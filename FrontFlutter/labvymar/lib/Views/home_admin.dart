@@ -100,7 +100,7 @@ class HomeAdmin extends StatelessWidget {
 }
 
 final List<String> _menuItems = <String>[
-  'Usuarios',
+  'Administración',
   'Inventario',
   'Recepción',
   'Consulta Medica',
@@ -120,19 +120,19 @@ class _ProfileIcon extends StatelessWidget {
       shape: RoundedRectangleBorder( // Ajusta los bordes
         borderRadius: BorderRadius.circular(8), // Radio de borde
       ),
-      color: Colors.white, // Fondo blanco
+      color: Color.fromARGB(255, 189, 10, 10), // Fondo blanco
       onSelected: (Menu item) {},
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-        PopupMenuItem<Menu>(
+        const PopupMenuItem<Menu>(
           value: Menu.itemOne,
           child: ListTile(
             title: Text('Cuenta'),
           ),
         ),
-        PopupMenuItem<Menu>(
+        const PopupMenuItem<Menu>(
           value: Menu.itemThree,
           child: ListTile(
-            title: Text('Sign Out'),
+            title: Text('Cerrar Sesión'),
           ),
         ),
       ],
