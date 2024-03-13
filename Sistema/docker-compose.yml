@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  sistema:
+    image: ${DOCKER_REGISTRY-}sistema
+    ports:
+      - "8001:80"
+      - "8002:443"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - my_network
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Vu79bC3xL87gf
+      MYSQL_DATABASE: SLC_bd
+    ports:
+      - "3307:3306"
+    networks:
+      - my_network
+
+volumes:
+  db_data:
+
+networks:
+  my_network:
+    driver: bridge
