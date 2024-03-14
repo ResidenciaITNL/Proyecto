@@ -66,7 +66,7 @@ class HomeAdmin extends StatelessWidget {
           ),
           child: const Center(
             child: Text(
-              "¡Bienvenido!",
+              "¡Vista de Administracion de Usuarios!",
               style: TextStyle(
                 fontSize: 24, // Tamaño de fuente ajustable según tus preferencias
                 fontWeight: FontWeight.bold, // Puedes ajustar el peso de la fuente según lo desees
