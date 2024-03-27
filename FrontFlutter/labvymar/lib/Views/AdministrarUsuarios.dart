@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:labvymar/Views/ConsultaMedica.dart';
+import 'package:labvymar/Views/EstudioMedico.dart';
+import 'package:labvymar/Views/InventarioMedicamento.dart';
+import 'package:labvymar/Views/Recepcion.dart';
 
 class AdminUsuarios extends StatelessWidget {
   AdminUsuarios({Key? key}) : super(key: key);
@@ -32,7 +36,7 @@ class AdminUsuarios extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, 'AministrarUsuarios');
+                    Navigator.pushReplacementNamed(context, 'home_admin');
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -43,7 +47,7 @@ class AdminUsuarios extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (isLargeScreen) Expanded(child: _navBarItems())
+                if (isLargeScreen) Expanded(child: _navBarItems(context))
               ],
             ),
           ),
@@ -61,39 +65,78 @@ class AdminUsuarios extends StatelessWidget {
   }
 
   Widget _drawer() => Drawer(
-    child: ListView(
-      children: _menuItems
-          .map((item) => ListTile(
+        child: ListView(
+          children: _menuItems
+              .map((item) => ListTile(
+                    onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                    },
+                    title: Text(item),
+                  ))
+              .toList(),
+        ),
+      );
+
+  Widget _navBarItems(BuildContext context) => Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: _menuItems
+            .map(
+              (item) => InkWell(
                 onTap: () {
-                  _scaffoldKey.currentState?.openEndDrawer();
+                  _handleMenuTap(context, item);
                 },
-                title: Text(item),
-              ))
-          .toList(),
-    ),
-  );
-
-  Widget _navBarItems() => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: _menuItems
-        .map(
-          (item) => InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: 24.0, horizontal: 16),
-              child: Text(
-                item,
-                style: const TextStyle(fontSize: 18),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 24.0, horizontal: 16),
+                  child: Text(
+                    item,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
               ),
-            ),
-          ),
-        )
-        .toList(),
-  );
+            )
+            .toList(),
+      );
 
-  Widget _buildUserDataTable() {
+  void _handleMenuTap(BuildContext context, String menuItem) {
+    switch (menuItem) {
+      case 'Administración':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AdminUsuarios()),
+        );
+        break;
+      case 'Inventario':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => InvMedicamento()),
+        );
+        break;
+      case 'Recepción':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Recep()),
+        );
+        break;
+      case 'Consulta Medica':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ConsMedica()),
+        );
+        break;
+      case 'Estudio Medico':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EstudioMed()),
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+    Widget _buildUserDataTable() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: DataTable(
@@ -142,6 +185,7 @@ class AdminUsuarios extends StatelessWidget {
       ]);
     }).toList();
   }
+
 }
 
 final List<String> _menuItems = <String>[

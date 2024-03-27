@@ -32,10 +32,11 @@ dependencies:
     sdk: flutter
   http: ^0.13.3  # Para hacer solicitudes HTTP al servidor
   dio: ^4.0.0    # Una alternativa más poderosa para solicitudes HTTP
-  flutter_swiper: ^2.0.0  # Para implementar deslizadores de imágenes
+  # flutter_swiper: ^2.0.0  # Para implementar deslizadores de imágenes
   flutter_staggered_grid_view: ^0.4.0  # Para crear diseños de cuadrícula escalonados
-  responsive_framework: ^0.4.0  # Para hacer que la aplicación sea responsiva
-  mysql1: ^0.18.1
+  # responsive_framework: ^0.4.0  # Para hacer que la aplicación sea responsiva
+  # mysql1: ^0.18.1
+  js: ^0.6.2
 
 
   # The following adds the Cupertino Icons font to your application.

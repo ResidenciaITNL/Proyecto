@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:labvymar/Views/AdministrarUsuarios.dart';
+import 'package:labvymar/Views/ConsultaMedica.dart';
+import 'package:labvymar/Views/EstudioMedico.dart';
+import 'package:labvymar/Views/InventarioMedicamento.dart';
+import 'package:labvymar/Views/Recepcion.dart';
 
 class HomeAdmin extends StatelessWidget {
   HomeAdmin({Key? key}) : super(key: key);
@@ -13,7 +18,7 @@ class HomeAdmin extends StatelessWidget {
     return Theme(
       data: ThemeData.light(),
       child: Scaffold(
-        backgroundColor: Colors.white, // Establece el color de fondo blanco
+        backgroundColor: Colors.white,
         key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -32,19 +37,18 @@ class HomeAdmin extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    // Manejar la navegación hacia la vista home
                     Navigator.pushReplacementNamed(context, 'home_admin');
                   },
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 10.0, bottom: 10.0), // Ajusta el espacio superior e inferior
+                    padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: Image.asset(
-                      'assets/VYMAR_logo.png', // Ruta de la imagen
-                      height: 60, // Altura de la imagen
-                      width: 60, // Ancho de la imagen
+                      'assets/VYMAR_logo.png',
+                      height: 60,
+                      width: 60,
                     ),
                   ),
                 ),
-                if (isLargeScreen) Expanded(child: _navBarItems())
+                if (isLargeScreen) Expanded(child: _navBarItems(context))
               ],
             ),
           ),
@@ -59,18 +63,21 @@ class HomeAdmin extends StatelessWidget {
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: const AssetImage('assets/fondo.jpg'), // Ruta de tu imagen
-              fit: BoxFit.cover, // Ajusta la imagen para cubrir el contenedor
-              colorFilter: ColorFilter.mode(const Color.fromARGB(123, 0, 0, 0).withOpacity(0.6), BlendMode.darken), // Añade una capa oscura semi-transparente
+              image: const AssetImage('assets/fondo.jpg'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                const Color.fromARGB(123, 0, 0, 0).withOpacity(0.6),
+                BlendMode.darken,
+              ),
             ),
           ),
           child: const Center(
             child: Text(
               "¡Bienvenido!",
               style: TextStyle(
-                fontSize: 24, // Tamaño de fuente ajustable según tus preferencias
-                fontWeight: FontWeight.bold, // Puedes ajustar el peso de la fuente según lo desees
-                color: Colors.white, // Color del texto
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
           ),
@@ -92,13 +99,15 @@ class HomeAdmin extends StatelessWidget {
         ),
       );
 
-  Widget _navBarItems() => Row(
+  Widget _navBarItems(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: _menuItems
             .map(
               (item) => InkWell(
-                onTap: () {},
+                onTap: () {
+                  _handleMenuTap(context, item);
+                },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 24.0, horizontal: 16),
@@ -111,6 +120,43 @@ class HomeAdmin extends StatelessWidget {
             )
             .toList(),
       );
+
+  void _handleMenuTap(BuildContext context, String menuItem) {
+    switch (menuItem) {
+      case 'Administración':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AdminUsuarios()),
+        );
+        break;
+      case 'Inventario':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => InvMedicamento()),
+        );
+        break;
+      case 'Recepción':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Recep()),
+        );
+        break;
+      case 'Consulta Medica':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ConsMedica()),
+        );
+        break;
+      case 'Estudio Medico':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EstudioMed()),
+        );
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 final List<String> _menuItems = <String>[
@@ -129,12 +175,12 @@ class _ProfileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<Menu>(
-      icon: const Icon(Icons.person, color: Color(0xFF094293)), // Asigna el color blanco al icono
+      icon: const Icon(Icons.person, color: Color(0xFF094293)),
       offset: const Offset(0, 40),
-      shape: RoundedRectangleBorder( // Ajusta los bordes
-        borderRadius: BorderRadius.circular(8), // Radio de borde
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
       ),
-      color: Color.fromARGB(255, 255, 255, 255), // Fondo blanco
+      color: Color.fromARGB(255, 255, 255, 255),
       onSelected: (Menu item) {},
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
         const PopupMenuItem<Menu>(

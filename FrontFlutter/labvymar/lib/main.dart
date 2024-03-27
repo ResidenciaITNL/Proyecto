@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:labvymar/Views/ConsultaMedica.dart';
+import 'package:labvymar/Views/EstudioMedico.dart';
+import 'package:labvymar/Views/InventarioMedicamento.dart';
+import 'package:labvymar/Views/Recepcion.dart';
 import 'package:labvymar/Views/login.dart';
 import 'package:labvymar/Views/recoverpass.dart';
 import 'package:labvymar/Views/home_admin.dart';
@@ -19,8 +23,12 @@ class MyApp extends StatelessWidget {
       routes: {
         'login' : (_) => Login(), // Agregando la ruta para la vista login
         'recoverpass' : (_) => RecoverPass(), // Agregando la ruta para la vista recoverpass
-        'home_admin' : (_) => HomeAdmin(), // Agregando la ruta para la vista recoverpass
-        'AdministrarUsuarios' : (_) => AdminUsuarios(),
+        'home_admin' : (_) => HomeAdmin(), // Agregando la ruta para la vista home_admin
+        'AdministrarUsuarios' : (_) => AdminUsuarios(), // Agregando la ruta para la vista AdministrarUsuarios
+        'ConsultaMedica' : (_) => ConsMedica(), // Agregando la ruta para la vista ConsultaMedica
+        'EstudioMedico' : (_) => EstudioMed(), // Agregando la ruta para la vista EstudioMedico
+        'InventarioMedicamento' : (_) => InvMedicamento(), // Agregando la ruta para la vista InventarioMedicamento
+        'Recepcion' : (_) => Recep(), // Agregando la ruta para la vista Recepcion
       },
       initialRoute: 'login',
     );
