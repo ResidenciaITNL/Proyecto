@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:labvymar/Views/login.dart';
 import 'package:labvymar/Views/recoverpass.dart';
 import 'package:labvymar/Views/home_admin.dart';
+import 'package:labvymar/Views/AdministrarUsuarios.dart';
 
 void main() => runApp(const MyApp());
 
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
         'login' : (_) => Login(), // Agregando la ruta para la vista login
         'recoverpass' : (_) => RecoverPass(), // Agregando la ruta para la vista recoverpass
         'home_admin' : (_) => HomeAdmin(), // Agregando la ruta para la vista recoverpass
+        'AdministrarUsuarios' : (_) => AdminUsuarios(),
       },
       initialRoute: 'login',
     );
