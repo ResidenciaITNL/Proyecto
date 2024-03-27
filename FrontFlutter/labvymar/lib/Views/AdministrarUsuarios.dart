@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class HomeAdmin extends StatelessWidget {
-  HomeAdmin({Key? key}) : super(key: key);
+class AdminUsuarios extends StatelessWidget {
+  AdminUsuarios({Key? key}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -13,7 +13,7 @@ class HomeAdmin extends StatelessWidget {
     return Theme(
       data: ThemeData.light(),
       child: Scaffold(
-        backgroundColor: Colors.white, // Establece el color de fondo blanco
+        backgroundColor: Colors.white,
         key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -32,15 +32,14 @@ class HomeAdmin extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    // Manejar la navegación hacia la vista home
-                    Navigator.pushReplacementNamed(context, 'home_admin');
+                    Navigator.pushReplacementNamed(context, 'AministrarUsuarios');
                   },
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 10.0, bottom: 10.0), // Ajusta el espacio superior e inferior
+                    padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: Image.asset(
-                      'assets/VYMAR_logo.png', // Ruta de la imagen
-                      height: 60, // Altura de la imagen
-                      width: 60, // Ancho de la imagen
+                      'assets/VYMAR_logo.png',
+                      height: 60,
+                      width: 60,
                     ),
                   ),
                 ),
@@ -56,61 +55,93 @@ class HomeAdmin extends StatelessWidget {
           ],
         ),
         drawer: isLargeScreen ? null : _drawer(),
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: const AssetImage('assets/fondo.jpg'), // Ruta de tu imagen
-              fit: BoxFit.cover, // Ajusta la imagen para cubrir el contenedor
-              colorFilter: ColorFilter.mode(const Color.fromARGB(123, 0, 0, 0).withOpacity(0.6), BlendMode.darken), // Añade una capa oscura semi-transparente
-            ),
-          ),
-          child: const Center(
-            child: Text(
-              "¡Vista de Administracion de Usuarios!",
-              style: TextStyle(
-                fontSize: 24, // Tamaño de fuente ajustable según tus preferencias
-                fontWeight: FontWeight.bold, // Puedes ajustar el peso de la fuente según lo desees
-                color: Colors.white, // Color del texto
-              ),
-            ),
-          ),
-        ),
+        body: _buildUserDataTable(),
       ),
     );
   }
 
   Widget _drawer() => Drawer(
-        child: ListView(
-          children: _menuItems
-              .map((item) => ListTile(
-                    onTap: () {
-                      _scaffoldKey.currentState?.openEndDrawer();
-                    },
-                    title: Text(item),
-                  ))
-              .toList(),
-        ),
-      );
+    child: ListView(
+      children: _menuItems
+          .map((item) => ListTile(
+                onTap: () {
+                  _scaffoldKey.currentState?.openEndDrawer();
+                },
+                title: Text(item),
+              ))
+          .toList(),
+    ),
+  );
 
   Widget _navBarItems() => Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: _menuItems
-            .map(
-              (item) => InkWell(
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 24.0, horizontal: 16),
-                  child: Text(
-                    item,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ),
+    mainAxisAlignment: MainAxisAlignment.end,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: _menuItems
+        .map(
+          (item) => InkWell(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 24.0, horizontal: 16),
+              child: Text(
+                item,
+                style: const TextStyle(fontSize: 18),
               ),
-            )
-            .toList(),
-      );
+            ),
+          ),
+        )
+        .toList(),
+  );
+
+  Widget _buildUserDataTable() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: DataTable(
+        columns: [
+          DataColumn(label: Text('Nombre')),
+          DataColumn(label: Text('Correo')),
+          DataColumn(label: Text('Acciones')),
+        ],
+        rows: _userDataRows(),
+      ),
+    );
+  }
+
+  List<DataRow> _userDataRows() {
+    // Aquí iría la lógica para cargar los datos de los usuarios desde tu fuente de datos
+    // Por ahora, vamos a simular algunos datos de ejemplo
+    final List<Map<String, String>> users = [
+      {'name': 'Usuario 1', 'email': 'usuario1@example.com'},
+      {'name': 'Usuario 2', 'email': 'usuario2@example.com'},
+      {'name': 'Usuario 3', 'email': 'usuario3@example.com'},
+    ];
+
+    return users.map((user) {
+      return DataRow(cells: [
+        DataCell(Text(user['name']!)),
+        DataCell(Text(user['email']!)),
+        DataCell(Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                // Lógica para editar el usuario
+                // Puedes abrir un diálogo o navegar a otra pantalla para editar
+                // Dependiendo de tu implementación
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                // Lógica para eliminar el usuario
+                // Puedes mostrar un diálogo de confirmación antes de eliminar
+              },
+            ),
+          ],
+        )),
+      ]);
+    }).toList();
+  }
 }
 
 final List<String> _menuItems = <String>[
@@ -129,12 +160,12 @@ class _ProfileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<Menu>(
-      icon: const Icon(Icons.person, color: Color(0xFF094293)), // Asigna el color blanco al icono
+      icon: const Icon(Icons.person, color: Color(0xFF094293)),
       offset: const Offset(0, 40),
-      shape: RoundedRectangleBorder( // Ajusta los bordes
-        borderRadius: BorderRadius.circular(8), // Radio de borde
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
       ),
-      color: Color.fromARGB(255, 255, 255, 255), // Fondo blanco
+      color: Color.fromARGB(255, 255, 255, 255),
       onSelected: (Menu item) {},
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
         const PopupMenuItem<Menu>(
