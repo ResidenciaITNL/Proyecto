@@ -12,7 +12,7 @@ class InvMedicamento extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final bool isLargeScreen = width > 800;
+    final bool isLargeScreen = width > 870;
 
     return Theme(
       data: ThemeData.light(),
@@ -58,7 +58,7 @@ class InvMedicamento extends StatelessWidget {
             )
           ],
         ),
-        drawer: isLargeScreen ? null : _drawer(),
+        drawer: isLargeScreen ? null : _drawer(context),
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -85,77 +85,82 @@ class InvMedicamento extends StatelessWidget {
     );
   }
 
-  Widget _drawer() => Drawer(
-        child: ListView(
-          children: _menuItems
-              .map((item) => ListTile(
-                    onTap: () {
-                      _scaffoldKey.currentState?.openEndDrawer();
-                    },
-                    title: Text(item),
-                  ))
-              .toList(),
+Widget _drawer(BuildContext context) => Drawer(
+  child: Container(
+    color: Colors.white, // Añade un fondo blanco
+    child: ListView(
+      children: _menuItems
+          .map(
+            (item) => ListTile(
+              onTap: () {
+                _handleMenuTap(context, item);
+              },
+              title: Text(item),
+            ),
+          )
+          .toList(),
+    ),
+  ),
+);
+
+Widget _navBarItems(BuildContext context) => Row(
+  mainAxisAlignment: MainAxisAlignment.end,
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: _menuItems
+      .map(
+        (item) => InkWell(
+          onTap: () {
+            _handleMenuTap(context, item);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                vertical: 24.0, horizontal: 16),
+            child: Text(
+              item,
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
         ),
-      );
+      )
+      .toList(),
+);
 
-  Widget _navBarItems(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: _menuItems
-            .map(
-              (item) => InkWell(
-                onTap: () {
-                  _handleMenuTap(context, item);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 24.0, horizontal: 16),
-                  child: Text(
-                    item,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-            )
-            .toList(),
+void _handleMenuTap(BuildContext context, String menuItem) {
+  switch (menuItem) {
+    case 'Administración':
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => AdminUsuarios()),
       );
-
-  void _handleMenuTap(BuildContext context, String menuItem) {
-    switch (menuItem) {
-      case 'Administración':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AdminUsuarios()),
-        );
-        break;
-      case 'Inventario':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => InvMedicamento()),
-        );
-        break;
-      case 'Recepción':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Recep()),
-        );
-        break;
-      case 'Consulta Medica':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ConsMedica()),
-        );
-        break;
-      case 'Estudio Medico':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EstudioMed()),
-        );
-        break;
-      default:
-        break;
-    }
+      break;
+    case 'Inventario':
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => InvMedicamento()),
+      );
+      break;
+    case 'Recepción':
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Recep()),
+      );
+      break;
+    case 'Consulta Medica':
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ConsMedica()),
+      );
+      break;
+    case 'Estudio Medico':
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => EstudioMed()),
+      );
+      break;
+    default:
+      break;
   }
+}
 }
 
 final List<String> _menuItems = <String>[
@@ -173,28 +178,31 @@ class _ProfileIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<Menu>(
-      icon: const Icon(Icons.person, color: Color(0xFF094293)),
-      offset: const Offset(0, 40),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+    return Container(
+      color: Colors.white, // Agregar fondo blanco al contenedor principal
+      child: PopupMenuButton<Menu>(
+        icon: const Icon(Icons.person, color: Color(0xFF094293)),
+        offset: const Offset(0, 40),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        color: Colors.white, // Asegurar que el menú desplegable también tenga un fondo blanco
+        onSelected: (Menu item) {},
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.itemOne,
+            child: ListTile(
+              title: Text('Cuenta'),
+            ),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.itemThree,
+            child: ListTile(
+              title: Text('Cerrar Sesión'),
+            ),
+          ),
+        ],
       ),
-      color: Color.fromARGB(255, 255, 255, 255),
-      onSelected: (Menu item) {},
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-        const PopupMenuItem<Menu>(
-          value: Menu.itemOne,
-          child: ListTile(
-            title: Text('Cuenta'),
-          ),
-        ),
-        const PopupMenuItem<Menu>(
-          value: Menu.itemThree,
-          child: ListTile(
-            title: Text('Cerrar Sesión'),
-          ),
-        ),
-      ],
     );
   }
 }

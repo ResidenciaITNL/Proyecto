@@ -37,6 +37,7 @@ dependencies:
   # responsive_framework: ^0.4.0  # Para hacer que la aplicación sea responsiva
   # mysql1: ^0.18.1
   js: ^0.6.2
+  responsive_builder: ^0.4.0
 
 
   # The following adds the Cupertino Icons font to your application.
