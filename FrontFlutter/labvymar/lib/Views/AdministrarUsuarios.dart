@@ -62,103 +62,139 @@ class AdminUsuarios extends StatelessWidget {
         drawer: isLargeScreen ? null : _drawer(context),
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0), // Agrega un padding en todos los lados
-            child: _buildUserDataTable(), // Tu DataTable aquí
+            padding: const EdgeInsets.all(
+                16.0), // Agrega un padding en todos los lados
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Administrar Usuarios',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(
+                    height: 20), // Agrega un espacio entre el título y el botón
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Lógica para agregar un usuario
+                  },
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Color(0xFF094293)),
+                  ),
+                  icon: const Icon(Icons.person_add_alt_sharp, color: Colors.white),
+                  label: const Text(
+                    'Agregar Usuario',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                const SizedBox(
+                    height:
+                        20), // Agrega un espacio entre el botón y el DataTable
+                _buildUserDataTable(), // Tu DataTable aquí
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-Widget _drawer(BuildContext context) => Drawer(
-  child: Container(
-    color: Colors.white, // Añade un fondo blanco
-    child: ListView(
-      children: _menuItems
-          .map(
-            (item) => ListTile(
-              onTap: () {
-                _handleMenuTap(context, item);
-              },
-              title: Text(item),
-            ),
-          )
-          .toList(),
-    ),
-  ),
-);
-
-Widget _navBarItems(BuildContext context) => Row(
-  mainAxisAlignment: MainAxisAlignment.end,
-  crossAxisAlignment: CrossAxisAlignment.center,
-  children: _menuItems
-      .map(
-        (item) => InkWell(
-          onTap: () {
-            _handleMenuTap(context, item);
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-                vertical: 24.0, horizontal: 16),
-            child: Text(
-              item,
-              style: const TextStyle(fontSize: 18),
-            ),
+  Widget _drawer(BuildContext context) => Drawer(
+        child: Container(
+          color: Colors.white, // Añade un fondo blanco
+          child: ListView(
+            children: _menuItems
+                .map(
+                  (item) => ListTile(
+                    onTap: () {
+                      _handleMenuTap(context, item);
+                    },
+                    title: Text(item),
+                  ),
+                )
+                .toList(),
           ),
         ),
-      )
-      .toList(),
-);
+      );
 
-void _handleMenuTap(BuildContext context, String menuItem) {
-  switch (menuItem) {
-    case 'Administración':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => AdminUsuarios()),
+  Widget _navBarItems(BuildContext context) => Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: _menuItems
+            .map(
+              (item) => InkWell(
+                onTap: () {
+                  _handleMenuTap(context, item);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 24.0, horizontal: 16),
+                  child: Text(
+                    item,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            )
+            .toList(),
       );
-      break;
-    case 'Inventario':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => InvMedicamento()),
-      );
-      break;
-    case 'Recepción':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Recep()),
-      );
-      break;
-    case 'Consulta Medica':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ConsMedica()),
-      );
-      break;
-    case 'Estudio Medico':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => EstudioMed()),
-      );
-      break;
-    default:
-      break;
+
+  void _handleMenuTap(BuildContext context, String menuItem) {
+    switch (menuItem) {
+      case 'Administración':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AdminUsuarios()),
+        );
+        break;
+      case 'Inventario':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => InvMedicamento()),
+        );
+        break;
+      case 'Recepción':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Recep()),
+        );
+        break;
+      case 'Consulta Medica':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ConsMedica()),
+        );
+        break;
+      case 'Estudio Medico':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => EstudioMed()),
+        );
+        break;
+      default:
+        break;
+    }
   }
-}
 
   Widget _buildUserDataTable() {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
-        double columnSpacing = screenWidth * 0.3; // Define el espacio de columna como el 10% del ancho de la pantalla por defecto
+        double columnSpacing = screenWidth *
+            0.3; // Define el espacio de columna como el 10% del ancho de la pantalla por defecto
         double fontSize = 16.0;
 
         if (sizingInformation.deviceScreenType == DeviceScreenType.mobile) {
-          columnSpacing = screenWidth * 0.1; // Ajusta el espacio de columna para dispositivos móviles
+          columnSpacing = screenWidth *
+              0.1; // Ajusta el espacio de columna para dispositivos móviles
           fontSize = 12.0;
-        } else if (sizingInformation.deviceScreenType == DeviceScreenType.tablet) {
-          columnSpacing = screenWidth * 0.2; // Ajusta el espacio de columna para tabletas
+        } else if (sizingInformation.deviceScreenType ==
+            DeviceScreenType.tablet) {
+          columnSpacing =
+              screenWidth * 0.2; // Ajusta el espacio de columna para tabletas
           fontSize = 14.0;
         }
 
@@ -206,7 +242,7 @@ void _handleMenuTap(BuildContext context, String menuItem) {
         DataCell(Row(
           children: [
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: Icon(Icons.edit,  color: Color(0xFF094293)),
               onPressed: () {
                 // Lógica para editar el usuario
                 // Puedes abrir un diálogo o navegar a otra pantalla para editar
@@ -214,7 +250,7 @@ void _handleMenuTap(BuildContext context, String menuItem) {
               },
             ),
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: Icon(Icons.person_off_sharp, color: Colors.red,),
               onPressed: () {
                 // Lógica para eliminar el usuario
                 // Puedes mostrar un diálogo de confirmación antes de eliminar
@@ -225,7 +261,6 @@ void _handleMenuTap(BuildContext context, String menuItem) {
       ]);
     }).toList();
   }
-
 }
 
 final List<String> _menuItems = <String>[
@@ -246,7 +281,6 @@ class _ProfileIcon extends StatelessWidget {
     return Container(
       color: Colors.white, // Agregar fondo blanco al contenedor principal
       child: PopupMenuButton<Menu>(
-        icon: const Icon(Icons.person, color: Color(0xFF094293)),
         offset: const Offset(0, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -257,16 +291,34 @@ class _ProfileIcon extends StatelessWidget {
           const PopupMenuItem<Menu>(
             value: Menu.itemOne,
             child: ListTile(
-              title: Text('Cuenta'),
+              title: Text(
+                'Cuenta',
+                textAlign: TextAlign.right, // Alinea el texto hacia la derecha
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
             ),
           ),
           const PopupMenuItem<Menu>(
             value: Menu.itemThree,
             child: ListTile(
-              title: Text('Cerrar Sesión'),
+              title: Text(
+                'Cerrar Sesión',
+                textAlign: TextAlign.right, // Alinea el texto hacia la derecha
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                
+              ),
             ),
           ),
         ],
+        child: const SizedBox(
+          width: 50, // Ancho del contenedor
+          height: 50, // Alto del contenedor
+          child: Icon(
+            Icons.account_circle_sharp,
+            size: 40, // Tamaño del icono
+            color: Color(0xFF094293),
+          ),
+        ),
       ),
     );
   }

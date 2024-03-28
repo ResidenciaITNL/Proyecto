@@ -184,7 +184,6 @@ class _ProfileIcon extends StatelessWidget {
     return Container(
       color: Colors.white, // Agregar fondo blanco al contenedor principal
       child: PopupMenuButton<Menu>(
-        icon: const Icon(Icons.person, color: Color(0xFF094293)),
         offset: const Offset(0, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -195,16 +194,34 @@ class _ProfileIcon extends StatelessWidget {
           const PopupMenuItem<Menu>(
             value: Menu.itemOne,
             child: ListTile(
-              title: Text('Cuenta'),
+              title: Text(
+                'Cuenta',
+                textAlign: TextAlign.right, // Alinea el texto hacia la derecha
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
             ),
           ),
           const PopupMenuItem<Menu>(
             value: Menu.itemThree,
             child: ListTile(
-              title: Text('Cerrar Sesión'),
+              title: Text(
+                'Cerrar Sesión',
+                textAlign: TextAlign.right, // Alinea el texto hacia la derecha
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                
+              ),
             ),
           ),
         ],
+        child: const SizedBox(
+          width: 50, // Ancho del contenedor
+          height: 50, // Alto del contenedor
+          child: Icon(
+            Icons.account_circle_sharp,
+            size: 40, // Tamaño del icono
+            color: Color(0xFF094293),
+          ),
+        ),
       ),
     );
   }
