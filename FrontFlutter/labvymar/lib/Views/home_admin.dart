@@ -66,7 +66,7 @@ class HomeAdmin extends StatelessWidget {
               image: const AssetImage('assets/fondo.jpg'),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                const Color.fromARGB(123, 0, 0, 0).withOpacity(0.6),
+                Color.fromARGB(157, 0, 0, 0).withOpacity(0.7),
                 BlendMode.darken,
               ),
             ),

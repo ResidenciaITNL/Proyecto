@@ -70,7 +70,7 @@ class AdminUsuarios extends StatelessWidget {
                 const Text(
                   'Administrar Usuarios',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 34,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -81,18 +81,22 @@ class AdminUsuarios extends StatelessWidget {
                     // Lógica para agregar un usuario
                   },
                   style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Color(0xFF094293)),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        const Color(0xFF094293)),
                   ),
-                  icon: const Icon(Icons.person_add_alt_sharp, color: Colors.white),
+                  icon: const Icon(
+                    Icons.person_add_alt_sharp,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                   label: const Text(
                     'Agregar Usuario',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ),
                 const SizedBox(
                     height:
-                        20), // Agrega un espacio entre el botón y el DataTable
+                        40), // Agrega un espacio entre el botón y el DataTable
                 _buildUserDataTable(), // Tu DataTable aquí
               ],
             ),
@@ -183,19 +187,16 @@ class AdminUsuarios extends StatelessWidget {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
-        double columnSpacing = screenWidth *
-            0.3; // Define el espacio de columna como el 10% del ancho de la pantalla por defecto
-        double fontSize = 16.0;
+        double columnSpacing = screenWidth * 0.15; // Espacio de columna predeterminado
+        double fontSize = 20.0; // Tamaño de fuente predeterminado
 
         if (sizingInformation.deviceScreenType == DeviceScreenType.mobile) {
-          columnSpacing = screenWidth *
-              0.1; // Ajusta el espacio de columna para dispositivos móviles
-          fontSize = 12.0;
+          columnSpacing = screenWidth * 0.1; // Ajuste para dispositivos móviles
+          fontSize = 16.0;
         } else if (sizingInformation.deviceScreenType ==
             DeviceScreenType.tablet) {
-          columnSpacing =
-              screenWidth * 0.2; // Ajusta el espacio de columna para tabletas
-          fontSize = 14.0;
+          columnSpacing = screenWidth * 0.12; // Ajuste para tabletas
+          fontSize = 18.0;
         }
 
         return DataTable(
@@ -204,19 +205,37 @@ class AdminUsuarios extends StatelessWidget {
             DataColumn(
               label: Text(
                 'Nombre',
-                style: TextStyle(fontSize: fontSize),
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             DataColumn(
               label: Text(
                 'Correo',
-                style: TextStyle(fontSize: fontSize),
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             DataColumn(
               label: Text(
-                'Acciones',
-                style: TextStyle(fontSize: fontSize),
+                'Rol',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Editar | Eliminar',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -227,30 +246,53 @@ class AdminUsuarios extends StatelessWidget {
   }
 
   List<DataRow> _userDataRows() {
-    // Aquí iría la lógica para cargar los datos de los usuarios desde tu fuente de datos
-    // Por ahora, vamos a simular algunos datos de ejemplo
+    // Lógica para cargar los datos de los usuarios
     final List<Map<String, String>> users = [
-      {'name': 'Usuario 1', 'email': 'usuario1@example.com'},
-      {'name': 'Usuario 2', 'email': 'usuario2@example.com'},
-      {'name': 'Usuario 3', 'email': 'usuario3@example.com'},
+      {
+        'name': 'Usuario 1',
+        'email': 'usuario1@example.com',
+        'rol': 'Medico Especialista'
+      },
+      {'name': 'Usuario 2', 'email': 'usuario2@example.com', 'rol': 'Doctor'},
+      {
+        'name': 'Usuario 3',
+        'email': 'usuario3@example.com',
+        'rol': 'Recepcionista'
+      },
     ];
 
     return users.map((user) {
       return DataRow(cells: [
-        DataCell(Text(user['name']!)),
-        DataCell(Text(user['email']!)),
+        DataCell(Text(
+          user['name']!,
+          style:
+              const TextStyle(fontSize: 18.0), // Aumentar el tamaño del texto
+        )),
+        DataCell(Text(
+          user['email']!,
+          style:
+              const TextStyle(fontSize: 18.0), // Aumentar el tamaño del texto
+        )),
+        DataCell(Text(
+          user['rol']!,
+          style:
+              const TextStyle(fontSize: 18.0), // Aumentar el tamaño del texto
+        )),
         DataCell(Row(
           children: [
             IconButton(
-              icon: Icon(Icons.edit,  color: Color(0xFF094293)),
+              icon: const Icon(Icons.edit, color: Color(0xFF094293)),
               onPressed: () {
                 // Lógica para editar el usuario
                 // Puedes abrir un diálogo o navegar a otra pantalla para editar
                 // Dependiendo de tu implementación
               },
             ),
+            const Text(
+              "           "
+            ),
             IconButton(
-              icon: Icon(Icons.person_off_sharp, color: Colors.red,),
+              icon: const Icon(Icons.person_off_sharp, color: Colors.red),
               onPressed: () {
                 // Lógica para eliminar el usuario
                 // Puedes mostrar un diálogo de confirmación antes de eliminar
@@ -285,7 +327,8 @@ class _ProfileIcon extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        color: Colors.white, // Asegurar que el menú desplegable también tenga un fondo blanco
+        color: Colors
+            .white, // Asegurar que el menú desplegable también tenga un fondo blanco
         onSelected: (Menu item) {},
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(
@@ -305,7 +348,6 @@ class _ProfileIcon extends StatelessWidget {
                 'Cerrar Sesión',
                 textAlign: TextAlign.right, // Alinea el texto hacia la derecha
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                
               ),
             ),
           ),

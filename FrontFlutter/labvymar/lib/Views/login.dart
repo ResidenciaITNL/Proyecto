@@ -258,7 +258,7 @@ class __FormContentState extends State<_FormContent> {
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => RecoverPass()),
                   );
