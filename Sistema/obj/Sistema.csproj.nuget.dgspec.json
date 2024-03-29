@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Jorge\\Desktop\\ResidenciaITNL\\Proyecto\\Sistema\\Sistema.csproj": {}
+    "C:\\Users\\jorge\\OneDrive\\Escritorio\\RecidenciaITNL\\Proyecto\\Sistema\\Sistema.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Jorge\\Desktop\\ResidenciaITNL\\Proyecto\\Sistema\\Sistema.csproj": {
+    "C:\\Users\\jorge\\OneDrive\\Escritorio\\RecidenciaITNL\\Proyecto\\Sistema\\Sistema.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Jorge\\Desktop\\ResidenciaITNL\\Proyecto\\Sistema\\Sistema.csproj",
+        "projectUniqueName": "C:\\Users\\jorge\\OneDrive\\Escritorio\\RecidenciaITNL\\Proyecto\\Sistema\\Sistema.csproj",
         "projectName": "Sistema",
-        "projectPath": "C:\\Users\\Jorge\\Desktop\\ResidenciaITNL\\Proyecto\\Sistema\\Sistema.csproj",
-        "packagesPath": "C:\\Users\\Jorge\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Jorge\\Desktop\\ResidenciaITNL\\Proyecto\\Sistema\\obj\\",
+        "projectPath": "C:\\Users\\jorge\\OneDrive\\Escritorio\\RecidenciaITNL\\Proyecto\\Sistema\\Sistema.csproj",
+        "packagesPath": "C:\\Users\\jorge\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jorge\\OneDrive\\Escritorio\\RecidenciaITNL\\Proyecto\\Sistema\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Jorge\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jorge\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,6 +25,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -108,7 +112,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }
