@@ -67,36 +67,7 @@ class AdminUsuarios extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Administrar Usuarios',
-                  style: TextStyle(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(
-                    height: 20), // Agrega un espacio entre el título y el botón
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Lógica para agregar un usuario
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color(0xFF094293)),
-                  ),
-                  icon: const Icon(
-                    Icons.person_add_alt_sharp,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  label: const Text(
-                    'Agregar Usuario',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ),
-                const SizedBox(
-                    height:
-                        40), // Agrega un espacio entre el botón y el DataTable
+                UserManagementScreen(),
                 _buildUserDataTable(), // Tu DataTable aquí
               ],
             ),
@@ -187,17 +158,9 @@ class AdminUsuarios extends StatelessWidget {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
-        double columnSpacing = screenWidth * 0.15; // Espacio de columna predeterminado
-        double fontSize = 20.0; // Tamaño de fuente predeterminado
-
-        if (sizingInformation.deviceScreenType == DeviceScreenType.mobile) {
-          columnSpacing = screenWidth * 0.1; // Ajuste para dispositivos móviles
-          fontSize = 16.0;
-        } else if (sizingInformation.deviceScreenType ==
-            DeviceScreenType.tablet) {
-          columnSpacing = screenWidth * 0.12; // Ajuste para tabletas
-          fontSize = 18.0;
-        }
+        double columnSpacing = screenWidth * 0.05; // Espacio de columna predeterminado
+        double fontSize = screenWidth * 0.020; // Tamaño de fuente predeterminado
+        double fontSizeEdit = screenWidth * 0.015; // Tamaño de fuente predeterminado
 
         return DataTable(
           columnSpacing: columnSpacing, // Espacio entre columnas
@@ -231,22 +194,21 @@ class AdminUsuarios extends StatelessWidget {
             ),
             DataColumn(
               label: Text(
-                'Editar | Eliminar',
+                'Editar | Eliminar ',
                 style: TextStyle(
-                  fontSize: fontSize,
+                  fontSize: fontSizeEdit,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ],
-          rows: _userDataRows(),
+          rows: _userDataRows(context),
         );
       },
     );
   }
 
-  List<DataRow> _userDataRows() {
-    // Lógica para cargar los datos de los usuarios
+  List<DataRow> _userDataRows(BuildContext context) {
     final List<Map<String, String>> users = [
       {
         'name': 'Usuario 1',
@@ -261,38 +223,42 @@ class AdminUsuarios extends StatelessWidget {
       },
     ];
 
+    final double screenWidth2 = MediaQuery.of(context).size.width;
+    double fontSize = screenWidth2 * 0.018;
+
+
     return users.map((user) {
+      
       return DataRow(cells: [
         DataCell(Text(
           user['name']!,
-          style:
-              const TextStyle(fontSize: 18.0), // Aumentar el tamaño del texto
+          style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
           user['email']!,
-          style:
-              const TextStyle(fontSize: 18.0), // Aumentar el tamaño del texto
+          style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
           user['rol']!,
-          style:
-              const TextStyle(fontSize: 18.0), // Aumentar el tamaño del texto
+          style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.edit, color: Color(0xFF094293)),
+              icon: Icon(Icons.edit, color: Color(0xFF094293), size: fontSize,),
               onPressed: () {
                 // Lógica para editar el usuario
                 // Puedes abrir un diálogo o navegar a otra pantalla para editar
                 // Dependiendo de tu implementación
               },
             ),
-            const Text(
-              "           "
-            ),
+            // Text("     ",
+            //   style: TextStyle(
+            //     fontSize: fontSize,
+            //   ),
+            // ),
             IconButton(
-              icon: const Icon(Icons.person_off_sharp, color: Colors.red),
+              icon: Icon(Icons.person_off_sharp, color: Colors.red, size: fontSize,),
               onPressed: () {
                 // Lógica para eliminar el usuario
                 // Puedes mostrar un diálogo de confirmación antes de eliminar
@@ -327,8 +293,7 @@ class _ProfileIcon extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        color: Colors
-            .white, // Asegurar que el menú desplegable también tenga un fondo blanco
+        color: Colors.white, // Asegurar que el menú desplegable también tenga un fondo blanco
         onSelected: (Menu item) {},
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(
@@ -364,4 +329,111 @@ class _ProfileIcon extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class UserManagementScreen extends StatefulWidget {
+  const UserManagementScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _UserManagementScreenState createState() => _UserManagementScreenState();
+}
+
+class _UserManagementScreenState extends State<UserManagementScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _roleController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Administrar Usuarios',
+              style: TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                _showAddUserDialog(context);
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(const Color(0xFF094293)),
+              ),
+              icon: const Icon(
+                Icons.person_add_alt_sharp,
+                color: Colors.white,
+                size: 30,
+              ),
+              label: const Text(
+                'Agregar Usuario',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            const SizedBox(height: 40),
+            // Tu DataTable aquí
+          ],
+        ),
+      ),
+    );
+  }
+
+void _showAddUserDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.white, // Establecer el color de fondo blanco
+        title: const Center(
+          // Centrar el título
+          child: Text('Nuevo usuario'),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Nombre'),
+              ),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Correo'),
+              ),
+              TextFormField(
+                controller: _roleController,
+                decoration: const InputDecoration(labelText: 'Rol'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Aquí puedes realizar la lógica para agregar el usuario con los datos ingresados
+              // por ejemplo, puedes acceder a los valores con _nameController.text, _emailController.text, _roleController.text
+              // y luego cerrar el dialogo con Navigator.of(context).pop();
+            },
+            child: const Text('Agregar'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 }
