@@ -280,7 +280,7 @@ void _showEditUserDialog(BuildContext context, String name, String currentRole) 
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: Text('Editar Usuario: $name'),
+            title: Text('Seleccione el rol de $name dentro del sistema'),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -335,7 +335,7 @@ void _showDeleteUserDialog(BuildContext context, String name) {
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: Text('Eliminar Usuario: $name'),
+            title: Text('Seguro que quiere dar de baja a $name del sistema?'),
             actions: [
               TextButton(
                 onPressed: () {

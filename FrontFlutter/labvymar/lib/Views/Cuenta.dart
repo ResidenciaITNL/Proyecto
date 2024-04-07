@@ -162,78 +162,106 @@ class CuentaUser extends StatelessWidget {
     );
   }
 
-  void _showEditEmailDialog(BuildContext context, String currentValue) {
-    TextEditingController _emailController =
-        TextEditingController(text: currentValue);
-    bool _isEmailValid = false;
+void _showEditEmailDialog(BuildContext context, String currentValue) {
+  TextEditingController _emailController = TextEditingController(text: currentValue);
+  TextEditingController _newEmailController = TextEditingController();
+  TextEditingController _confirmEmailController = TextEditingController();
+  bool _isEmailValid = false;
 
-    // Función para validar el correo electrónico
-    void _validateEmail(String value) {
-      // Utilizamos una expresión regular para validar el formato del correo electrónico
-      bool isValidFormat =
-          RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
-      // Actualizamos el estado de la validez del correo electrónico
-      _isEmailValid = isValidFormat;
-    }
+  // Función para validar el correo electrónico
+  void _validateEmail(String value) {
+    // Utilizamos una expresión regular para validar el formato del correo electrónico
+    bool isValidFormat = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
+    // Actualizamos el estado de la validez del correo electrónico
+    _isEmailValid = isValidFormat && _newEmailController.text == _confirmEmailController.text;
+  }
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text("Editar correo electrónico"),
-              content: TextField(
-                controller: _emailController,
-                onChanged: (value) {
-                  setState(() {
-                    _validateEmail(
-                        value); // Validar el correo electrónico al cambiar
-                  });
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text("Editar correo electrónico"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _emailController,
+                  enabled: false,
+                  decoration: const InputDecoration(
+                    hintText: "Correo electrónico actual",
+                  ),
+                ),
+                TextField(
+                  controller: _newEmailController,
+                  onChanged: (value) {
+                    setState(() {
+                      _validateEmail(value);
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    hintText: "Ingrese el nuevo correo electrónico",
+                  ),
+                ),
+                TextField(
+                  controller: _confirmEmailController,
+                  onChanged: (value) {
+                    setState(() {
+                      _validateEmail(value);
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    hintText: "Confirme el nuevo correo electrónico",
+                  ),
+                ),
+                if (!_isEmailValid)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 25.0),
+                    child: Text(
+                      "Los correos electrónicos deben coincidir y tener un formato válido.",
+                      style: TextStyle(color: Colors.red,),
+                    ),
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cerrar el diálogo
                 },
-                decoration: InputDecoration(
-                  hintText: "Ingrese el nuevo correo electrónico",
-                  errorText: _isEmailValid
-                      ? null
-                      : "Ingrese un correo electrónico válido",
+                child: const Text("Cancelar"),
+              ),
+              ElevatedButton(
+                onPressed: _isEmailValid
+                    ? () {
+                        // Aquí puedes realizar la lógica para guardar el nuevo correo electrónico
+                        String newEmail = _newEmailController.text;
+                        // Por ahora, simplemente imprimo el nuevo correo electrónico
+                        print("Nuevo correo electrónico: $newEmail");
+                        Navigator.of(context).pop(); // Cerrar el diálogo
+                      }
+                    : null,
+                style: ButtonStyle(
+                  backgroundColor: _isEmailValid
+                      ? MaterialStateProperty.all<Color>(const Color(0xFF094293)) // Color del botón de guardar
+                      : MaterialStateProperty.all<Color>(const Color(0xFFBBDEFB)), // Color de botón desactivado
+                ),
+                child: const Text(
+                  "Guardar",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Cerrar el diálogo
-                  },
-                  child: const Text("Cancelar"),
-                ),
-                ElevatedButton(
-                  onPressed: _isEmailValid
-                      ? () {
-                          // Aquí puedes realizar la lógica para guardar el nuevo correo electrónico
-                          String newEmail = _emailController.text;
-                          // Por ahora, simplemente imprimo el nuevo correo electrónico
-                          print("Nuevo correo electrónico: $newEmail");
-                          Navigator.of(context).pop(); // Cerrar el diálogo
-                        }
-                      : null,
-                  style: ButtonStyle(
-                    backgroundColor: _isEmailValid
-                        ? MaterialStateProperty.all<Color>(const Color(
-                            0xFF094293)) // Color del botón de guardar
-                        : MaterialStateProperty.all<Color>(const Color(
-                            0xFFBBDEFB)), // Color de botón desactivado
-                  ),
-                  child: const Text(
-                    "Guardar",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
+
 
   void _showEditPasswordDialog(BuildContext context, String currentValue) {
     TextEditingController _currentPasswordController = TextEditingController();
