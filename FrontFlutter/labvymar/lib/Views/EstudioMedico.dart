@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:labvymar/Views/AdministrarUsuarios.dart';
 import 'package:labvymar/Views/ConsultaMedica.dart';
+import 'package:labvymar/Views/Cuenta.dart';
 import 'package:labvymar/Views/InventarioMedicamento.dart';
 import 'package:labvymar/Views/Recepcion.dart';
+import 'package:labvymar/Views/login.dart';
 
 class EstudioMed extends StatelessWidget {
   EstudioMed({Key? key}) : super(key: key);
@@ -179,21 +181,40 @@ class _ProfileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white, // Agregar fondo blanco al contenedor principal
+      color: Colors.white,
       child: PopupMenuButton<Menu>(
         offset: const Offset(0, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        color: Colors.white, // Asegurar que el menú desplegable también tenga un fondo blanco
-        onSelected: (Menu item) {},
+        color: Colors.white,
+        onSelected: (Menu item) {
+          switch (item) {
+            case Menu.itemOne:
+              // Navigate to "Cuenta.dart" using pushReplacement
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => CuentaUser()),
+              );
+              break;
+            case Menu.itemThree:
+              // Handle "Cerrar Sesión" action
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Login()),
+              );
+              break;
+            case Menu.itemTwo:
+              // TODO: Handle this case.
+          }
+        },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(
             value: Menu.itemOne,
             child: ListTile(
               title: Text(
                 'Cuenta',
-                textAlign: TextAlign.right, // Alinea el texto hacia la derecha
+                textAlign: TextAlign.right,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
@@ -203,19 +224,18 @@ class _ProfileIcon extends StatelessWidget {
             child: ListTile(
               title: Text(
                 'Cerrar Sesión',
-                textAlign: TextAlign.right, // Alinea el texto hacia la derecha
+                textAlign: TextAlign.right,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                
               ),
             ),
           ),
         ],
         child: const SizedBox(
-          width: 50, // Ancho del contenedor
-          height: 50, // Alto del contenedor
+          width: 50,
+          height: 50,
           child: Icon(
             Icons.account_circle_sharp,
-            size: 40, // Tamaño del icono
+            size: 40,
             color: Color(0xFF094293),
           ),
         ),
@@ -223,3 +243,4 @@ class _ProfileIcon extends StatelessWidget {
     );
   }
 }
+

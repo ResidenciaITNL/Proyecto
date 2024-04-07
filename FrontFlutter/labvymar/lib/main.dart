@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:labvymar/Views/ConsultaMedica.dart';
+import 'package:labvymar/Views/Cuenta.dart';
 import 'package:labvymar/Views/EstudioMedico.dart';
 import 'package:labvymar/Views/InventarioMedicamento.dart';
 import 'package:labvymar/Views/Recepcion.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         'EstudioMedico' : (_) => EstudioMed(), // Agregando la ruta para la vista EstudioMedico
         'InventarioMedicamento' : (_) => InvMedicamento(), // Agregando la ruta para la vista InventarioMedicamento
         'Recepcion' : (_) => Recep(), // Agregando la ruta para la vista Recepcion
+        'Cuenta' : (_) => CuentaUser() // Agregando la ruta para la vista Cuenta
       },
       initialRoute: 'login',
     );
