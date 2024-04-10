@@ -273,6 +273,7 @@ class AdminUsuarios extends StatelessWidget {
 void _showEditUserDialog(BuildContext context, String name, String currentRole) {
   List<String> roles = ['Doctor', 'Medico Especialista', 'Recepcionista'];
   String selectedRole = currentRole;
+  TextEditingController nameController = TextEditingController(text: name);
 
   showDialog(
     context: context,
@@ -280,11 +281,22 @@ void _showEditUserDialog(BuildContext context, String name, String currentRole) 
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: Text('Seleccione el rol de $name dentro del sistema'),
+            backgroundColor: Colors.white, // Establecer el fondo blanco
+            title: Text('Editar usuario', style: TextStyle(color: Colors.black)), // Color del título
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start, // Alinear a la izquierda
                 children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: 'Nombre'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  Text('Rol:', style: TextStyle(color: Colors.black)), // Color del texto del rol
                   DropdownButton<String>(
                     value: selectedRole,
                     onChanged: (String? newValue) {
@@ -307,13 +319,14 @@ void _showEditUserDialog(BuildContext context, String name, String currentRole) 
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cancelar'),
+                child: Text('Cancelar', style: TextStyle(color: Colors.black)), // Color del texto del botón Cancelar
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Aquí puedes realizar la lógica para guardar los cambios del rol
+                  // Aquí puedes realizar la lógica para guardar los cambios del rol y del nombre
+                  String newName = nameController.text;
                   String newRole = selectedRole;
-                  // Puedes implementar la lógica para guardar el nuevo rol aquí
+                  print('El nuevo nombre es: $newName');
                   print('El nuevo rol es: $newRole');
                   Navigator.of(context).pop();
                 },
@@ -326,6 +339,8 @@ void _showEditUserDialog(BuildContext context, String name, String currentRole) 
     },
   );
 }
+
+
 
 
 void _showDeleteUserDialog(BuildContext context, String name) {

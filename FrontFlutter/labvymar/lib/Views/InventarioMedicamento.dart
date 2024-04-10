@@ -5,6 +5,7 @@ import 'package:labvymar/Views/Cuenta.dart';
 import 'package:labvymar/Views/EstudioMedico.dart';
 import 'package:labvymar/Views/Recepcion.dart';
 import 'package:labvymar/Views/login.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 class InvMedicamento extends StatelessWidget {
   InvMedicamento({Key? key}) : super(key: key);
@@ -61,25 +62,16 @@ class InvMedicamento extends StatelessWidget {
           ],
         ),
         drawer: isLargeScreen ? null : _drawer(context),
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: const AssetImage('assets/fondo.jpg'),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                const Color.fromARGB(123, 0, 0, 0).withOpacity(0.6),
-                BlendMode.darken,
-              ),
-            ),
-          ),
-          child: const Center(
-            child: Text(
-              "¡Bienvenido al Inventario del Medicamento!",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(
+                16.0), // Agrega un padding en todos los lados
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const UserManagementScreen(),
+                _buildUserDataTable(), // Tu DataTable aquí
+              ],
             ),
           ),
         ),
@@ -87,82 +79,356 @@ class InvMedicamento extends StatelessWidget {
     );
   }
 
-Widget _drawer(BuildContext context) => Drawer(
-  child: Container(
-    color: Colors.white, // Añade un fondo blanco
-    child: ListView(
-      children: _menuItems
-          .map(
-            (item) => ListTile(
-              onTap: () {
-                _handleMenuTap(context, item);
-              },
-              title: Text(item),
-            ),
-          )
-          .toList(),
-    ),
-  ),
-);
-
-Widget _navBarItems(BuildContext context) => Row(
-  mainAxisAlignment: MainAxisAlignment.end,
-  crossAxisAlignment: CrossAxisAlignment.center,
-  children: _menuItems
-      .map(
-        (item) => InkWell(
-          onTap: () {
-            _handleMenuTap(context, item);
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-                vertical: 24.0, horizontal: 16),
-            child: Text(
-              item,
-              style: const TextStyle(fontSize: 18),
-            ),
+  Widget _drawer(BuildContext context) => Drawer(
+        child: Container(
+          color: Colors.white, // Añade un fondo blanco
+          child: ListView(
+            children: _menuItems
+                .map(
+                  (item) => ListTile(
+                    onTap: () {
+                      _handleMenuTap(context, item);
+                    },
+                    title: Text(item),
+                  ),
+                )
+                .toList(),
           ),
         ),
-      )
-      .toList(),
-);
+      );
 
-void _handleMenuTap(BuildContext context, String menuItem) {
-  switch (menuItem) {
-    case 'Administración':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => AdminUsuarios()),
+  Widget _navBarItems(BuildContext context) => Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: _menuItems
+            .map(
+              (item) => InkWell(
+                onTap: () {
+                  _handleMenuTap(context, item);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 24.0, horizontal: 16),
+                  child: Text(
+                    item,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            )
+            .toList(),
       );
-      break;
-    case 'Inventario':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => InvMedicamento()),
-      );
-      break;
-    case 'Recepción':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Recep()),
-      );
-      break;
-    case 'Consulta Medica':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ConsMedica()),
-      );
-      break;
-    case 'Estudio Medico':
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => EstudioMed()),
-      );
-      break;
-    default:
-      break;
+
+  void _handleMenuTap(BuildContext context, String menuItem) {
+    switch (menuItem) {
+      case 'Administración':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AdminUsuarios()),
+        );
+        break;
+      case 'Inventario':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => InvMedicamento()),
+        );
+        break;
+      case 'Recepción':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Recep()),
+        );
+        break;
+      case 'Consulta Medica':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ConsMedica()),
+        );
+        break;
+      case 'Estudio Medico':
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => EstudioMed()),
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  Widget _buildUserDataTable() {
+    return ResponsiveBuilder(
+      builder: (context, sizingInformation) {
+        double screenWidth = MediaQuery.of(context).size.width;
+        double columnSpacing =
+            screenWidth * 0.05; // Espacio de columna predeterminado
+        double fontSize =
+            screenWidth * 0.01; // Tamaño de fuente predeterminado
+        double fontSizeEdit =
+            screenWidth * 0.01; // Tamaño de fuente predeterminado
+
+        return DataTable(
+          columnSpacing: columnSpacing, // Espacio entre columnas
+          columns: [
+            DataColumn(
+              label: Text(
+                'Nombre',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Descripcion',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Fecha de caducidad',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Contenido',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Cantidad',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Inventario',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Precio',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Editar | Eliminar',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+          rows: _userDataRows(context),
+        );
+      },
+    );
+  }
+
+  List<DataRow> _userDataRows(BuildContext context) {
+    final List<Map<String, String>> users = [
+      {
+        'nombre': 'omeprasol',
+        'descripcion': 'para la gastritis',
+        'fecha_cad': '02/12/2024',
+        'contenido': '20 capsulas',
+        'cantidad': '20 mg',
+        'inventario': '80',
+        'precio': '120',
+      },
+      {
+        'nombre': 'riopan',
+        'descripcion': 'para la acides',
+        'fecha_cad': '27/05/2025',
+        'contenido': '20 bolsas',
+        'cantidad': '10 ml',
+        'inventario': '132',
+        'precio': '250',
+      },
+      {
+        'nombre': 'aspirina',
+        'descripcion': 'para el dolor de cabeza',
+        'fecha_cad': '12/07/2025',
+        'contenido': '20 capsulas',
+        'cantidad': '400 mg',
+        'inventario': '206',
+        'precio': '80',
+      },
+    ];
+
+    final double screenWidth2 = MediaQuery.of(context).size.width;
+    double fontSize = screenWidth2 * 0.009;
+
+    return users.map((user) {
+      return DataRow(cells: [
+        DataCell(Text(
+          user['nombre']!,
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['descripcion']!,
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['fecha_cad']!,
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['contenido']!,
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['cantidad']!,
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['inventario']!,
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['precio']!,
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Row(
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.edit,
+                color: const Color(0xFF094293),
+                size: fontSize,
+              ),
+              onPressed: () {
+                // Lógica para editar el usuario
+                _showEditUserDialog(context, user['nombre']!, user['descripcion']!);
+              },
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.person_off_sharp,
+                color: Colors.red,
+                size: fontSize,
+              ),
+              onPressed: () {
+                // Lógica para eliminar el usuario
+                _showDeleteUserDialog(context, user['nombre']!);
+              },
+            ),
+          ],
+        )),
+      ]);
+    }).toList();
   }
 }
+
+void _showEditUserDialog(
+    BuildContext context, String name, String currentRole) {
+  List<String> roles = ['Doctor', 'Medico Especialista', 'Recepcionista'];
+  String selectedRole = currentRole;
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Text('Seleccione el rol de $name dentro del sistema'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<String>(
+                    value: selectedRole,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedRole = newValue!;
+                      });
+                    },
+                    items: roles.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Aquí puedes realizar la lógica para guardar los cambios del rol
+                  String newRole = selectedRole;
+                  // Puedes implementar la lógica para guardar el nuevo rol aquí
+                  print('El nuevo rol es: $newRole');
+                  Navigator.of(context).pop();
+                },
+                child: Text('Guardar'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+void _showDeleteUserDialog(BuildContext context, String name) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Text('Seguro que quiere dar de baja a $name del sistema?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Aquí puedes realizar la lógica para eliminar el usuario
+                },
+                child: Text('Eliminar'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
 }
 
 final List<String> _menuItems = <String>[
@@ -205,7 +471,7 @@ class _ProfileIcon extends StatelessWidget {
               );
               break;
             case Menu.itemTwo:
-              // TODO: Handle this case.
+            // TODO: Handle this case.
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
@@ -240,6 +506,127 @@ class _ProfileIcon extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class UserManagementScreen extends StatefulWidget {
+  const UserManagementScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _UserManagementScreenState createState() => _UserManagementScreenState();
+}
+
+class _UserManagementScreenState extends State<UserManagementScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _selectedRole = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Inventario de Medicamento',
+              style: TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                _showAddUserDialog(context);
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(const Color(0xFF094293)),
+              ),
+              icon: const Icon(
+                Icons.person_add_alt_sharp,
+                color: Colors.white,
+                size: 30,
+              ),
+              label: const Text(
+                'Agregar medicamento',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            const SizedBox(height: 40),
+            // Tu DataTable aquí
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddUserDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String? selectedRole; // Variable para almacenar el rol seleccionado
+
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Center(
+            child: Text('Nuevo usuario'),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Nombre'),
+                ),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'Correo'),
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedRole,
+                  decoration: const InputDecoration(labelText: 'Rol'),
+                  items: <String>[
+                    'Doctor',
+                    'Medico Especialista',
+                    'Recepcionista'
+                  ].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedRole = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Aquí puedes realizar la lógica para agregar el usuario con los datos ingresados
+                // por ejemplo, puedes acceder a los valores con _nameController.text, _emailController.text, selectedRole
+                // y luego cerrar el dialogo con Navigator.of(context).pop();
+              },
+              child: const Text('Agregar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -182,6 +182,7 @@ void _showEditEmailDialog(BuildContext context, String currentValue) {
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             title: const Text("Editar correo electrónico"),
             content: Column(
               mainAxisSize: MainAxisSize.min,
