@@ -13,16 +13,14 @@ namespace Sistema.Models
     {
         [Key]
         public int UserId { get; set; }
-        [Required]
         public string name { get; set; }
-        [Required]
         public string email { get; set; }
-        [Required]
         public string password { get; set; }
         public string? codeRecovery { get; set; }
         public string? tokenRefresh { get; set; }
         public Role role { get; set; }
         public int CustomersId { get; set; }
+        public bool active { get; set; } = true;
         public virtual Customers Customers { get; set; }
 
         public void HashPassword()
