@@ -4,6 +4,5 @@
 
 /.vs
 /Sistema/.vs
-/Sistema/bin
-/Sistema/obj
-/Sistema/bin/Debug/net6.0/Microsoft.EntityFrameworkCore.Abstractions.dll
+/Sistema/bin/
+/Sistema/obj/
