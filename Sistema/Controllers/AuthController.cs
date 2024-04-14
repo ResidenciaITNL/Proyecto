@@ -22,6 +22,7 @@ namespace Sistema.Controllers
             _jwtService = new JwtService(_configuration);
         }
         [HttpPost]
+        [ProducesResponseType(200)]
         public async Task<IActionResult> Login([FromBody] PostAuth postAuth)
         {
             Users user = await _context.Users.FirstOrDefaultAsync(x => x.email == postAuth.email);
