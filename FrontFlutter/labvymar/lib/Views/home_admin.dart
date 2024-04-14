@@ -56,9 +56,23 @@ class HomeAdmin extends StatelessWidget {
           ],
         ),
         drawer: isLargeScreen ? null : _drawer(),
-        body: const Center(
-          child: Text(
-            "Body",
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: const AssetImage('assets/fondo.jpg'), // Ruta de tu imagen
+              fit: BoxFit.cover, // Ajusta la imagen para cubrir el contenedor
+              colorFilter: ColorFilter.mode(const Color.fromARGB(123, 0, 0, 0).withOpacity(0.6), BlendMode.darken), // Añade una capa oscura semi-transparente
+            ),
+          ),
+          child: const Center(
+            child: Text(
+              "¡Bienvenido!",
+              style: TextStyle(
+                fontSize: 24, // Tamaño de fuente ajustable según tus preferencias
+                fontWeight: FontWeight.bold, // Puedes ajustar el peso de la fuente según lo desees
+                color: Colors.white, // Color del texto
+              ),
+            ),
           ),
         ),
       ),
@@ -115,12 +129,12 @@ class _ProfileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<Menu>(
-      icon: const Icon(Icons.person),
+      icon: const Icon(Icons.person, color: Color(0xFF094293)), // Asigna el color blanco al icono
       offset: const Offset(0, 40),
       shape: RoundedRectangleBorder( // Ajusta los bordes
         borderRadius: BorderRadius.circular(8), // Radio de borde
       ),
-      color: Color.fromARGB(255, 189, 10, 10), // Fondo blanco
+      color: Color.fromARGB(255, 255, 255, 255), // Fondo blanco
       onSelected: (Menu item) {},
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
         const PopupMenuItem<Menu>(
