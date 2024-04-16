@@ -323,8 +323,8 @@ class InvMedicamento extends StatelessWidget {
               ),
               onPressed: () {
                 // Lógica para editar el usuario
-                _showEditUserDialog(
-                    context, user['nombre']!, user['descripcion']!);
+                _showEditMedicineDialog(
+                    context, user['nombre']!, user['descripcion']!, user['fecha_cad']!, user['contenido']!, user['unidad_Medida']!, user['inventario_Actual']!, user['precio']!,);
               },
             ),
             IconButton(
@@ -345,10 +345,27 @@ class InvMedicamento extends StatelessWidget {
   }
 }
 
-void _showEditUserDialog(
-    BuildContext context, String name, String currentRole) {
-  List<String> roles = ['Doctor', 'Medico Especialista', 'Recepcionista'];
-  String selectedRole = currentRole;
+void _showEditMedicineDialog(
+    BuildContext context,
+    String name,
+    String description,
+    String fechaCaducidad,
+    String contenido,
+    String unidMedida,
+    String invActual,
+    String precio) {
+  TextEditingController nameController = TextEditingController(text: name);
+  TextEditingController descriptionController =
+      TextEditingController(text: description);
+  TextEditingController fechaCaducidadController =
+      TextEditingController(text: fechaCaducidad);
+  TextEditingController contenidoController =
+      TextEditingController(text: contenido);
+  TextEditingController unidMedidaController =
+      TextEditingController(text: unidMedida);
+  TextEditingController invActualController =
+      TextEditingController(text: invActual);
+  TextEditingController precioController = TextEditingController(text: precio);
 
   showDialog(
     context: context,
@@ -356,24 +373,69 @@ void _showEditUserDialog(
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: Text('Seleccione el rol de $name dentro del sistema'),
+            backgroundColor: Colors.white, // Establecer el fondo blanco
+            title: const Text('Editar producto',
+                style: TextStyle(color: Colors.black)), // Color del título
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // Alinear a la izquierda
                 children: [
-                  DropdownButton<String>(
-                    value: selectedRole,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedRole = newValue!;
-                      });
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: 'Nombre'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
                     },
-                    items: roles.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: InputDecoration(labelText: 'Descripción'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: fechaCaducidadController,
+                    decoration: InputDecoration(labelText: 'Fecha de caducidad'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: contenidoController,
+                    decoration: InputDecoration(labelText: 'Contenido'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: unidMedidaController,
+                    decoration: InputDecoration(labelText: 'Unidad de medida'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: invActualController,
+                    decoration: InputDecoration(labelText: 'Inventario Actual'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: precioController,
+                    decoration: InputDecoration(labelText: 'Precio'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                    },
                   ),
                 ],
               ),
@@ -383,14 +445,28 @@ void _showEditUserDialog(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cancelar'),
+                child: const Text('Cancelar',
+                    style: TextStyle(
+                        color: Colors
+                            .black)), // Color del texto del botón Cancelar
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Aquí puedes realizar la lógica para guardar los cambios del rol
-                  String newRole = selectedRole;
-                  // Puedes implementar la lógica para guardar el nuevo rol aquí
-                  print('El nuevo rol es: $newRole');
+                  // Aquí puedes realizar la lógica para guardar los cambios del rol y del nombre
+                  String newName = nameController.text;
+                  String newDescripcion = descriptionController.text;
+                  String newFechaCaducidad = fechaCaducidadController.text;
+                  String newContenido = contenidoController.text;
+                  String newUnidMedida = unidMedidaController.text;
+                  String newInvActual = invActualController.text;
+                  String newPrecio = precioController.text;
+                  print('la actualizacion es: $newName');
+                  print('la actualizacion es: $newDescripcion');
+                  print('la actualizacion es: $newFechaCaducidad');
+                  print('la actualizacion es: $newContenido');
+                  print('la actualizacion es: $newUnidMedida');
+                  print('la actualizacion es: $newInvActual');
+                  print('la actualizacion es: $newPrecio');
                   Navigator.of(context).pop();
                 },
                 child: Text('Guardar'),
@@ -410,7 +486,8 @@ void _showDeleteUserDialog(BuildContext context, String name) {
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: Text('Seguro que quiere dar de baja a $name del sistema?'),
+            title: Text(
+                'Seguro que quieres dar de baja el producto seleccionado del sistema?\n\n$name'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -529,7 +606,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   final TextEditingController _inventarioActualController =
       TextEditingController();
   final TextEditingController _precioController = TextEditingController();
-  // final TextEditingController _selectedRole = TextEditingController();
+  bool _isButtonEnabled = false; // Estado del botón "Agregar"
 
   @override
   Widget build(BuildContext context) {
@@ -566,7 +643,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               ),
             ),
             const SizedBox(height: 40),
-            // Tu DataTable aquí
           ],
         ),
       ),
@@ -577,114 +653,164 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String? selectedRole; // Variable para almacenar el rol seleccionado
-
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: const Center(
-            child: Text('Nuevo Medicamento'),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Nombre'),
-                ),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Descripción'),
-                ),
-                TextFormField(
-                  controller: _dateCadController,
-                  decoration:
-                      const InputDecoration(labelText: 'Fecha de Caducidad'),
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2100),
-                    );
-                    if (pickedDate != null) {
-                      String formattedDate =
-                          '${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}';
-                      setState(() {
-                        _dateCadController.text = formattedDate;
-                      });
-                    }
-                  },
-                  readOnly: true,
-                ),
-                TextFormField(
-                  controller: _contenidoController,
-                  decoration: const InputDecoration(labelText: 'Contenido'),
-                ),
-                TextFormField(
-                  controller: _unidadDeMedidaController,
-                  decoration:
-                      const InputDecoration(labelText: 'Unidad de Medida'),
-                ),
-                TextFormField(
-                  controller: _inventarioActualController,
-                  decoration:
-                      const InputDecoration(labelText: 'Inventario Actual'),
-                ),
-                TextFormField(
-                  controller: _precioController,
-                  decoration: const InputDecoration(labelText: 'Precio'),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter
-                        .digitsOnly, // Solo permite caracteres numéricos
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      // Evita números negativos
-                      if (newValue.text.isEmpty) {
-                        return newValue.copyWith(text: '0');
-                      } else if (double.tryParse(newValue.text) == null) {
-                        return oldValue;
-                      } else {
-                        return newValue;
-                      }
-                    }),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Center(
+                child: Text('Nuevo Medicamento'),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(labelText: 'Nombre'),
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration:
+                          const InputDecoration(labelText: 'Descripción'),
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _dateCadController,
+                      decoration: const InputDecoration(
+                          labelText: 'Fecha de Caducidad'),
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          String formattedDate =
+                              '${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}';
+                          setState(() {
+                            _dateCadController.text = formattedDate;
+                          });
+                        }
+                      },
+                      readOnly: true,
+                    ),
+                    TextFormField(
+                      controller: _contenidoController,
+                      decoration: const InputDecoration(labelText: 'Contenido'),
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _unidadDeMedidaController,
+                      decoration:
+                          const InputDecoration(labelText: 'Unidad de Medida'),
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _inventarioActualController,
+                      decoration:
+                          const InputDecoration(labelText: 'Inventario Actual'),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          // Evita números negativos
+                          if (newValue.text.isEmpty) {
+                            return newValue.copyWith(text: '');
+                          } else if (double.tryParse(newValue.text) == null) {
+                            return oldValue;
+                          } else {
+                            return newValue;
+                          }
+                        }),
+                      ],
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _precioController,
+                      decoration: const InputDecoration(labelText: 'Precio'),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          // Evita números negativos
+                          if (newValue.text.isEmpty) {
+                            return newValue.copyWith(text: '');
+                          } else if (double.tryParse(newValue.text) == null) {
+                            return oldValue;
+                          } else {
+                            return newValue;
+                          }
+                        }),
+                      ],
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
                   ],
                 ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    _clearControllers();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: _isButtonEnabled ? _handleAdd : null,
+                  style: ButtonStyle(
+                    backgroundColor: _isButtonEnabled
+                        ? MaterialStateProperty.all<Color>(
+                            const Color(0xFF094293))
+                        : MaterialStateProperty.all<Color>(
+                            const Color(0xFFBBDEFB)),
+                  ),
+                  child: const Text(
+                    'Agregar',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Limpiar los controladores y cerrar el AlertDialog
-                _nameController.clear();
-                _descriptionController.clear();
-                _dateCadController.clear();
-                _contenidoController.clear();
-                _unidadDeMedidaController.clear();
-                _inventarioActualController.clear();
-                _precioController.clear();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Realizar la lógica para agregar el medicamento aquí
-                // Luego, limpiar los controladores y cerrar el AlertDialog
-                _nameController.clear();
-                _descriptionController.clear();
-                _dateCadController.clear();
-                _contenidoController.clear();
-                _unidadDeMedidaController.clear();
-                _inventarioActualController.clear();
-                _precioController.clear();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Agregar'),
-            ),
-          ],
+            );
+          },
         );
       },
     );
+  }
+
+  // Verificar si todos los campos están llenos
+  bool _isValidForm() {
+    return _nameController.text.isNotEmpty &&
+        _descriptionController.text.isNotEmpty &&
+        _dateCadController.text.isNotEmpty &&
+        _contenidoController.text.isNotEmpty &&
+        _unidadDeMedidaController.text.isNotEmpty &&
+        _inventarioActualController.text.isNotEmpty &&
+        _precioController.text.isNotEmpty;
+  }
+
+  // Actualizar el estado del botón "Agregar"
+  void _updateButtonState(void Function(void Function()) setState) {
+    setState(() {
+      _isButtonEnabled = _isValidForm();
+    });
+  }
+
+  // Limpiar los controladores de texto
+  void _clearControllers() {
+    _nameController.clear();
+    _descriptionController.clear();
+    _dateCadController.clear();
+    _contenidoController.clear();
+    _unidadDeMedidaController.clear();
+    _inventarioActualController.clear();
+    _precioController.clear();
+  }
+
+  // Lógica para manejar la adición de medicamento
+  void _handleAdd() {
+    // Realizar la lógica para agregar el medicamento aquí
+    _clearControllers();
+    Navigator.of(context).pop();
   }
 }
