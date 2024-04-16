@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:labvymar/Views/AdministrarUsuarios.dart';
 import 'package:labvymar/Views/ConsultaMedica.dart';
 import 'package:labvymar/Views/Cuenta.dart';
@@ -162,8 +163,7 @@ class InvMedicamento extends StatelessWidget {
         double screenWidth = MediaQuery.of(context).size.width;
         double columnSpacing =
             screenWidth * 0.05; // Espacio de columna predeterminado
-        double fontSize =
-            screenWidth * 0.01; // Tamaño de fuente predeterminado
+        double fontSize = screenWidth * 0.01; // Tamaño de fuente predeterminado
         double fontSizeEdit =
             screenWidth * 0.01; // Tamaño de fuente predeterminado
 
@@ -208,7 +208,7 @@ class InvMedicamento extends StatelessWidget {
             ),
             DataColumn(
               label: Text(
-                'Cantidad',
+                'Unidad de Medida',
                 style: TextStyle(
                   fontSize: fontSizeEdit,
                   fontWeight: FontWeight.bold,
@@ -217,7 +217,7 @@ class InvMedicamento extends StatelessWidget {
             ),
             DataColumn(
               label: Text(
-                'Inventario',
+                'Inventario Actual',
                 style: TextStyle(
                   fontSize: fontSizeEdit,
                   fontWeight: FontWeight.bold,
@@ -256,8 +256,8 @@ class InvMedicamento extends StatelessWidget {
         'descripcion': 'para la gastritis',
         'fecha_cad': '02/12/2024',
         'contenido': '20 capsulas',
-        'cantidad': '20 mg',
-        'inventario': '80',
+        'unidad_Medida': '20 mg',
+        'inventario_Actual': '80',
         'precio': '120',
       },
       {
@@ -265,8 +265,8 @@ class InvMedicamento extends StatelessWidget {
         'descripcion': 'para la acides',
         'fecha_cad': '27/05/2025',
         'contenido': '20 bolsas',
-        'cantidad': '10 ml',
-        'inventario': '132',
+        'unidad_Medida': '10 ml',
+        'inventario_Actual': '132',
         'precio': '250',
       },
       {
@@ -274,8 +274,8 @@ class InvMedicamento extends StatelessWidget {
         'descripcion': 'para el dolor de cabeza',
         'fecha_cad': '12/07/2025',
         'contenido': '20 capsulas',
-        'cantidad': '400 mg',
-        'inventario': '206',
+        'unidad_Medida': '400 mg',
+        'inventario_Actual': '206',
         'precio': '80',
       },
     ];
@@ -302,11 +302,11 @@ class InvMedicamento extends StatelessWidget {
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['cantidad']!,
+          user['unidad_Medida']!,
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['inventario']!,
+          user['inventario_Actual']!,
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
@@ -323,7 +323,8 @@ class InvMedicamento extends StatelessWidget {
               ),
               onPressed: () {
                 // Lógica para editar el usuario
-                _showEditUserDialog(context, user['nombre']!, user['descripcion']!);
+                _showEditUserDialog(
+                    context, user['nombre']!, user['descripcion']!);
               },
             ),
             IconButton(
@@ -520,7 +521,14 @@ class UserManagementScreen extends StatefulWidget {
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _dateCadController = TextEditingController();
+  final TextEditingController _contenidoController = TextEditingController();
+  final TextEditingController _unidadDeMedidaController =
+      TextEditingController();
+  final TextEditingController _inventarioActualController =
+      TextEditingController();
+  final TextEditingController _precioController = TextEditingController();
   // final TextEditingController _selectedRole = TextEditingController();
 
   @override
@@ -541,7 +549,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
-                _showAddUserDialog(context);
+                _showAddmedicineDialog(context);
               },
               style: ButtonStyle(
                 backgroundColor:
@@ -565,7 +573,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  void _showAddUserDialog(BuildContext context) {
+  void _showAddmedicineDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -574,7 +582,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: const Center(
-            child: Text('Nuevo usuario'),
+            child: Text('Nuevo Medicamento'),
           ),
           content: SingleChildScrollView(
             child: Column(
@@ -584,27 +592,62 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   decoration: const InputDecoration(labelText: 'Nombre'),
                 ),
                 TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Correo'),
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(labelText: 'Descripción'),
                 ),
-                DropdownButtonFormField<String>(
-                  value: selectedRole,
-                  decoration: const InputDecoration(labelText: 'Rol'),
-                  items: <String>[
-                    'Doctor',
-                    'Medico Especialista',
-                    'Recepcionista'
-                  ].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+                TextFormField(
+                  controller: _dateCadController,
+                  decoration:
+                      const InputDecoration(labelText: 'Fecha de Caducidad'),
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2100),
                     );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedRole = value;
-                    });
+                    if (pickedDate != null) {
+                      String formattedDate =
+                          '${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}';
+                      setState(() {
+                        _dateCadController.text = formattedDate;
+                      });
+                    }
                   },
+                  readOnly: true,
+                ),
+                TextFormField(
+                  controller: _contenidoController,
+                  decoration: const InputDecoration(labelText: 'Contenido'),
+                ),
+                TextFormField(
+                  controller: _unidadDeMedidaController,
+                  decoration:
+                      const InputDecoration(labelText: 'Unidad de Medida'),
+                ),
+                TextFormField(
+                  controller: _inventarioActualController,
+                  decoration:
+                      const InputDecoration(labelText: 'Inventario Actual'),
+                ),
+                TextFormField(
+                  controller: _precioController,
+                  decoration: const InputDecoration(labelText: 'Precio'),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter
+                        .digitsOnly, // Solo permite caracteres numéricos
+                    TextInputFormatter.withFunction((oldValue, newValue) {
+                      // Evita números negativos
+                      if (newValue.text.isEmpty) {
+                        return newValue.copyWith(text: '0');
+                      } else if (double.tryParse(newValue.text) == null) {
+                        return oldValue;
+                      } else {
+                        return newValue;
+                      }
+                    }),
+                  ],
                 ),
               ],
             ),
@@ -612,15 +655,30 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           actions: [
             TextButton(
               onPressed: () {
+                // Limpiar los controladores y cerrar el AlertDialog
+                _nameController.clear();
+                _descriptionController.clear();
+                _dateCadController.clear();
+                _contenidoController.clear();
+                _unidadDeMedidaController.clear();
+                _inventarioActualController.clear();
+                _precioController.clear();
                 Navigator.of(context).pop();
               },
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
               onPressed: () {
-                // Aquí puedes realizar la lógica para agregar el usuario con los datos ingresados
-                // por ejemplo, puedes acceder a los valores con _nameController.text, _emailController.text, selectedRole
-                // y luego cerrar el dialogo con Navigator.of(context).pop();
+                // Realizar la lógica para agregar el medicamento aquí
+                // Luego, limpiar los controladores y cerrar el AlertDialog
+                _nameController.clear();
+                _descriptionController.clear();
+                _dateCadController.clear();
+                _contenidoController.clear();
+                _unidadDeMedidaController.clear();
+                _inventarioActualController.clear();
+                _precioController.clear();
+                Navigator.of(context).pop();
               },
               child: const Text('Agregar'),
             ),
