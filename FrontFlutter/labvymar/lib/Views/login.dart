@@ -254,9 +254,10 @@ class __FormContentState extends State<_FormContent> {
                 ),
               ),
               onPressed: () async {
-                if (await apiService.loggin(usuario, password)) {
-                  Navigator.pushReplacementNamed(context, 'home_admin');
-                }
+                Navigator.pushReplacementNamed(context, 'home_admin');
+                // if (await apiService.loggin(usuario, password)) {
+                //   Navigator.pushReplacementNamed(context, 'home_admin');
+                // }
               },
             ),
           ),

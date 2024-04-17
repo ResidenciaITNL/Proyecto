@@ -324,7 +324,7 @@ class InvMedicamento extends StatelessWidget {
               onPressed: () {
                 // Lógica para editar el usuario
                 _showEditMedicineDialog(
-                    context, user['nombre']!, user['descripcion']!, user['fecha_cad']!, user['contenido']!, user['unidad_Medida']!, user['inventario_Actual']!, user['precio']!,);
+                    context, user['nombre']!, user['descripcion']!,  user['fecha_cad']!, user['contenido']!, user['unidad_Medida']!, user['inventario_Actual']!, user['precio']!,);
               },
             ),
             IconButton(
@@ -373,68 +373,83 @@ void _showEditMedicineDialog(
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            backgroundColor: Colors.white, // Establecer el fondo blanco
+            backgroundColor: Colors.white,
             title: const Text('Editar producto',
-                style: TextStyle(color: Colors.black)), // Color del título
+                style: TextStyle(color: Colors.black)),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment:
-                    CrossAxisAlignment.start, // Alinear a la izquierda
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
+                  TextFormField(
                     controller: nameController,
                     decoration: InputDecoration(labelText: 'Nombre'),
                     onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextField(
+                  TextFormField(
                     controller: descriptionController,
                     decoration: InputDecoration(labelText: 'Descripción'),
                     onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextField(
+                  TextFormField(
                     controller: fechaCaducidadController,
-                    decoration: InputDecoration(labelText: 'Fecha de caducidad'),
-                    onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                    decoration:
+                        InputDecoration(labelText: 'Fecha de caducidad'),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        String formattedDate =
+                            '${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}';
+                        setState(() {
+                          fechaCaducidadController.text = formattedDate;
+                        });
+                      }
                     },
+                    readOnly: true,
                   ),
                   const SizedBox(height: 20),
-                  TextField(
+                  TextFormField(
                     controller: contenidoController,
                     decoration: InputDecoration(labelText: 'Contenido'),
                     onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextField(
+                  TextFormField(
                     controller: unidMedidaController,
-                    decoration: InputDecoration(labelText: 'Unidad de medida'),
+                    decoration:
+                        InputDecoration(labelText: 'Unidad de medida'),
                     onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextField(
+                  TextFormField(
                     controller: invActualController,
-                    decoration: InputDecoration(labelText: 'Inventario Actual'),
+                    decoration:
+                        InputDecoration(labelText: 'Inventario Actual'),
                     onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextField(
+                  TextFormField(
                     controller: precioController,
                     decoration: InputDecoration(labelText: 'Precio'),
                     onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
                   ),
                 ],
@@ -446,16 +461,14 @@ void _showEditMedicineDialog(
                   Navigator.of(context).pop();
                 },
                 child: const Text('Cancelar',
-                    style: TextStyle(
-                        color: Colors
-                            .black)), // Color del texto del botón Cancelar
+                    style: TextStyle(color: Colors.black)),
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Aquí puedes realizar la lógica para guardar los cambios del rol y del nombre
                   String newName = nameController.text;
                   String newDescripcion = descriptionController.text;
-                  String newFechaCaducidad = fechaCaducidadController.text;
+                  String newFechaCaducidad =
+                      fechaCaducidadController.text; // Aquí obtienes la nueva fecha
                   String newContenido = contenidoController.text;
                   String newUnidMedida = unidMedidaController.text;
                   String newInvActual = invActualController.text;
@@ -468,8 +481,11 @@ void _showEditMedicineDialog(
                   print('la actualizacion es: $newInvActual');
                   print('la actualizacion es: $newPrecio');
                   Navigator.of(context).pop();
-                },
-                child: Text('Guardar'),
+                },                
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:  Color(0xFF094293), // Color de fondo rojo
+                ),
+                child: Text('Guardar', style: TextStyle(color: Colors.white),),
               ),
             ],
           );
@@ -478,6 +494,7 @@ void _showEditMedicineDialog(
     },
   );
 }
+
 
 void _showDeleteUserDialog(BuildContext context, String name) {
   showDialog(
@@ -499,7 +516,10 @@ void _showDeleteUserDialog(BuildContext context, String name) {
                 onPressed: () {
                   // Aquí puedes realizar la lógica para eliminar el usuario
                 },
-                child: Text('Eliminar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, // Color de fondo rojo
+                ),
+                child: Text('Eliminar', style: TextStyle(color: Colors.white),),
               ),
             ],
           );
