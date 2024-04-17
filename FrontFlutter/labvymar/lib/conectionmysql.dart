@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class MySQLService {
-  static const String baseUrl = 'http://localhost:33060'; // Cambia si es necesario
+class APIService {
+  static const String baseUrl = 'http://localhost:5225/api'; // Cambia si es necesario
 
   // Método para obtener todos los usuarios
   Future<List<Map<String, dynamic>>> getUsers() async {
@@ -47,4 +47,28 @@ class MySQLService {
       throw Exception('Failed to delete user');
     }
   }
+
+  Future<bool> loggin(String user, String password) async{
+
+    Map<String, String> padeLoad = {
+      'email': user,
+      'password': password
+    };
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/Auth'),
+      body: jsonEncode(padeLoad),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    return response.statusCode == 200;
+  }
+
 }
+
+
+
+
+
+
+

@@ -4,3 +4,8 @@
 
 /.vs
 /Sistema/.vs
+Sistema/obj/project.assets.json
+Sistema/obj/project.nuget.cache
+Sistema/obj/Sistema.csproj.nuget.dgspec.json
+Sistema/obj/Sistema.csproj.nuget.g.props
+Sistema/obj/Debug/net6.0/Sistema.assets.cache
