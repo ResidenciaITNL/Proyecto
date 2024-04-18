@@ -162,7 +162,7 @@ class InvMedicamento extends StatelessWidget {
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
         double columnSpacing =
-            screenWidth * 0.05; // Espacio de columna predeterminado
+            screenWidth * 0.015; // Espacio de columna predeterminado
         double fontSize = screenWidth * 0.01; // Tamaño de fuente predeterminado
         double fontSizeEdit =
             screenWidth * 0.01; // Tamaño de fuente predeterminado

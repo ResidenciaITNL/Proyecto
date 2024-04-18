@@ -343,11 +343,14 @@ void _showEditUserDialog(
                   print('El nuevo nombre es: $newName');
                   print('El nuevo rol es: $newRole');
                   Navigator.of(context).pop();
-                },                
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:  Color(0xFF094293), // Color de fondo rojo
+                  backgroundColor: Color(0xFF094293), // Color de fondo rojo
                 ),
-                child: Text('Guardar', style: TextStyle(color: Colors.white),),
+                child: Text(
+                  'Guardar',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -364,7 +367,8 @@ void _showDeleteUserDialog(BuildContext context, String name) {
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: Text('Seguro que quiere dar de baja al usuario seleccionado del sistema?\n\n$name'),
+            title: Text(
+                'Seguro que quiere dar de baja al usuario seleccionado del sistema?\n\n$name'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -379,7 +383,10 @@ void _showDeleteUserDialog(BuildContext context, String name) {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red, // Color de fondo rojo
                 ),
-                child: Text('Eliminar', style: TextStyle(color: Colors.white),),
+                child: Text(
+                  'Eliminar',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -388,7 +395,6 @@ void _showDeleteUserDialog(BuildContext context, String name) {
     },
   );
 }
-
 
 final List<String> _menuItems = <String>[
   'Administración',
@@ -524,136 +530,134 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-void _showAddUserDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      String? selectedRole; // Variable para almacenar el rol seleccionado
+  void _showAddUserDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String? selectedRole; // Variable para almacenar el rol seleccionado
 
-      // Función para verificar si los campos están completos y el rol ha sido seleccionado
-      bool isFormValid() {
-        bool isEmailValid = _emailController.text.isNotEmpty &&
-            RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                .hasMatch(_emailController.text);
-        return _nameController.text.isNotEmpty &&
-            _emailController.text.isNotEmpty &&
-            isEmailValid &&
-            selectedRole != null;
-      }
-
-      // Función para validar el formato del correo electrónico
-      String? validateEmail(String? value) {
-        if (value == null || value.isEmpty) {
-          return 'El correo electrónico es requerido.';
+        // Función para verificar si los campos están completos y el rol ha sido seleccionado
+        bool isFormValid() {
+          bool isEmailValid = _emailController.text.isNotEmpty &&
+              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                  .hasMatch(_emailController.text);
+          return _nameController.text.isNotEmpty &&
+              _emailController.text.isNotEmpty &&
+              isEmailValid &&
+              selectedRole != null;
         }
-        // Expresión regular para validar el formato del correo electrónico
-        bool isValidEmail = RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-            .hasMatch(value);
-        if (!isValidEmail) {
-          return 'El correo electrónico debe cumplir con el formato válido.';
-        }
-        return null; // Retorna null si la validación es exitosa
-      }
 
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: const Center(
-              child: Text('Nuevo usuario'),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Nombre'),
-                  ),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Correo'),
-                    validator: validateEmail, // Validación del correo electrónico
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5.0),
-                    child: Text(
-                      // Mostrar mensaje de error si la validación falla
-                      _emailController.text.isNotEmpty &&
-                              !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                  .hasMatch(_emailController.text)
-                          ? 'El correo electrónico debe cumplir con el formato válido.'
-                          : '',
-                      style: TextStyle(color: Colors.red),
+        // Función para validar el formato del correo electrónico
+        String? validateEmail(String? value) {
+          if (value == null || value.isEmpty) {
+            return 'El correo electrónico es requerido.';
+          }
+          // Expresión regular para validar el formato del correo electrónico
+          bool isValidEmail =
+              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
+          if (!isValidEmail) {
+            return 'El correo electrónico debe cumplir con el formato válido.';
+          }
+          return null; // Retorna null si la validación es exitosa
+        }
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Center(
+                child: Text('Nuevo usuario'),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(labelText: 'Nombre'),
+                    ),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(labelText: 'Correo'),
+                      validator:
+                          validateEmail, // Validación del correo electrónico
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        // Mostrar mensaje de error si la validación falla
+                        _emailController.text.isNotEmpty &&
+                                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                    .hasMatch(_emailController.text)
+                            ? 'El correo electrónico debe cumplir con el formato válido.'
+                            : '',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: selectedRole,
+                      decoration: const InputDecoration(labelText: 'Rol'),
+                      items: <String>[
+                        'Doctor',
+                        'Medico Especialista',
+                        'Recepcionista'
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedRole = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Limpiar los campos al hacer clic en "Cancelar"
+                    _nameController.clear();
+                    _emailController.clear();
+                    selectedRole = null; // Limpiar la selección del rol
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed:
+                      isFormValid() // Habilita el botón solo si el formulario es válido
+                          ? () {
+                              // Aquí puedes realizar la lógica para agregar el usuario con los datos ingresados
+                              // por ejemplo, puedes acceder a los valores con _nameController.text, _emailController.text, selectedRole
+                              // y luego cerrar el dialogo con Navigator.of(context).pop();
+                              // Limpiar los campos después de agregar el usuario
+                              _nameController.clear();
+                              _emailController.clear();
+                              selectedRole =
+                                  null; // Limpiar la selección del rol
+                              Navigator.of(context).pop();
+                            }
+                          : null,
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      isFormValid()
+                          ? const Color(0xFF094293)
+                          : const Color(0xFFBBDEFB),
                     ),
                   ),
-                  DropdownButtonFormField<String>(
-                    value: selectedRole,
-                    decoration: const InputDecoration(labelText: 'Rol'),
-                    items: <String>[
-                      'Doctor',
-                      'Medico Especialista',
-                      'Recepcionista'
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedRole = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  // Limpiar los campos al hacer clic en "Cancelar"
-                  _nameController.clear();
-                  _emailController.clear();
-                  selectedRole = null; // Limpiar la selección del rol
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed:
-                    isFormValid() // Habilita el botón solo si el formulario es válido
-                        ? () {
-                            // Aquí puedes realizar la lógica para agregar el usuario con los datos ingresados
-                            // por ejemplo, puedes acceder a los valores con _nameController.text, _emailController.text, selectedRole
-                            // y luego cerrar el dialogo con Navigator.of(context).pop();
-                            // Limpiar los campos después de agregar el usuario
-                            _nameController.clear();
-                            _emailController.clear();
-                            selectedRole = null; // Limpiar la selección del rol
-                            Navigator.of(context).pop();
-                          }
-                        : null,
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                    isFormValid()
-                        ? const Color(0xFF094293)
-                        : const Color(0xFFBBDEFB),
+                  child: const Text(
+                    'Agregar',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
-                child: const Text(
-                  'Agregar',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
-
-
-
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 }
