@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:labvymar/Views/AdministrarUsuarios.dart';
 import 'package:labvymar/Views/ConsultaMedica.dart';
 import 'package:labvymar/Views/Cuenta.dart';
@@ -208,7 +209,25 @@ class Recep extends StatelessWidget {
             ),
             DataColumn(
               label: Text(
-                'Alérgico a medicamento',
+                'Alergias',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Consulta',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Estudio Médico',
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
@@ -238,28 +257,36 @@ class Recep extends StatelessWidget {
         'edad': '22',
         'estatura': '1.80',
         'peso': '70kg',
-        'alergias': 'no'
+        'alergias': 'no',
+        'consulta': 'si',
+        'estudioMedico': 'si'
       },
       {
         'nombre': 'Jorge',
         'edad': '24',
         'estatura': '1.70',
         'peso': '75kg',
-        'alergias': 'si'
+        'alergias': 'si',
+        'consulta': 'si',
+        'estudioMedico': 'no'
       },
       {
         'nombre': 'Victor',
         'edad': '23',
         'estatura': '1.68',
         'peso': '75kg',
-        'alergias': 'no'
+        'alergias': 'no',
+        'consulta': 'no',
+        'estudioMedico': 'si'
       },
       {
         'nombre': 'Adrian',
         'edad': '21',
         'estatura': '1.75',
         'peso': '65kg',
-        'alergias': 'no'
+        'alergias': 'no',
+        'consulta': 'si',
+        'estudioMedico': 'no'
       },
     ];
 
@@ -284,46 +311,100 @@ class Recep extends StatelessWidget {
           user['peso']!,
           style: TextStyle(fontSize: fontSize),
         )),
-        DataCell(Text(
-          user['alergias']!,
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(Row(
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.edit,
-                color: const Color(0xFF094293),
-                size: fontSize,
-              ),
-              onPressed: () {
-                // Lógica para editar el usuario
-                _showEditUserDialog(context, user['name']!, user['rol']!);
-              },
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              user['alergias']!,
+              style: TextStyle(fontSize: fontSize),
             ),
-            IconButton(
-              icon: Icon(
-                Icons.person_off_sharp,
-                color: Colors.red,
-                size: fontSize,
-              ),
-              onPressed: () {
-                // Lógica para eliminar el usuario
-                _showDeleteUserDialog(context, user['name']!);
-              },
+          ),
+        ),
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              user['consulta']!,
+              style: TextStyle(fontSize: fontSize),
             ),
-          ],
-        )),
+          ),
+        ),
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              user['estudioMedico']!,
+              style: TextStyle(fontSize: fontSize),
+            ),
+          ),
+        ),
+        DataCell(
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment
+                  .center, // Centra los elementos horizontalmente
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.edit,
+                    color: const Color(0xFF094293),
+                    size: fontSize,
+                  ),
+                  onPressed: () {
+                    // Lógica para editar el paciente
+                    _showEditPacienteDialog(
+                      context,
+                      user['nombre']!,
+                      user['edad']!,
+                      user['estatura']!,
+                      user['peso']!,
+                      user['alergias']!,
+                      user['consulta']!,
+                      user['estudioMedico']!,
+                    );
+                  },
+                ),
+                SizedBox(width: 5), // Separación de 5 píxeles
+                IconButton(
+                  icon: Icon(
+                    Icons.person_off_sharp,
+                    color: Colors.red,
+                    size: fontSize,
+                  ),
+                  onPressed: () {
+                    // Lógica para eliminar el paciente
+                    _showDeletePacienteDialog(context, user['nombre']!);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ]);
     }).toList();
   }
 }
 
-void _showEditUserDialog(
-    BuildContext context, String name, String currentRole) {
-  List<String> roles = ['Doctor', 'Medico Especialista', 'Recepcionista'];
-  String selectedRole = currentRole;
+void _showEditPacienteDialog(
+    BuildContext context,
+    String name,
+    String edad,
+    String estatura,
+    String peso,
+    String alergias,
+    String consulta,
+    String estudiomed) {
   TextEditingController nameController = TextEditingController(text: name);
+  TextEditingController edadController = TextEditingController(text: edad);
+  TextEditingController estaturaController =
+      TextEditingController(text: estatura);
+  TextEditingController pesoController = TextEditingController(text: peso);
+  TextEditingController alergiasController =
+      TextEditingController(text: alergias);
+  TextEditingController consultaController =
+      TextEditingController(text: consulta);
+  TextEditingController estudiomedController =
+      TextEditingController(text: estudiomed);
 
   showDialog(
     context: context,
@@ -331,39 +412,84 @@ void _showEditUserDialog(
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            backgroundColor: Colors.white, // Establecer el fondo blanco
-            title: Text('Editar usuario',
-                style: TextStyle(color: Colors.black)), // Color del título
+            backgroundColor: Colors.white,
+            title: const Text('Editar datos del paciente',
+                style: TextStyle(color: Colors.black)),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment:
-                    CrossAxisAlignment.start, // Alinear a la izquierda
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
+                  TextFormField(
                     controller: nameController,
                     decoration: InputDecoration(labelText: 'Nombre'),
                     onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextField
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
                   ),
-                  SizedBox(height: 20),
-                  Text('Rol:',
-                      style: TextStyle(
-                          color: Colors.black)), // Color del texto del rol
-                  DropdownButton<String>(
-                    value: selectedRole,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedRole = newValue!;
-                      });
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: edadController,
+                    decoration: InputDecoration(labelText: 'Edad'),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(
+                          r'^\d+')), // Permite solo números enteros positivos
+                    ],
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
-                    items: roles.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: estaturaController,
+                    decoration: InputDecoration(labelText: 'Estatura'),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: pesoController,
+                    decoration: InputDecoration(labelText: 'Peso'),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(
+                          r'^\d+')), // Permite solo números enteros positivos
+                    ],
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: alergiasController,
+                    decoration: InputDecoration(labelText: 'Alergias'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: consultaController,
+                    decoration: InputDecoration(labelText: 'Consulta'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: estudiomedController,
+                    decoration: InputDecoration(labelText: 'Estudio Medico'),
+                    onChanged: (value) {
+                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
+                    },
                   ),
                 ],
               ),
@@ -374,17 +500,24 @@ void _showEditUserDialog(
                   Navigator.of(context).pop();
                 },
                 child: const Text('Cancelar',
-                    style: TextStyle(
-                        color: Colors
-                            .black)), // Color del texto del botón Cancelar
+                    style: TextStyle(color: Colors.black)),
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Aquí puedes realizar la lógica para guardar los cambios del rol y del nombre
                   String newName = nameController.text;
-                  String newRole = selectedRole;
-                  print('El nuevo nombre es: $newName');
-                  print('El nuevo rol es: $newRole');
+                  String newEdad = edadController.text;
+                  String newEstatura = estaturaController.text;
+                  String newPeso = pesoController.text;
+                  String newAlergias = alergiasController.text;
+                  String newConsulta = consultaController.text;
+                  String newEstudioMed = estudiomedController.text;
+                  print('la actualizacion es: $newName');
+                  print('la actualizacion es: $newEdad');
+                  print('la actualizacion es: $newEstatura');
+                  print('la actualizacion es: $newPeso');
+                  print('la actualizacion es: $newAlergias');
+                  print('la actualizacion es: $newConsulta');
+                  print('la actualizacion es: $newEstudioMed');
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
@@ -403,7 +536,7 @@ void _showEditUserDialog(
   );
 }
 
-void _showDeleteUserDialog(BuildContext context, String name) {
+void _showDeletePacienteDialog(BuildContext context, String name) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -411,7 +544,7 @@ void _showDeleteUserDialog(BuildContext context, String name) {
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
             title: Text(
-                'Seguro que quiere dar de baja al usuario seleccionado del sistema?\n\n$name'),
+                'Seguro que quieres dar de baja al paciente seleccionado del sistema?\n\n$name'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -528,8 +661,13 @@ class UserManagementScreen extends StatefulWidget {
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  // final TextEditingController _selectedRole = TextEditingController();
+  final TextEditingController _EdadController = TextEditingController();
+  final TextEditingController _EstaturaController = TextEditingController();
+  final TextEditingController _PesoController = TextEditingController();
+  final TextEditingController _AlergiasController = TextEditingController();
+  final TextEditingController _ConsultaController = TextEditingController();
+  final TextEditingController _EstudioMedController = TextEditingController();
+  bool _isButtonEnabled = false; // Estado del botón "Agregar"
 
   @override
   Widget build(BuildContext context) {
@@ -549,7 +687,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
-                _showAddUserDialog(context);
+                _showAddPacienteDialog(context);
               },
               style: ButtonStyle(
                 backgroundColor:
@@ -573,43 +711,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  void _showAddUserDialog(BuildContext context) {
+  void _showAddPacienteDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String? selectedRole; // Variable para almacenar el rol seleccionado
-
-        // Función para verificar si los campos están completos y el rol ha sido seleccionado
-        bool isFormValid() {
-          bool isEmailValid = _emailController.text.isNotEmpty &&
-              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                  .hasMatch(_emailController.text);
-          return _nameController.text.isNotEmpty &&
-              _emailController.text.isNotEmpty &&
-              isEmailValid &&
-              selectedRole != null;
-        }
-
-        // Función para validar el formato del correo electrónico
-        String? validateEmail(String? value) {
-          if (value == null || value.isEmpty) {
-            return 'El correo electrónico es requerido.';
-          }
-          // Expresión regular para validar el formato del correo electrónico
-          bool isValidEmail =
-              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
-          if (!isValidEmail) {
-            return 'El correo electrónico debe cumplir con el formato válido.';
-          }
-          return null; // Retorna null si la validación es exitosa
-        }
-
         return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
+          builder: (context, setState) {
             return AlertDialog(
               backgroundColor: Colors.white,
               title: const Center(
-                child: Text('Nuevo usuario'),
+                child: Text('Nuevo Paciente'),
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -617,43 +728,72 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     TextFormField(
                       controller: _nameController,
                       decoration: const InputDecoration(labelText: 'Nombre'),
+                      onChanged: (_) => _updateButtonState(setState),
                     ),
                     TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(labelText: 'Correo'),
-                      validator:
-                          validateEmail, // Validación del correo electrónico
+                      controller: _EdadController,
+                      decoration: const InputDecoration(labelText: 'Edad'),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          // Evita números negativos
+                          if (newValue.text.isEmpty) {
+                            return newValue.copyWith(text: '');
+                          } else if (double.tryParse(newValue.text) == null) {
+                            return oldValue;
+                          } else {
+                            return newValue;
+                          }
+                        }),
+                      ],
+                      onChanged: (_) => _updateButtonState(setState),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5.0),
-                      child: Text(
-                        // Mostrar mensaje de error si la validación falla
-                        _emailController.text.isNotEmpty &&
-                                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                    .hasMatch(_emailController.text)
-                            ? 'El correo electrónico debe cumplir con el formato válido.'
-                            : '',
-                        style: TextStyle(color: Colors.red),
-                      ),
+                    TextFormField(
+                      controller: _EstaturaController,
+                      decoration: const InputDecoration(labelText: 'Estatura'),
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true), // Tipo de teclado decimal
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(
+                            r'^\d+\.?\d{0,2}')), // Permite solo números decimales con hasta dos decimales
+                      ],
+                      onChanged: (_) => _updateButtonState(setState),
                     ),
-                    DropdownButtonFormField<String>(
-                      value: selectedRole,
-                      decoration: const InputDecoration(labelText: 'Rol'),
-                      items: <String>[
-                        'Doctor',
-                        'Medico Especialista',
-                        'Recepcionista'
-                      ].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedRole = value;
-                        });
-                      },
+                    TextFormField(
+                      controller: _PesoController,
+                      decoration: const InputDecoration(labelText: 'Peso'),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          // Evita números negativos
+                          if (newValue.text.isEmpty) {
+                            return newValue.copyWith(text: '');
+                          } else if (double.tryParse(newValue.text) == null) {
+                            return oldValue;
+                          } else {
+                            return newValue;
+                          }
+                        }),
+                      ],
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _AlergiasController,
+                      decoration: const InputDecoration(labelText: 'Alergias'),
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _ConsultaController,
+                      decoration: const InputDecoration(labelText: 'Consulta'),
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _EstudioMedController,
+                      decoration:
+                          const InputDecoration(labelText: 'EstudioMedico'),
+                      onChanged: (_) => _updateButtonState(setState),
                     ),
                   ],
                 ),
@@ -661,35 +801,19 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    // Limpiar los campos al hacer clic en "Cancelar"
-                    _nameController.clear();
-                    _emailController.clear();
-                    selectedRole = null; // Limpiar la selección del rol
+                    _clearControllers();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Cancelar'),
                 ),
                 ElevatedButton(
-                  onPressed:
-                      isFormValid() // Habilita el botón solo si el formulario es válido
-                          ? () {
-                              // Aquí puedes realizar la lógica para agregar el usuario con los datos ingresados
-                              // por ejemplo, puedes acceder a los valores con _nameController.text, _emailController.text, selectedRole
-                              // y luego cerrar el dialogo con Navigator.of(context).pop();
-                              // Limpiar los campos después de agregar el usuario
-                              _nameController.clear();
-                              _emailController.clear();
-                              selectedRole =
-                                  null; // Limpiar la selección del rol
-                              Navigator.of(context).pop();
-                            }
-                          : null,
+                  onPressed: _isButtonEnabled ? _handleAdd : null,
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                      isFormValid()
-                          ? const Color(0xFF094293)
-                          : const Color(0xFFBBDEFB),
-                    ),
+                    backgroundColor: _isButtonEnabled
+                        ? MaterialStateProperty.all<Color>(
+                            const Color(0xFF094293))
+                        : MaterialStateProperty.all<Color>(
+                            const Color(0xFFBBDEFB)),
                   ),
                   child: const Text(
                     'Agregar',
@@ -702,5 +826,41 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         );
       },
     );
+  }
+
+  // Verificar si todos los campos están llenos
+  bool _isValidForm() {
+    return _nameController.text.isNotEmpty &&
+        _EdadController.text.isNotEmpty &&
+        _EstaturaController.text.isNotEmpty &&
+        _PesoController.text.isNotEmpty &&
+        _AlergiasController.text.isNotEmpty &&
+        _ConsultaController.text.isNotEmpty &&
+        _EstudioMedController.text.isNotEmpty;
+  }
+
+  // Actualizar el estado del botón "Agregar"
+  void _updateButtonState(void Function(void Function()) setState) {
+    setState(() {
+      _isButtonEnabled = _isValidForm();
+    });
+  }
+
+  // Limpiar los controladores de texto
+  void _clearControllers() {
+    _nameController.clear();
+    _EdadController.clear();
+    _EstaturaController.clear();
+    _PesoController.clear();
+    _AlergiasController.clear();
+    _ConsultaController.clear();
+    _EstudioMedController.clear();
+  }
+
+  // Lógica para manejar la adición de medicamento
+  void _handleAdd() {
+    // Realizar la lógica para agregar el medicamento aquí
+    _clearControllers();
+    Navigator.of(context).pop();
   }
 }

@@ -322,7 +322,7 @@ class InvMedicamento extends StatelessWidget {
                 size: fontSize,
               ),
               onPressed: () {
-                // Lógica para editar el usuario
+                // Lógica para editar el medicamento
                 _showEditMedicineDialog(
                     context, user['nombre']!, user['descripcion']!,  user['fecha_cad']!, user['contenido']!, user['unidad_Medida']!, user['inventario_Actual']!, user['precio']!,);
               },
@@ -334,7 +334,7 @@ class InvMedicamento extends StatelessWidget {
                 size: fontSize,
               ),
               onPressed: () {
-                // Lógica para eliminar el usuario
+                // Lógica para eliminar el medicamento
                 _showDeleteUserDialog(context, user['nombre']!);
               },
             ),
@@ -653,7 +653,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     MaterialStateProperty.all<Color>(const Color(0xFF094293)),
               ),
               icon: const Icon(
-                Icons.person_add_alt_sharp,
+                Icons.add_circle_sharp,
                 color: Colors.white,
                 size: 30,
               ),
