@@ -164,9 +164,9 @@ class Recep extends StatelessWidget {
         double columnSpacing =
             screenWidth * 0.02; // Espacio de columna predeterminado
         double fontSize =
-            screenWidth * 0.020; // Tamaño de fuente predeterminado
-        double fontSizeEdit =
             screenWidth * 0.015; // Tamaño de fuente predeterminado
+        double fontSizeEdit =
+            screenWidth * 0.011; // Tamaño de fuente predeterminado
 
         return DataTable(
           columnSpacing: columnSpacing, // Espacio entre columnas
@@ -218,6 +218,15 @@ class Recep extends StatelessWidget {
             ),
             DataColumn(
               label: Text(
+                'Presión arterial',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
                 'Consulta',
                 style: TextStyle(
                   fontSize: fontSize,
@@ -258,6 +267,7 @@ class Recep extends StatelessWidget {
         'estatura': '1.80',
         'peso': '70kg',
         'alergias': 'no',
+        'presion': 'no',
         'consulta': 'si',
         'estudioMedico': 'si'
       },
@@ -267,6 +277,7 @@ class Recep extends StatelessWidget {
         'estatura': '1.70',
         'peso': '75kg',
         'alergias': 'si',
+        'presion': 'no',
         'consulta': 'si',
         'estudioMedico': 'no'
       },
@@ -276,6 +287,7 @@ class Recep extends StatelessWidget {
         'estatura': '1.68',
         'peso': '75kg',
         'alergias': 'no',
+        'presion': 'no',
         'consulta': 'no',
         'estudioMedico': 'si'
       },
@@ -285,13 +297,14 @@ class Recep extends StatelessWidget {
         'estatura': '1.75',
         'peso': '65kg',
         'alergias': 'no',
+        'presion': 'no',
         'consulta': 'si',
         'estudioMedico': 'no'
       },
     ];
 
     final double screenWidth2 = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth2 * 0.018;
+    double fontSize = screenWidth2 * 0.015;
 
     return users.map((user) {
       return DataRow(cells: [
@@ -316,6 +329,15 @@ class Recep extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               user['alergias']!,
+              style: TextStyle(fontSize: fontSize),
+            ),
+          ),
+        ),
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              user['presion']!,
               style: TextStyle(fontSize: fontSize),
             ),
           ),
@@ -359,6 +381,7 @@ class Recep extends StatelessWidget {
                       user['estatura']!,
                       user['peso']!,
                       user['alergias']!,
+                      user['presion']!,
                       user['consulta']!,
                       user['estudioMedico']!,
                     );
@@ -392,6 +415,7 @@ void _showEditPacienteDialog(
     String estatura,
     String peso,
     String alergias,
+    String presion,
     String consulta,
     String estudiomed) {
   TextEditingController nameController = TextEditingController(text: name);
@@ -401,10 +425,15 @@ void _showEditPacienteDialog(
   TextEditingController pesoController = TextEditingController(text: peso);
   TextEditingController alergiasController =
       TextEditingController(text: alergias);
+  TextEditingController presionController =
+      TextEditingController(text: presion);
   TextEditingController consultaController =
       TextEditingController(text: consulta);
   TextEditingController estudiomedController =
       TextEditingController(text: estudiomed);
+
+  bool? isConsulta = false; // Variable para mantener el estado del checkbox
+  bool? isEstudioMedico = false;
 
   showDialog(
     context: context,
@@ -458,10 +487,11 @@ void _showEditPacienteDialog(
                   TextFormField(
                     controller: pesoController,
                     decoration: InputDecoration(labelText: 'Peso'),
-                    keyboardType: TextInputType.number,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(
-                          r'^\d+')), // Permite solo números enteros positivos
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,2}')),
                     ],
                     onChanged: (value) {
                       // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
@@ -477,19 +507,53 @@ void _showEditPacienteDialog(
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    controller: consultaController,
-                    decoration: InputDecoration(labelText: 'Consulta'),
+                    controller: presionController,
+                    decoration: InputDecoration(labelText: 'Presion'),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
                     onChanged: (value) {
                       // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: estudiomedController,
-                    decoration: InputDecoration(labelText: 'Estudio Medico'),
-                    onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
-                    },
+                  ), // En el cuerpo de tu Widget
+                  Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isConsulta,
+                            onChanged: (newValue) {
+                              setState(() {
+                                isConsulta = newValue;
+                              });
+                            },
+                          ),
+                          Text('¿Consulta Medica?'),
+                        ],
+                      ),
+                    ],
+                  ), // En el cuerpo de tu Widget
+                  Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isEstudioMedico,
+                            onChanged: (newValue) {
+                              setState(() {
+                                isEstudioMedico = newValue;
+                              });
+                            },
+                          ),
+                          Text('¿Estudio Medico?'),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -509,6 +573,7 @@ void _showEditPacienteDialog(
                   String newEstatura = estaturaController.text;
                   String newPeso = pesoController.text;
                   String newAlergias = alergiasController.text;
+                  String newPresion = presionController.text;
                   String newConsulta = consultaController.text;
                   String newEstudioMed = estudiomedController.text;
                   print('la actualizacion es: $newName');
@@ -516,6 +581,7 @@ void _showEditPacienteDialog(
                   print('la actualizacion es: $newEstatura');
                   print('la actualizacion es: $newPeso');
                   print('la actualizacion es: $newAlergias');
+                  print('la actualizacion es: $newPresion');
                   print('la actualizacion es: $newConsulta');
                   print('la actualizacion es: $newEstudioMed');
                   Navigator.of(context).pop();
@@ -665,9 +731,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   final TextEditingController _EstaturaController = TextEditingController();
   final TextEditingController _PesoController = TextEditingController();
   final TextEditingController _AlergiasController = TextEditingController();
+  final TextEditingController _PresionController = TextEditingController();
   final TextEditingController _ConsultaController = TextEditingController();
   final TextEditingController _EstudioMedController = TextEditingController();
   bool _isButtonEnabled = false; // Estado del botón "Agregar"
+
+  bool isConsulted = false; // Variable para mantener el estado del checkbox
+  bool isEstudioMed = false; // Variable para mantener el estado del checkbox
 
   @override
   Widget build(BuildContext context) {
@@ -763,19 +833,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     TextFormField(
                       controller: _PesoController,
                       decoration: const InputDecoration(labelText: 'Peso'),
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true), // Tipo de teclado decimal
                       inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        TextInputFormatter.withFunction((oldValue, newValue) {
-                          // Evita números negativos
-                          if (newValue.text.isEmpty) {
-                            return newValue.copyWith(text: '');
-                          } else if (double.tryParse(newValue.text) == null) {
-                            return oldValue;
-                          } else {
-                            return newValue;
-                          }
-                        }),
+                        FilteringTextInputFormatter.allow(RegExp(
+                            r'^\d+\.?\d{0,2}')), // Permite solo números decimales con hasta dos decimales
                       ],
                       onChanged: (_) => _updateButtonState(setState),
                     ),
@@ -785,15 +847,61 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       onChanged: (_) => _updateButtonState(setState),
                     ),
                     TextFormField(
-                      controller: _ConsultaController,
-                      decoration: const InputDecoration(labelText: 'Consulta'),
+                      controller: _PresionController,
+                      decoration: const InputDecoration(labelText: 'Presion'),
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true), // Tipo de teclado decimal
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(
+                            r'^\d+\.?\d{0,2}')), // Permite solo números decimales con hasta dos decimales
+                      ],
                       onChanged: (_) => _updateButtonState(setState),
                     ),
-                    TextFormField(
-                      controller: _EstudioMedController,
-                      decoration:
-                          const InputDecoration(labelText: 'EstudioMedico'),
-                      onChanged: (_) => _updateButtonState(setState),
+                    Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: isConsulted,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  isConsulted = newValue!;
+                                  _updateButtonState(
+                                      setState); // Actualizar el estado del botón después de cambiar el checkbox
+                                  _ConsultaController.text = isConsulted
+                                      ? 'si'
+                                      : 'no'; // Actualizar el valor del controlador del checkbox
+                                });
+                              },
+                            ),
+                            Text('¿Consulta Medica?'),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: isEstudioMed,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  isEstudioMed = newValue!;
+                                  _updateButtonState(
+                                      setState); // Actualizar el estado del botón después de cambiar el checkbox
+                                  _EstudioMedController.text = isEstudioMed
+                                      ? 'si'
+                                      : 'no'; // Actualizar el valor del controlador del checkbox
+                                });
+                              },
+                            ),
+                            Text('¿Estudio Medico?'),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -835,8 +943,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         _EstaturaController.text.isNotEmpty &&
         _PesoController.text.isNotEmpty &&
         _AlergiasController.text.isNotEmpty &&
-        _ConsultaController.text.isNotEmpty &&
-        _EstudioMedController.text.isNotEmpty;
+        _PresionController.text.isNotEmpty;
   }
 
   // Actualizar el estado del botón "Agregar"
@@ -853,6 +960,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     _EstaturaController.clear();
     _PesoController.clear();
     _AlergiasController.clear();
+    _PresionController.clear();
     _ConsultaController.clear();
     _EstudioMedController.clear();
   }
