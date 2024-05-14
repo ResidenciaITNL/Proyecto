@@ -124,6 +124,9 @@ class __FormContentState extends State<_FormContent> {
           //----------- Input de email -------------//
           //-----------------------------------------//
           TextFormField(
+            onChanged: (value) {
+              usuario = value;
+            },
             validator: (value) {
               //--------Validacion del correo electronico
               if (value == null || value.isEmpty) {
@@ -166,6 +169,9 @@ class __FormContentState extends State<_FormContent> {
           //----------- Input de contraseña -------------//
           //----------------------------------------------//
           TextFormField(
+            onChanged: (value) {
+              password = value;
+            },
             //-------Validacion de contraseña
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -173,41 +179,44 @@ class __FormContentState extends State<_FormContent> {
               }
 
               if (value.length < 6) {
-                return 'Contraseña debe cumplir con 6 mas caracteres';
+                return 'Contraseña debe tener al menos 6 caracteres';
               }
 
-              password = value;
+              setState(() {
+                password = value;
+              });
 
               return null;
             },
             obscureText: !_isPasswordVisible,
             decoration: InputDecoration(
-                labelText: 'Contraseña',
-                hintText: '******',
-                prefixIcon: const Icon(Icons.lock_outline_rounded),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Colors
-                          .black), // Color del borde cuando está habilitado
+              labelText: 'Contraseña',
+              hintText: '******',
+              prefixIcon: const Icon(Icons.lock_outline_rounded),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.black,
                 ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Color(
-                          0xFF094293)), // Color del borde cuando está enfocado
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFF094293),
                 ),
-                labelStyle: const TextStyle(
-                  color: Colors.black, // Color del labelText por defecto
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(_isPasswordVisible
-                      ? Icons.visibility_off
-                      : Icons.visibility),
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
-                )),
+              ),
+              labelStyle: const TextStyle(
+                color: Colors.black,
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(_isPasswordVisible
+                    ? Icons.visibility_off
+                    : Icons.visibility),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              ),
+            ),
           ),
           _gap(),
 
@@ -240,7 +249,8 @@ class __FormContentState extends State<_FormContent> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF094293),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4)),
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
               child: const Padding(
                 padding: EdgeInsets.all(10.0),
@@ -254,10 +264,46 @@ class __FormContentState extends State<_FormContent> {
                 ),
               ),
               onPressed: () async {
-                Navigator.pushReplacementNamed(context, 'home_admin');
-                // if (await apiService.loggin(usuario, password)) {
-                //   Navigator.pushReplacementNamed(context, 'home_admin');
-                // }
+                // Validar que usuario y contraseña no estén vacíos
+                if (usuario.isEmpty || password.isEmpty) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Error'),
+                      content: Text('Por favor ingrese usuario y contraseña.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                  return;
+                }
+
+                // Realizar el inicio de sesión
+                bool loggedIn = await apiService.loggin(usuario, password);
+
+                // Verificar si el inicio de sesión fue exitoso
+                if (loggedIn) {
+                  Navigator.pushReplacementNamed(context, 'home_admin');
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Error'),
+                      content: Text(
+                          'Inicio de sesión fallido. Por favor revise sus credenciales.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
             ),
           ),
