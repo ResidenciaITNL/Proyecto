@@ -10,21 +10,26 @@ namespace Sistema.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize("SuperAdmin,Admin")]
+    [Authorize(Roles = "SuperAdmin, Admin")]
     public class UsersController : ControllerBase
     {
         private readonly BDContext _context;
-        public int CustomerId { get; private set; }
         public UsersController(BDContext context)
         {
             _context = context;
-            CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
         }
         // GET: api/<UsersController>
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            List<Users> users = await _context.Users.Where(x => x.CustomersId == CustomerId && x.active).ToListAsync();
+            int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
+            var users = await _context.Users.Where(x => x.CustomersId == CustomerId && x.active).Select(x => new
+            {
+                UserId = x.UserId,
+                name = x.name,
+                email = x.email,
+                role = x.role.ToString()
+            }).ToListAsync();
             return Ok(users);
         }
 
@@ -32,6 +37,7 @@ namespace Sistema.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
+            int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
             Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && x.CustomersId == CustomerId && x.active);
             if (user == null)
             {
@@ -44,7 +50,7 @@ namespace Sistema.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Users value)
         {
-            //Crear usuario
+            int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
             value.CustomersId = CustomerId;
             value.HashPassword();
             await _context.Users.AddAsync(value);
@@ -56,6 +62,7 @@ namespace Sistema.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Users value)
         {
+            int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
             Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && x.CustomersId == CustomerId && x.active);
             if (user == null)
             {
@@ -77,6 +84,7 @@ namespace Sistema.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
             Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && x.CustomersId == CustomerId && x.active);
             if (user != null)
             {
