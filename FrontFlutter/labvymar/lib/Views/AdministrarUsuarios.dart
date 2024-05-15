@@ -9,7 +9,6 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 import 'package:labvymar/conectionmysql.dart';
 
-
 class AdminUsuarios extends StatefulWidget {
   AdminUsuarios({super.key});
 
@@ -166,75 +165,86 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
     }
   }
 
- Widget _buildUserDataTable() {
-  return ResponsiveBuilder(
-    builder: (context, sizingInformation) {
-      double screenWidth = MediaQuery.of(context).size.width;
-      double columnSpacing = screenWidth * 0.05; 
-      double fontSize = screenWidth * 0.020; 
-      double fontSizeEdit = screenWidth * 0.015; 
+  Widget _buildUserDataTable() {
+    return ResponsiveBuilder(
+      builder: (context, sizingInformation) {
+        double screenWidth = MediaQuery.of(context).size.width;
+        double columnSpacing = screenWidth * 0.05;
+        double fontSize = screenWidth * 0.020;
+        double fontSizeEdit = screenWidth * 0.015;
 
-      return FutureBuilder<List<DataRow>>(
-        future: _userDataRows(context),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(), // Muestra un indicador de carga mientras se espera
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'), // Muestra un mensaje de error si ocurre algún problema
-            );
-          } else {
-            return DataTable(
-              columnSpacing: columnSpacing,
-              columns: [
-                DataColumn(
-                  label: Text(
-                    'Nombre',
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.bold,
+        return FutureBuilder<List<DataRow>>(
+          future: _userDataRows(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child:
+                    CircularProgressIndicator(), // Muestra un indicador de carga mientras se espera
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                    'Error: ${snapshot.error}'), // Muestra un mensaje de error si ocurre algún problema
+              );
+            } else {
+              return DataTable(
+                columnSpacing: columnSpacing,
+                columns: [
+                  DataColumn(
+                    label: Text(
+                      'ID',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                DataColumn(
-                  label: Text(
-                    'Correo',
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.bold,
+                  DataColumn(
+                    label: Text(
+                      'Nombre',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                DataColumn(
-                  label: Text(
-                    'Rol',
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.bold,
+                  DataColumn(
+                    label: Text(
+                      'Correo',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                DataColumn(
-                  label: Text(
-                    'Editar | Eliminar ',
-                    style: TextStyle(
-                      fontSize: fontSizeEdit,
-                      fontWeight: FontWeight.bold,
+                  DataColumn(
+                    label: Text(
+                      'Rol',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
-              rows: snapshot.data!, // Utiliza los datos devueltos por _userDataRows
-            );
-          }
-        },
-      );
-    },
-  );
-}
-
+                  DataColumn(
+                    label: Text(
+                      'Editar | Eliminar ',
+                      style: TextStyle(
+                        fontSize: fontSizeEdit,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+                rows: snapshot
+                    .data!, // Utiliza los datos devueltos por _userDataRows
+              );
+            }
+          },
+        );
+      },
+    );
+  }
 
   Future<List<DataRow>> _userDataRows(BuildContext context) async {
   final List<Map<String, dynamic>> users = await apiService.getUsers();
@@ -244,20 +254,20 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 
   return users.map((user) {
     return DataRow(cells: [
-            DataCell(Text(
-        user['userId']!,
+      DataCell(Text(
+        user['userId'].toString(), // Convertir el userId a String
         style: TextStyle(fontSize: fontSize),
       )),
       DataCell(Text(
-        user['name']!,
+        user['name'], // Acceder a 'name' en minúsculas
         style: TextStyle(fontSize: fontSize),
       )),
       DataCell(Text(
-        user['email']!,
+        user['email'], // Acceder a 'email' en minúsculas
         style: TextStyle(fontSize: fontSize),
       )),
       DataCell(Text(
-        user['role']!,
+        user['role'], // Acceder a 'role' en minúsculas
         style: TextStyle(fontSize: fontSize),
       )),
       DataCell(Row(
@@ -270,7 +280,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
             ),
             onPressed: () {
               // Lógica para editar el usuario
-              _showEditUserDialog(context, user['name']!, user['role']!);
+              _showEditUserDialog(context, user['name'], user['role']);
             },
           ),
           IconButton(
@@ -281,7 +291,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
             ),
             onPressed: () {
               // Lógica para eliminar el usuario
-              _showDeleteUserDialog(context, user['name']!);
+              _showDeleteUserDialog(context, user['name']);
             },
           ),
         ],
