@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:labvymar/Views/AdministrarUsuarios.dart';
-import 'package:labvymar/Views/ConsultaMedica.dart';
-import 'package:labvymar/Views/Cuenta.dart';
-import 'package:labvymar/Views/EstudioMedico.dart';
-import 'package:labvymar/Views/Recepcion.dart';
-import 'package:labvymar/Views/login.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+
+import 'package:labvymar/Views/Navbar_widgets.dart';
+import 'package:labvymar/conectionmysql.dart';
 
 class InvMedicamento extends StatelessWidget {
   InvMedicamento({Key? key}) : super(key: key);
@@ -51,18 +48,18 @@ class InvMedicamento extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (isLargeScreen) Expanded(child: _navBarItems(context))
+                if (isLargeScreen) Expanded(child: NavBarWidgets.navBarItems(context))
               ],
             ),
           ),
-          actions: const [
+          actions: [
             Padding(
               padding: EdgeInsets.only(right: 16.0),
-              child: CircleAvatar(child: _ProfileIcon()),
+              child: CircleAvatar(child: NavBarWidgets.profileIcon(context)),
             )
           ],
         ),
-        drawer: isLargeScreen ? null : _drawer(context),
+        drawer: isLargeScreen ? null : NavBarWidgets.drawer(context),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(
@@ -78,83 +75,6 @@ class InvMedicamento extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _drawer(BuildContext context) => Drawer(
-        child: Container(
-          color: Colors.white, // Añade un fondo blanco
-          child: ListView(
-            children: _menuItems
-                .map(
-                  (item) => ListTile(
-                    onTap: () {
-                      _handleMenuTap(context, item);
-                    },
-                    title: Text(item),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      );
-
-  Widget _navBarItems(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: _menuItems
-            .map(
-              (item) => InkWell(
-                onTap: () {
-                  _handleMenuTap(context, item);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 24.0, horizontal: 16),
-                  child: Text(
-                    item,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-            )
-            .toList(),
-      );
-
-  void _handleMenuTap(BuildContext context, String menuItem) {
-    switch (menuItem) {
-      case 'Administración':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AdminUsuarios()),
-        );
-        break;
-      case 'Inventario':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => InvMedicamento()),
-        );
-        break;
-      case 'Recepción':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Recep()),
-        );
-        break;
-      case 'Consulta Medica':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => ConsMedica()),
-        );
-        break;
-      case 'Estudio Medico':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => EstudioMed()),
-        );
-        break;
-      default:
-        break;
-    }
   }
 
   Widget _buildUserDataTable() {
@@ -527,85 +447,6 @@ void _showDeleteUserDialog(BuildContext context, String name) {
       );
     },
   );
-}
-
-final List<String> _menuItems = <String>[
-  'Administración',
-  'Inventario',
-  'Recepción',
-  'Consulta Medica',
-  'Estudio Medico',
-];
-
-enum Menu { itemOne, itemTwo, itemThree }
-
-class _ProfileIcon extends StatelessWidget {
-  const _ProfileIcon({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: PopupMenuButton<Menu>(
-        offset: const Offset(0, 40),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        color: Colors.white,
-        onSelected: (Menu item) {
-          switch (item) {
-            case Menu.itemOne:
-              // Navigate to "Cuenta.dart" using pushReplacement
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => CuentaUser()),
-              );
-              break;
-            case Menu.itemThree:
-              // Handle "Cerrar Sesión" action
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => Login()),
-              );
-              break;
-            case Menu.itemTwo:
-            // TODO: Handle this case.
-          }
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-          const PopupMenuItem<Menu>(
-            value: Menu.itemOne,
-            child: ListTile(
-              title: Text(
-                'Cuenta',
-                textAlign: TextAlign.right,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.itemThree,
-            child: ListTile(
-              title: Text(
-                'Cerrar Sesión',
-                textAlign: TextAlign.right,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ),
-          ),
-        ],
-        child: const SizedBox(
-          width: 50,
-          height: 50,
-          child: Icon(
-            Icons.account_circle_sharp,
-            size: 40,
-            color: Color(0xFF094293),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class UserManagementScreen extends StatefulWidget {

@@ -1,12 +1,9 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
-import 'package:labvymar/Views/ConsultaMedica.dart';
-import 'package:labvymar/Views/Cuenta.dart';
-import 'package:labvymar/Views/EstudioMedico.dart';
-import 'package:labvymar/Views/InventarioMedicamento.dart';
-import 'package:labvymar/Views/Recepcion.dart';
-import 'package:labvymar/Views/login.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+import 'package:labvymar/Views/Navbar_widgets.dart';
 import 'package:labvymar/conectionmysql.dart';
 
 class AdminUsuarios extends StatefulWidget {
@@ -59,18 +56,19 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                     ),
                   ),
                 ),
-                if (isLargeScreen) Expanded(child: _navBarItems(context))
+                if (isLargeScreen)
+                  Expanded(child: NavBarWidgets.navBarItems(context))
               ],
             ),
           ),
-          actions: const [
+          actions: [
             Padding(
               padding: EdgeInsets.only(right: 16.0),
-              child: CircleAvatar(child: _ProfileIcon()),
+              child: CircleAvatar(child: NavBarWidgets.profileIcon(context)),
             )
           ],
         ),
-        drawer: isLargeScreen ? null : _drawer(context),
+        drawer: isLargeScreen ? null : NavBarWidgets.drawer(context),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(
@@ -86,83 +84,6 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
         ),
       ),
     );
-  }
-
-  Widget _drawer(BuildContext context) => Drawer(
-        child: Container(
-          color: Colors.white, // Añade un fondo blanco
-          child: ListView(
-            children: _menuItems
-                .map(
-                  (item) => ListTile(
-                    onTap: () {
-                      _handleMenuTap(context, item);
-                    },
-                    title: Text(item),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      );
-
-  Widget _navBarItems(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: _menuItems
-            .map(
-              (item) => InkWell(
-                onTap: () {
-                  _handleMenuTap(context, item);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 24.0, horizontal: 16),
-                  child: Text(
-                    item,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-            )
-            .toList(),
-      );
-
-  void _handleMenuTap(BuildContext context, String menuItem) {
-    switch (menuItem) {
-      case 'Administración':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AdminUsuarios()),
-        );
-        break;
-      case 'Inventario':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => InvMedicamento()),
-        );
-        break;
-      case 'Recepción':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Recep()),
-        );
-        break;
-      case 'Consulta Medica':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => ConsMedica()),
-        );
-        break;
-      case 'Estudio Medico':
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => EstudioMed()),
-        );
-        break;
-      default:
-        break;
-    }
   }
 
   Widget _buildUserDataTable() {
@@ -247,59 +168,58 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
   }
 
   Future<List<DataRow>> _userDataRows(BuildContext context) async {
-  final List<Map<String, dynamic>> users = await apiService.getUsers();
+    final List<Map<String, dynamic>> users = await apiService.getUsers();
 
-  final double screenWidth2 = MediaQuery.of(context).size.width;
-  double fontSize = screenWidth2 * 0.018;
+    final double screenWidth2 = MediaQuery.of(context).size.width;
+    double fontSize = screenWidth2 * 0.018;
 
-  return users.map((user) {
-    return DataRow(cells: [
-      DataCell(Text(
-        user['userId'].toString(), // Convertir el userId a String
-        style: TextStyle(fontSize: fontSize),
-      )),
-      DataCell(Text(
-        user['name'], // Acceder a 'name' en minúsculas
-        style: TextStyle(fontSize: fontSize),
-      )),
-      DataCell(Text(
-        user['email'], // Acceder a 'email' en minúsculas
-        style: TextStyle(fontSize: fontSize),
-      )),
-      DataCell(Text(
-        user['role'], // Acceder a 'role' en minúsculas
-        style: TextStyle(fontSize: fontSize),
-      )),
-      DataCell(Row(
-        children: [
-          IconButton(
-            icon: Icon(
-              Icons.edit,
-              color: const Color(0xFF094293),
-              size: fontSize,
+    return users.map((user) {
+      return DataRow(cells: [
+        DataCell(Text(
+          user['userId'].toString(), // Convertir el userId a String
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['name'], // Acceder a 'name' en minúsculas
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['email'], // Acceder a 'email' en minúsculas
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Text(
+          user['role'], // Acceder a 'role' en minúsculas
+          style: TextStyle(fontSize: fontSize),
+        )),
+        DataCell(Row(
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.edit,
+                color: const Color(0xFF094293),
+                size: fontSize,
+              ),
+              onPressed: () {
+                // Lógica para editar el usuario
+                _showEditUserDialog(context, user['name'], user['role']);
+              },
             ),
-            onPressed: () {
-              // Lógica para editar el usuario
-              _showEditUserDialog(context, user['name'], user['role']);
-            },
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.person_off_sharp,
-              color: Colors.red,
-              size: fontSize,
+            IconButton(
+              icon: Icon(
+                Icons.person_off_sharp,
+                color: Colors.red,
+                size: fontSize,
+              ),
+              onPressed: () {
+                // Lógica para eliminar el usuario
+                _showDeleteUserDialog(context, user['name']);
+              },
             ),
-            onPressed: () {
-              // Lógica para eliminar el usuario
-              _showDeleteUserDialog(context, user['name']);
-            },
-          ),
-        ],
-      )),
-    ]);
-  }).toList();
-}
-
+          ],
+        )),
+      ]);
+    }).toList();
+  }
 }
 
 void _showEditUserDialog(
@@ -420,85 +340,6 @@ void _showDeleteUserDialog(BuildContext context, String name) {
       );
     },
   );
-}
-
-final List<String> _menuItems = <String>[
-  'Administración',
-  'Inventario',
-  'Recepción',
-  'Consulta Medica',
-  'Estudio Medico',
-];
-
-enum Menu { itemOne, itemTwo, itemThree }
-
-class _ProfileIcon extends StatelessWidget {
-  const _ProfileIcon({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: PopupMenuButton<Menu>(
-        offset: const Offset(0, 40),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        color: Colors.white,
-        onSelected: (Menu item) {
-          switch (item) {
-            case Menu.itemOne:
-              // Navigate to "Cuenta.dart" using pushReplacement
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => CuentaUser()),
-              );
-              break;
-            case Menu.itemThree:
-              // Handle "Cerrar Sesión" action
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => Login()),
-              );
-              break;
-            case Menu.itemTwo:
-            // TODO: Handle this case.
-          }
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-          const PopupMenuItem<Menu>(
-            value: Menu.itemOne,
-            child: ListTile(
-              title: Text(
-                'Cuenta',
-                textAlign: TextAlign.right,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.itemThree,
-            child: ListTile(
-              title: Text(
-                'Cerrar Sesión',
-                textAlign: TextAlign.right,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ),
-          ),
-        ],
-        child: const SizedBox(
-          width: 50,
-          height: 50,
-          child: Icon(
-            Icons.account_circle_sharp,
-            size: 40,
-            color: Color(0xFF094293),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class UserManagementScreen extends StatefulWidget {
@@ -686,17 +527,4 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       },
     );
   }
-}
-
-//-----------------------------------------//
-//----------- Lista de usuarios -----------//
-//-----------------------------------------//
-
-class UserList {
-  String userId1;
-  String name1;
-  String email1;
-  String role1;
-
-  UserList(this.userId1, this.name1, this.email1, this.role1);
 }

@@ -223,22 +223,22 @@ class __FormContentState extends State<_FormContent> {
           //---------------------------------------------------------//
           //----------- Checkbox de recordar contraseña -------------//
           //---------------------------------------------------------//
-          CheckboxListTile(
-            checkColor: Colors.white,
-            activeColor: Color(0xFF094293),
-            value: _rememberMe,
-            onChanged: (value) {
-              if (value == null) return;
-              setState(() {
-                _rememberMe = value;
-              });
-            },
-            title: const Text('Recordar contraseña'),
-            controlAffinity: ListTileControlAffinity.leading,
-            dense: true,
-            contentPadding: const EdgeInsets.all(0),
-          ),
-          _gap(),
+          // CheckboxListTile(
+          //   checkColor: Colors.white,
+          //   activeColor: Color(0xFF094293),
+          //   value: _rememberMe,
+          //   onChanged: (value) {
+          //     if (value == null) return;
+          //     setState(() {
+          //       _rememberMe = value;
+          //     });
+          //   },
+          //   title: const Text('Recordar contraseña'),
+          //   controlAffinity: ListTileControlAffinity.leading,
+          //   dense: true,
+          //   contentPadding: const EdgeInsets.all(0),
+          // ),
+          // _gap(),
 
           //-----------------------------------------//
           //----------- Boton de submit -------------//
@@ -322,10 +322,8 @@ class __FormContentState extends State<_FormContent> {
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => RecoverPass()),
-                  );
+                  
+                  Navigator.pushReplacementNamed(context, 'recoverpass');
                 },
                 child: const Material(
                   color: Color.fromARGB(0, 0, 0, 0),
