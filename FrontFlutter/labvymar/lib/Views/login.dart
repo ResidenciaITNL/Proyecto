@@ -283,12 +283,16 @@ class __FormContentState extends State<_FormContent> {
                 }
 
                 // Realizar el inicio de sesión
-                bool loggedIn = await apiService.loggin(usuario, password);
+                Map<String, dynamic> loggedIn =
+                    await apiService.login(usuario, password);
 
                 // Verificar si el inicio de sesión fue exitoso
-                if (loggedIn) {
+                if (loggedIn.containsKey('success') &&
+                    loggedIn['success'] == true) {
+                  // Inicio de sesión exitoso, redirigir a la página de inicio de administrador
                   Navigator.pushReplacementNamed(context, 'home_admin');
                 } else {
+                  // Mostrar un diálogo de error
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(

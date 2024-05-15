@@ -7,8 +7,18 @@ import 'package:labvymar/Views/Recepcion.dart';
 import 'package:labvymar/Views/login.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-class AdminUsuarios extends StatelessWidget {
+import 'package:labvymar/conectionmysql.dart';
+
+
+class AdminUsuarios extends StatefulWidget {
   AdminUsuarios({super.key});
+
+  @override
+  State<AdminUsuarios> createState() => _AdminUsuariosState();
+}
+
+class _AdminUsuariosState extends State<AdminUsuarios> {
+  final APIService apiService = APIService();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -156,124 +166,130 @@ class AdminUsuarios extends StatelessWidget {
     }
   }
 
-  Widget _buildUserDataTable() {
-    return ResponsiveBuilder(
-      builder: (context, sizingInformation) {
-        double screenWidth = MediaQuery.of(context).size.width;
-        double columnSpacing =
-            screenWidth * 0.05; // Espacio de columna predeterminado
-        double fontSize =
-            screenWidth * 0.020; // Tamaño de fuente predeterminado
-        double fontSizeEdit =
-            screenWidth * 0.015; // Tamaño de fuente predeterminado
+ Widget _buildUserDataTable() {
+  return ResponsiveBuilder(
+    builder: (context, sizingInformation) {
+      double screenWidth = MediaQuery.of(context).size.width;
+      double columnSpacing = screenWidth * 0.05; 
+      double fontSize = screenWidth * 0.020; 
+      double fontSizeEdit = screenWidth * 0.015; 
 
-        return DataTable(
-          columnSpacing: columnSpacing, // Espacio entre columnas
-          columns: [
-            DataColumn(
-              label: Text(
-                'Nombre',
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
+      return FutureBuilder<List<DataRow>>(
+        future: _userDataRows(context),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(), // Muestra un indicador de carga mientras se espera
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'), // Muestra un mensaje de error si ocurre algún problema
+            );
+          } else {
+            return DataTable(
+              columnSpacing: columnSpacing,
+              columns: [
+                DataColumn(
+                  label: Text(
+                    'Nombre',
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Correo',
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
+                DataColumn(
+                  label: Text(
+                    'Correo',
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Rol',
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
+                DataColumn(
+                  label: Text(
+                    'Rol',
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Editar | Eliminar ',
-                style: TextStyle(
-                  fontSize: fontSizeEdit,
-                  fontWeight: FontWeight.bold,
+                DataColumn(
+                  label: Text(
+                    'Editar | Eliminar ',
+                    style: TextStyle(
+                      fontSize: fontSizeEdit,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ],
-          rows: _userDataRows(context),
-        );
-      },
-    );
-  }
+              ],
+              rows: snapshot.data!, // Utiliza los datos devueltos por _userDataRows
+            );
+          }
+        },
+      );
+    },
+  );
+}
 
-  List<DataRow> _userDataRows(BuildContext context) {
-    final List<Map<String, String>> users = [
-      {
-        'name': 'Usuario 1',
-        'email': 'usuario1@example.com',
-        'rol': 'Medico Especialista'
-      },
-      {'name': 'Usuario 2', 'email': 'usuario2@example.com', 'rol': 'Doctor'},
-      {
-        'name': 'Usuario 3',
-        'email': 'usuario3@example.com',
-        'rol': 'Recepcionista'
-      },
-    ];
 
-    final double screenWidth2 = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth2 * 0.018;
+  Future<List<DataRow>> _userDataRows(BuildContext context) async {
+  final List<Map<String, dynamic>> users = await apiService.getUsers();
 
-    return users.map((user) {
-      return DataRow(cells: [
-        DataCell(Text(
-          user['name']!,
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(Text(
-          user['email']!,
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(Text(
-          user['rol']!,
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(Row(
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.edit,
-                color: const Color(0xFF094293),
-                size: fontSize,
-              ),
-              onPressed: () {
-                // Lógica para editar el usuario
-                _showEditUserDialog(context, user['name']!, user['rol']!);
-              },
+  final double screenWidth2 = MediaQuery.of(context).size.width;
+  double fontSize = screenWidth2 * 0.018;
+
+  return users.map((user) {
+    return DataRow(cells: [
+            DataCell(Text(
+        user['userId']!,
+        style: TextStyle(fontSize: fontSize),
+      )),
+      DataCell(Text(
+        user['name']!,
+        style: TextStyle(fontSize: fontSize),
+      )),
+      DataCell(Text(
+        user['email']!,
+        style: TextStyle(fontSize: fontSize),
+      )),
+      DataCell(Text(
+        user['role']!,
+        style: TextStyle(fontSize: fontSize),
+      )),
+      DataCell(Row(
+        children: [
+          IconButton(
+            icon: Icon(
+              Icons.edit,
+              color: const Color(0xFF094293),
+              size: fontSize,
             ),
-            IconButton(
-              icon: Icon(
-                Icons.person_off_sharp,
-                color: Colors.red,
-                size: fontSize,
-              ),
-              onPressed: () {
-                // Lógica para eliminar el usuario
-                _showDeleteUserDialog(context, user['name']!);
-              },
+            onPressed: () {
+              // Lógica para editar el usuario
+              _showEditUserDialog(context, user['name']!, user['role']!);
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.person_off_sharp,
+              color: Colors.red,
+              size: fontSize,
             ),
-          ],
-        )),
-      ]);
-    }).toList();
-  }
+            onPressed: () {
+              // Lógica para eliminar el usuario
+              _showDeleteUserDialog(context, user['name']!);
+            },
+          ),
+        ],
+      )),
+    ]);
+  }).toList();
+}
+
 }
 
 void _showEditUserDialog(
@@ -660,4 +676,17 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       },
     );
   }
+}
+
+//-----------------------------------------//
+//----------- Lista de usuarios -----------//
+//-----------------------------------------//
+
+class UserList {
+  String userId1;
+  String name1;
+  String email1;
+  String role1;
+
+  UserList(this.userId1, this.name1, this.email1, this.role1);
 }
