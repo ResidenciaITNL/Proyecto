@@ -1,10 +1,13 @@
 import 'dart:js';
-
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import 'package:labvymar/Views/Navbar_widgets.dart';
 import 'package:labvymar/conectionmysql.dart';
+
+//-------------------------------------------------------------//
+//----------------- Clase de AdminUsuarios --------------------//
+//-------------------------------------------------------------//
 
 class AdminUsuarios extends StatefulWidget {
   AdminUsuarios({super.key});
@@ -13,10 +16,19 @@ class AdminUsuarios extends StatefulWidget {
   State<AdminUsuarios> createState() => _AdminUsuariosState();
 }
 
+//-------------------------------------------------------------//
+//-------------- Clase de _AdminUsuariosState -----------------//
+//-------------------------------------------------------------//
+
 class _AdminUsuariosState extends State<AdminUsuarios> {
   final APIService apiService = APIService();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+
+  //-------------------------------------------------------------//
+  //-------- Widget que hace referencia al navbar y body --------//
+  //-------------------------------------------------------------//
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +40,11 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
       child: Scaffold(
         backgroundColor: Colors.white,
         key: _scaffoldKey,
+
+        //------------------------//
+        //-------- Navbar --------//
+        //------------------------//
+
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -69,6 +86,11 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
           ],
         ),
         drawer: isLargeScreen ? null : NavBarWidgets.drawer(context),
+
+        //------------------------//
+        //--------- Body ---------//
+        //------------------------//
+
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(
@@ -85,6 +107,11 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
       ),
     );
   }
+
+
+  //-------------------------------------------------------------//
+  //-------- Widget de la tabla de la lista de usuarios ---------//
+  //-------------------------------------------------------------//
 
   Widget _buildUserDataTable() {
     return ResponsiveBuilder(
@@ -167,6 +194,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
     );
   }
 
+  //------------------------------------------------------------//
+  //-------- Lista de usuarios que se obtiene del API  ---------//
+  //------------------------------------------------------------//
+
   Future<List<DataRow>> _userDataRows(BuildContext context) async {
     final List<Map<String, dynamic>> users = await apiService.getUsers();
 
@@ -221,6 +252,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
     }).toList();
   }
 }
+
+//-------------------------------------------------------------//
+//-------- ShowDialog de la opcion de Editar Usuario  ---------//
+//-------------------------------------------------------------//
 
 void _showEditUserDialog(
     BuildContext context, String name, String currentRole) {
@@ -306,6 +341,10 @@ void _showEditUserDialog(
   );
 }
 
+//---------------------------------------------------------------//
+//-------- ShowDialog de la opcion de Eliminar Usuario  ---------//
+//---------------------------------------------------------------//
+
 void _showDeleteUserDialog(BuildContext context, String name) {
   showDialog(
     context: context,
@@ -342,6 +381,10 @@ void _showDeleteUserDialog(BuildContext context, String name) {
   );
 }
 
+//---------------------------------------------------------------//
+//--------   ---------//
+//---------------------------------------------------------------//
+
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
 
@@ -349,6 +392,10 @@ class UserManagementScreen extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _UserManagementScreenState createState() => _UserManagementScreenState();
 }
+
+//------------------------------------------------------//
+//-------- Clase del boton de agregar usuario  ---------//
+//------------------------------------------------------//
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
   final TextEditingController _nameController = TextEditingController();
@@ -396,6 +443,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       ),
     );
   }
+
+  //-----------------------------------------------------------//
+  //-------- ShowDialog del boton de Agregar Usuario  ---------//
+  //-----------------------------------------------------------//
 
   void _showAddUserDialog(BuildContext context) {
     showDialog(

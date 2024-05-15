@@ -38,34 +38,34 @@ class APIService {
     }
   }
 
-// Método para obtener el token guardado
+  // Método para obtener el token guardado
   Future<String?> getToken() async {
     return await storage.read(key: 'token');
   }
 
-// Método para obtener todos los usuarios
-Future<List<Map<String, dynamic>>> getUsers() async {
-  String? token = await getToken(); // Obtener el token guardado
-  
-  if(token == null) {
-    throw Exception('Token not found');
-  }
+  // Método para obtener todos los usuarios
+  Future<List<Map<String, dynamic>>> getUsers() async {
+    String? token = await getToken(); // Obtener el token guardado
 
-  final response = await http.get(
-    Uri.parse('$baseUrl/Users'),
-    headers: {
-      'Authorization': 'Bearer $token', // Añadir el token al encabezado de autorización
-    },
-    
-  );
-  print('Toke generado desde el get: $token');
+    if (token == null) {
+      throw Exception('Token not found');
+    }
 
-  if (response.statusCode == 200) {
-    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
-  } else {
-    throw Exception('Failed to load users');
+    final response = await http.get(
+      Uri.parse('$baseUrl/Users'),
+      headers: {
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+    print('Toke generado desde el get: $token');
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load users');
+    }
   }
-}
 
   // Método para crear un usuario
   Future<void> createUser(Map<String, dynamic> userData) async {
