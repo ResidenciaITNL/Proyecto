@@ -12,6 +12,16 @@ builder.Services.AddDbContext<BDContext>(options =>
     .UseLazyLoadingProxies()
     .UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin",
+    builder => builder.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader());
+});
+
+
+
 var configuration = builder.Configuration;
 builder.Services.AddAuthentication(options =>
 {
@@ -98,6 +108,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 //app.UseHttpsRedirection();
+
+app.UseCors("AllowOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();
