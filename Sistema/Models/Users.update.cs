@@ -7,6 +7,7 @@ namespace Sistema.Models
         public string? name { get; set; }
         [EmailAddress(ErrorMessage = "El email no es valido")]
         public string? email { get; set; }
+        public string? oldPassword { get; set; }
         public string? password { get; set; }
         public Role? role { get; set; }
         public bool? active { get; set; }
