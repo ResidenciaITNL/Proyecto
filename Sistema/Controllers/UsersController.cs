@@ -71,9 +71,17 @@ namespace Sistema.Controllers
             }
             user.name = value.name ?? user.name;
             user.email = value.email ?? user.email;
-            if (value.role != null && value.role != Role.SuperAdmin)
+            // Validar el rol que no se superAdmin si no es nulo
+            if (value.role != null)
             {
-                return BadRequest(new { message = "El rol no es valido" });
+                if (value.role != Role.SuperAdmin)
+                {
+                    user.role = value.role ?? user.role;
+                }
+                else
+                {
+                    return BadRequest(new { message = "No puedes asignar el rol de SuperAdmin" });
+                }
             }
             user.role = value.role ?? user.role;
             if (value.password != null)
