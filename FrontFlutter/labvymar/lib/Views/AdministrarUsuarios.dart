@@ -204,7 +204,8 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['role'], // Acceder a 'role' en minúsculas
+          user['role']
+              .toString(), // Acceder a 'role' en minúsculas y convertirlo a String
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Row(
@@ -216,8 +217,15 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                 size: fontSize,
               ),
               onPressed: () {
-                // Lógica para editar el usuario
-                _showEditUserDialog(context, user['name'], user['role']);
+                // Obtener los datos relevantes de la fila seleccionada
+                int userId = user['userId'];
+                String name = user['name'];
+                String email = user['email'];
+
+                // int role = user['role'];
+
+                // Llamar al método para mostrar el diálogo de edición
+                _showEditUserDialog(context, userId, name, email);
               },
             ),
             IconButton(
@@ -242,11 +250,18 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 //-------- ShowDialog de la opcion de Editar Usuario  ---------//
 //-------------------------------------------------------------//
 
-void _showEditUserDialog(
-    BuildContext context, String name, String currentRole) {
-  List<String> roles = ['Doctor', 'Medico Especialista', 'Recepcionista'];
-  String selectedRole = currentRole;
+void _showEditUserDialog(BuildContext context, int userId, String name, String email) {
+  final Map<String, int> roleMap = {
+    'Selecciona un rol': -1,
+    'Doctor': 1,
+    'Médico Especialista': 2,
+    'Recepcionista': 3,
+  };
+
+  int? selectedRole;
+
   TextEditingController nameController = TextEditingController(text: name);
+  TextEditingController emailController = TextEditingController(text: email);
 
   showDialog(
     context: context,
@@ -254,14 +269,15 @@ void _showEditUserDialog(
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            backgroundColor: Colors.white, // Establecer el fondo blanco
-            title: Text('Editar usuario',
-                style: TextStyle(color: Colors.black)), // Color del título
+            backgroundColor: Colors.white,
+            title: Text(
+              'Editar usuario',
+              style: TextStyle(color: Colors.black),
+            ),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment:
-                    CrossAxisAlignment.start, // Alinear a la izquierda
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
                     controller: nameController,
@@ -271,22 +287,24 @@ void _showEditUserDialog(
                     },
                   ),
                   SizedBox(height: 20),
-                  Text('Rol:',
-                      style: TextStyle(
-                          color: Colors.black)), // Color del texto del rol
-                  DropdownButton<String>(
+                  Text(
+                    'Rol:',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  DropdownButtonFormField<int>(
                     value: selectedRole,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedRole = newValue!;
-                      });
-                    },
-                    items: roles.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
+                    decoration: const InputDecoration(labelText: 'Rol'),
+                    items: roleMap.entries.map((entry) {
+                      return DropdownMenuItem<int>(
+                        value: entry.value,
+                        child: Text(entry.key),
                       );
                     }).toList(),
+                    onChanged: (int? value) {
+                      setState(() {
+                        selectedRole = value;
+                      });
+                    },
                   ),
                 ],
               ),
@@ -296,22 +314,76 @@ void _showEditUserDialog(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Cancelar',
-                    style: TextStyle(
-                        color: Colors
-                            .black)), // Color del texto del botón Cancelar
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
               ElevatedButton(
-                onPressed: () {
-                  // Aquí puedes realizar la lógica para guardar los cambios del rol y del nombre
-                  String newName = nameController.text;
-                  String newRole = selectedRole;
-                  print('El nuevo nombre es: $newName');
-                  print('El nuevo rol es: $newRole');
-                  Navigator.of(context).pop();
+                onPressed: () async {
+                  // Validar que se haya seleccionado un rol válido
+                  if (selectedRole != null && selectedRole != -1) {
+                    String newName = nameController.text;
+                    String sameEmail = emailController.text;
+                    int newRole = selectedRole!;
+
+                    try {
+                      // Llamar al método updateUser de APIService para actualizar el usuario
+                      await APIService().updateUser(
+                          userId, {'name': newName, 'role': newRole, 'email': sameEmail});
+
+                      // Mostrar mensaje de éxito
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Usuario actualizado exitosamente.'),
+                        ),
+                      );
+
+                      Navigator.of(context).pop(); // Cerrar el diálogo
+                    } catch (e) {
+                      // Manejar cualquier error que pueda ocurrir durante la actualización
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Error'),
+                            content:
+                                Text('Hubo un error al actualizar el usuario.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Aceptar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  } else {
+                    // Mostrar alerta si no se selecciona un rol válido
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Error'),
+                          content: Text('Por favor selecciona un rol válido.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Aceptar'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF094293), // Color de fondo rojo
+                  backgroundColor: Color(0xFF094293),
                 ),
                 child: Text(
                   'Guardar',

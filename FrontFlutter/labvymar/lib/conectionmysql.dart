@@ -107,11 +107,22 @@ class APIService {
   //-------- Método para actualizar un usuario  ---------//
   //-----------------------------------------------------//
   Future<void> updateUser(int userId, Map<String, dynamic> newData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
     final response = await http.put(
-      Uri.parse('$baseUrl/SLC_bd/Users/$userId'),
+      Uri.parse('$baseUrl/Users/$userId'),
       body: jsonEncode(newData),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
     );
+
     if (response.statusCode != 204) {
       throw Exception('Failed to update user');
     }
