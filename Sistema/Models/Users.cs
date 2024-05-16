@@ -7,7 +7,10 @@ namespace Sistema.Models
     {
         SuperAdmin,
         Admin,
-        User
+        User,
+        Doctor,
+        Recepcionista,
+        Especialista
     }
     public class Users
     {
@@ -18,10 +21,11 @@ namespace Sistema.Models
         public string password { get; set; }
         public string? codeRecovery { get; set; }
         public string? tokenRefresh { get; set; }
+        public bool? firstLogin { get; set; } = true;
         public Role role { get; set; }
-        public int CustomersId { get; set; }
+        public int? CustomersId { get; set; }
         public bool active { get; set; } = true;
-        public virtual Customers Customers { get; set; }
+        public virtual Customers? Customers { get; set; }
 
         public void HashPassword()
         {
