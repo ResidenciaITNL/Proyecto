@@ -41,9 +41,8 @@ namespace Sistema.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim("CustomerId", user.CustomersId.ToString())
             };
-
             string token = _jwtService.GenerateToken(claims, 2);
-            return Ok(new { token, refreshToken = "No disponible aun" });
+            return Ok(new { token, refreshToken = "No disponible aun", user.firstLogin });
         }
 
         [HttpPost("refresh")]

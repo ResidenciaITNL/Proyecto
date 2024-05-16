@@ -23,7 +23,7 @@ namespace Sistema.Controllers
         public async Task<IActionResult> GetUsers()
         {
             int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
-            var users = await _context.Users.Where(x => x.CustomersId == CustomerId && x.active).Select(x => new
+            var users = await _context.Users.Where(x => x.CustomersId == CustomerId && x.active && x.role != Role.SuperAdmin).Select(x => new
             {
                 UserId = x.UserId,
                 name = x.name,
@@ -61,7 +61,7 @@ namespace Sistema.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Users value)
+        public async Task<IActionResult> Put(int id, [FromBody] UsersUpdate value)
         {
             int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
             Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && x.CustomersId == CustomerId && x.active);
@@ -69,16 +69,26 @@ namespace Sistema.Controllers
             {
                 return NotFound(new { message = "Usuario no encontrado" });
             }
-            user.name = value.name;
-            user.email = value.email;
-            user.role = value.role;
-            if (!string.IsNullOrEmpty(value.password))
+            user.name = value.name ?? user.name;
+            user.email = value.email ?? user.email;
+            if (value.role != null && value.role != Role.SuperAdmin)
             {
+                return BadRequest(new { message = "El rol no es valido" });
+            }
+            user.role = value.role ?? user.role;
+            if (value.password != null)
+            {
+                if (value.password.Length < 8)
+                {
+                    return BadRequest(new { message = "La contraseña debe tener al menos 8 caracteres" });
+                }
                 user.password = value.password;
+                user.firstLogin = true;
                 user.HashPassword();
             }
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "Se ha actualizado el usuario" });
+            _context.Entry(user).State = EntityState.Modified;
+            _context.SaveChanges();
+            return Ok(new { message = "Usuario actualizado" });
         }
 
         // DELETE api/<UsersController>/5
