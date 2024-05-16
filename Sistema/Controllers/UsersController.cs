@@ -52,6 +52,7 @@ namespace Sistema.Controllers
         {
             int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
             value.CustomersId = CustomerId;
+            value.Customers = await _context.Customers.FirstOrDefaultAsync(x => x.CustomersId == CustomerId);
             value.HashPassword();
             await _context.Users.AddAsync(value);
             await _context.SaveChangesAsync();
