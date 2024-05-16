@@ -43,6 +43,7 @@ namespace Sistema.Controllers
                     return BadRequest(new { message = "Contraseña incorrecta" });
                 }
                 user.password = value.password;
+                user.firstLogin = false;
                 user.HashPassword();
             }
             _context.Entry(user).State = EntityState.Modified;
