@@ -253,9 +253,9 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 void _showEditUserDialog(BuildContext context, int userId, String name, String email) {
   final Map<String, int> roleMap = {
     'Selecciona un rol': -1,
-    'Doctor': 1,
-    'Médico Especialista': 2,
-    'Recepcionista': 3,
+    'Doctor': 3,
+    'Médico Especialista': 5,
+    'Recepcionista': 4,
   };
 
   int? selectedRole;
@@ -514,10 +514,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       builder: (BuildContext context) {
         // Mapa para asociar los roles de texto con valores numéricos
         final Map<String, int> roleMap = {
-          'Selecciona un rol': 0,
-          'Doctor': 1,
-          'Médico Especialista': 2,
-          'Recepcionista': 3,
+          'Selecciona un rol': -1,
+          'Doctor': 3,
+          'Médico Especialista': 5,
+          'Recepcionista': 4,
         };
 
         // Variable para almacenar el rol seleccionado
@@ -538,8 +538,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           }
           if (_passwordController.text.isEmpty) {
             errors.add('La contraseña es requerida.\n');
-          } else if (_passwordController.text.length < 6) {
-            errors.add('La contraseña debe tener al menos 6 caracteres.\n');
+          } else if (_passwordController.text.length < 8) {
+            errors.add('La contraseña debe tener al menos 8 caracteres.\n');
           }
           if (selectedRole == null || selectedRole == 0) {
             errors.add('Debe seleccionar un rol.');
@@ -620,7 +620,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         'name': name,
                         'email': email,
                         'role': role,
-                        'password': password,
+                        'oldPassword': password,
                       };
 
                       try {

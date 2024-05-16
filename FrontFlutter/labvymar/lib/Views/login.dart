@@ -178,8 +178,8 @@ class __FormContentState extends State<_FormContent> {
                 return 'Favor de ingresar la contraseña';
               }
 
-              if (value.length < 6) {
-                return 'Contraseña debe tener al menos 6 caracteres';
+              if (value.length < 8) {
+                return 'Contraseña debe tener al menos 8 caracteres';
               }
 
               setState(() {
@@ -289,8 +289,16 @@ class __FormContentState extends State<_FormContent> {
                 // Verificar si el inicio de sesión fue exitoso
                 if (loggedIn.containsKey('success') &&
                     loggedIn['success'] == true) {
-                  // Inicio de sesión exitoso, redirigir a la página de inicio de administrador
-                  Navigator.pushReplacementNamed(context, 'home_admin');
+
+                  if (loggedIn['firstLogin'] == true) {
+                    // Inicio de sesión exitoso y por primera vez, redirigir a la página de cambiarPasword
+                    Navigator.pushReplacementNamed(context, 'cambiarPassword');
+                  } else if(loggedIn['firstLogin'] == false){
+                   // Inicio de sesión exitoso, redirigir a la página de inicio de administrador
+                    Navigator.pushReplacementNamed(context, 'home_admin');
+                  }
+
+
                 } else {
                   // Mostrar un diálogo de error
                   showDialog(
@@ -322,7 +330,6 @@ class __FormContentState extends State<_FormContent> {
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
-                  
                   Navigator.pushReplacementNamed(context, 'recoverpass');
                 },
                 child: const Material(

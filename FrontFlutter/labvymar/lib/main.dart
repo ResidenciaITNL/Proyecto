@@ -4,6 +4,7 @@ import 'package:labvymar/Views/Cuenta.dart';
 import 'package:labvymar/Views/EstudioMedico.dart';
 import 'package:labvymar/Views/InventarioMedicamento.dart';
 import 'package:labvymar/Views/Recepcion.dart';
+import 'package:labvymar/Views/cambiarPassword.dart';
 import 'package:labvymar/Views/login.dart';
 import 'package:labvymar/Views/recoverpass.dart';
 import 'package:labvymar/Views/home_admin.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       routes: {
         'login' : (_) => Login(), // Agregando la ruta para la vista login
         'recoverpass' : (_) => RecoverPass(), // Agregando la ruta para la vista recoverpass
+        'cambiarPassword' : (_) => CambiarPassword(), // Agregando la ruta para la vista recoverpass
         'home_admin' : (_) => HomeAdmin(), // Agregando la ruta para la vista home_admin
         'AdministrarUsuarios' : (_) => AdminUsuarios(), // Agregando la ruta para la vista AdministrarUsuarios
         'ConsultaMedica' : (_) => ConsMedica(), // Agregando la ruta para la vista ConsultaMedica

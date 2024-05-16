@@ -11,11 +11,9 @@ class APIService {
   static const String baseUrl = 'http://localhost:5225/api';
 
   // Variable para obtener el token JWT
-  final storage = const FlutterSecureStorage();
+    final storage = const FlutterSecureStorage();
 
-  //------------------------------------------------------//
-  //-------- Metodo de Login y obtener el token  ---------//
-  //------------------------------------------------------//
+
   Future<Map<String, dynamic>> login(String user, String password) async {
     if (user.isEmpty || password.isEmpty) {
       return {'error': 'Usuario y contraseña son requeridos'};
@@ -35,12 +33,14 @@ class APIService {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       String token = responseData['token'];
+      bool firstLogin = responseData['firstLogin'];
 
-      // Guardar el token de manera segura
       await storage.write(key: 'token', value: token);
 
-      print('Token JWT: $token'); // Imprime el token en la consola
-      return {'success': true, 'token': token};
+      print('Token JWT: $token');
+      print('First Login: $firstLogin'); // Para verificar en la consola
+
+      return {'success': true, 'token': token, 'firstLogin': firstLogin};
     } else {
       return {'error': 'Credenciales inválidas'};
     }
@@ -51,6 +51,54 @@ class APIService {
   //---------------------------------------------------------//
   Future<String?> getToken() async {
     return await storage.read(key: 'token');
+  }
+
+
+  //---------------------------------------------------------//
+  //--------------- Método para cerrar sesion  --------------//
+  //---------------------------------------------------------//
+  Future<String?> cerrarSesion() async {
+    await storage.delete(key: 'token');
+
+    String mensaje = 'Se elimino el token de manera exitosa.';
+
+    return mensaje;
+  }
+
+  //--------------------------------------------------------------//
+  //--------------- Método para cambiar contraseña  --------------//
+  //--------------------------------------------------------------//
+
+  Future<Map<String, dynamic>> actualizarPassword({
+    required String Oldpassword,
+    required String password
+  }) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    Map<String, String> payload = {
+      'oldPassword': Oldpassword,
+      'password': password,
+    };
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/MyAccount/change-password'), // Reemplaza 'updatePassword' con la ruta correcta en tu API
+      body: jsonEncode(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to update password');
+    }
   }
 
   //---------------------------------------------------------//
