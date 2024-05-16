@@ -2,12 +2,20 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class APIService {
-  static const String baseUrl =
-      'http://localhost:5225/api'; // Cambia si es necesario
+//---------------------------------------------------//
+//-------- Clase de la conexion con el API  ---------//
+//---------------------------------------------------//
 
+class APIService {
+  // Variable de la url base del API
+  static const String baseUrl = 'http://localhost:5225/api';
+
+  // Variable para obtener el token JWT
   final storage = const FlutterSecureStorage();
 
+  //------------------------------------------------------//
+  //-------- Metodo de Login y obtener el token  ---------//
+  //------------------------------------------------------//
   Future<Map<String, dynamic>> login(String user, String password) async {
     if (user.isEmpty || password.isEmpty) {
       return {'error': 'Usuario y contraseña son requeridos'};
@@ -38,12 +46,16 @@ class APIService {
     }
   }
 
-  // Método para obtener el token guardado
+  //---------------------------------------------------------//
+  //-------- Método para obtener el token guardado  ---------//
+  //---------------------------------------------------------//
   Future<String?> getToken() async {
     return await storage.read(key: 'token');
   }
 
-  // Método para obtener todos los usuarios
+  //---------------------------------------------------------//
+  //-------- Método para obtener lista de usuarios  ---------//
+  //---------------------------------------------------------//
   Future<List<Map<String, dynamic>>> getUsers() async {
     String? token = await getToken(); // Obtener el token guardado
 
@@ -67,19 +79,33 @@ class APIService {
     }
   }
 
-  // Método para crear un usuario
+  //------------------------------------------------//
+  //-------- Método para crear un usuario  ---------//
+  //------------------------------------------------//
   Future<void> createUser(Map<String, dynamic> userData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
     final response = await http.post(
-      Uri.parse('$baseUrl/SLC_bd/Users'),
+      Uri.parse('$baseUrl/Users'),
       body: jsonEncode(userData),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
     );
     if (response.statusCode != 201) {
       throw Exception('Failed to create user');
     }
   }
 
-  // Método para actualizar un usuario
+  //-----------------------------------------------------//
+  //-------- Método para actualizar un usuario  ---------//
+  //-----------------------------------------------------//
   Future<void> updateUser(int userId, Map<String, dynamic> newData) async {
     final response = await http.put(
       Uri.parse('$baseUrl/SLC_bd/Users/$userId'),
@@ -91,7 +117,9 @@ class APIService {
     }
   }
 
-  // Método para eliminar un usuario
+  //---------------------------------------------------//
+  //-------- Método para eliminar un usuario  ---------//
+  //---------------------------------------------------//
   Future<void> deleteUser(int userId) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/SLC_bd/Users/$userId'),

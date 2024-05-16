@@ -25,7 +25,6 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
   //-------------------------------------------------------------//
   //-------- Widget que hace referencia al navbar y body --------//
   //-------------------------------------------------------------//
@@ -108,7 +107,6 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
     );
   }
 
-
   //-------------------------------------------------------------//
   //-------- Widget de la tabla de la lista de usuarios ---------//
   //-------------------------------------------------------------//
@@ -138,15 +136,6 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
               return DataTable(
                 columnSpacing: columnSpacing,
                 columns: [
-                  DataColumn(
-                    label: Text(
-                      'ID',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
                   DataColumn(
                     label: Text(
                       'Nombre',
@@ -206,10 +195,6 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 
     return users.map((user) {
       return DataRow(cells: [
-        DataCell(Text(
-          user['userId'].toString(), // Convertir el userId a String
-          style: TextStyle(fontSize: fontSize),
-        )),
         DataCell(Text(
           user['name'], // Acceder a 'name' en minúsculas
           style: TextStyle(fontSize: fontSize),
@@ -381,9 +366,9 @@ void _showDeleteUserDialog(BuildContext context, String name) {
   );
 }
 
-//---------------------------------------------------------------//
-//--------   ---------//
-//---------------------------------------------------------------//
+//-----------------------------------//
+//--------  Header del body ---------//
+//-----------------------------------//
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -398,9 +383,12 @@ class UserManagementScreen extends StatefulWidget {
 //------------------------------------------------------//
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
+  final APIService apiService = APIService();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  // final TextEditingController _selectedRole = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  int? selectedRole;
 
   @override
   Widget build(BuildContext context) {
@@ -452,31 +440,39 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String? selectedRole; // Variable para almacenar el rol seleccionado
+        // Mapa para asociar los roles de texto con valores numéricos
+        final Map<String, int> roleMap = {
+          'Selecciona un rol': 0,
+          'Doctor': 1,
+          'Médico Especialista': 2,
+          'Recepcionista': 3,
+        };
+
+        // Variable para almacenar el rol seleccionado
+        int? selectedRole;
 
         // Función para verificar si los campos están completos y el rol ha sido seleccionado
-        bool isFormValid() {
+        List<String> validateForm() {
+          List<String> errors = [];
           bool isEmailValid = _emailController.text.isNotEmpty &&
               RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                   .hasMatch(_emailController.text);
-          return _nameController.text.isNotEmpty &&
-              _emailController.text.isNotEmpty &&
-              isEmailValid &&
-              selectedRole != null;
-        }
-
-        // Función para validar el formato del correo electrónico
-        String? validateEmail(String? value) {
-          if (value == null || value.isEmpty) {
-            return 'El correo electrónico es requerido.';
+          if (_nameController.text.isEmpty) {
+            errors.add('El nombre es requerido.\n');
           }
-          // Expresión regular para validar el formato del correo electrónico
-          bool isValidEmail =
-              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
-          if (!isValidEmail) {
-            return 'El correo electrónico debe cumplir con el formato válido.';
+          if (!isEmailValid) {
+            errors.add(
+                'El correo electrónico debe cumplir con el formato válido.\n');
           }
-          return null; // Retorna null si la validación es exitosa
+          if (_passwordController.text.isEmpty) {
+            errors.add('La contraseña es requerida.\n');
+          } else if (_passwordController.text.length < 6) {
+            errors.add('La contraseña debe tener al menos 6 caracteres.\n');
+          }
+          if (selectedRole == null || selectedRole == 0) {
+            errors.add('Debe seleccionar un rol.');
+          }
+          return errors;
         }
 
         return StatefulBuilder(
@@ -493,42 +489,30 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       controller: _nameController,
                       decoration: const InputDecoration(labelText: 'Nombre'),
                     ),
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(labelText: 'Correo'),
-                      validator:
-                          validateEmail, // Validación del correo electrónico
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5.0),
-                      child: Text(
-                        // Mostrar mensaje de error si la validación falla
-                        _emailController.text.isNotEmpty &&
-                                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                    .hasMatch(_emailController.text)
-                            ? 'El correo electrónico debe cumplir con el formato válido.'
-                            : '',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ),
-                    DropdownButtonFormField<String>(
+                    DropdownButtonFormField<int>(
                       value: selectedRole,
                       decoration: const InputDecoration(labelText: 'Rol'),
-                      items: <String>[
-                        'Doctor',
-                        'Medico Especialista',
-                        'Recepcionista'
-                      ].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
+                      items: roleMap.entries.map((entry) {
+                        return DropdownMenuItem<int>(
+                          value: entry.value,
+                          child: Text(entry.key),
                         );
                       }).toList(),
-                      onChanged: (String? value) {
+                      onChanged: (int? value) {
                         setState(() {
                           selectedRole = value;
                         });
                       },
+                    ),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(labelText: 'Correo'),
+                    ),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration:
+                          const InputDecoration(labelText: 'Contraseña'),
                     ),
                   ],
                 ),
@@ -539,31 +523,94 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     // Limpiar los campos al hacer clic en "Cancelar"
                     _nameController.clear();
                     _emailController.clear();
+                    _passwordController.clear();
                     selectedRole = null; // Limpiar la selección del rol
                     Navigator.of(context).pop();
                   },
                   child: const Text('Cancelar'),
                 ),
                 ElevatedButton(
-                  onPressed:
-                      isFormValid() // Habilita el botón solo si el formulario es válido
-                          ? () {
-                              // Aquí puedes realizar la lógica para agregar el usuario con los datos ingresados
-                              // por ejemplo, puedes acceder a los valores con _nameController.text, _emailController.text, selectedRole
-                              // y luego cerrar el dialogo con Navigator.of(context).pop();
-                              // Limpiar los campos después de agregar el usuario
-                              _nameController.clear();
-                              _emailController.clear();
-                              selectedRole =
-                                  null; // Limpiar la selección del rol
-                              Navigator.of(context).pop();
-                            }
-                          : null,
+                  onPressed: () async {
+                    // Validar el formulario
+                    List<String> errors = validateForm();
+                    if (errors.isEmpty) {
+                      // Si no hay errores, agregar el usuario
+                      // Lógica para agregar el usuario...
+
+                      // Obtener los datos del usuario del formulario
+                      String name = _nameController.text;
+                      String email = _emailController.text;
+                      String password = _passwordController.text;
+                      int role = selectedRole!;
+
+                      // Crear un nuevo usuario con los datos recopilados
+                      Map<String, dynamic> userData = {
+                        'name': name,
+                        'email': email,
+                        'role': role,
+                        'password': password,
+                      };
+
+                      try {
+                        // Llamar al método createUser de APIService
+                        await apiService.createUser(userData);
+
+                        // Si la creación del usuario tiene éxito, limpiar los campos y cerrar el diálogo
+                        _nameController.clear();
+                        _emailController.clear();
+                        _passwordController.clear();
+                        selectedRole = null;
+                        Navigator.of(context).pop();
+
+                        // Mostrar un mensaje de éxito (puedes agregar esto si lo deseas)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Usuario creado exitosamente'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      } catch (e) {
+                        // Si hay un error al crear el usuario, mostrar un mensaje de error
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error al crear usuario: $e'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    } else {
+                      // Si hay errores, mostrar el diálogo de alerta con los mensajes de error
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Error'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: errors.map((error) {
+                                return Text(
+                                  error,
+                                  style: TextStyle(color: Colors.red),
+                                );
+                              }).toList(),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Aceptar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
-                      isFormValid()
-                          ? const Color(0xFF094293)
-                          : const Color(0xFFBBDEFB),
+                      const Color(0xFF094293),
                     ),
                   ),
                   child: const Text(
