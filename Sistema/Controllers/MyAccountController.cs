@@ -15,11 +15,9 @@ namespace Sistema.Controllers
     public class MyAccountController : ControllerBase
     {
         private readonly BDContext _context;
-        public int CustomerId { get; private set; }
         public MyAccountController(BDContext context)
         {
             _context = context;
-            CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
         }
 
         // PUT api/<MyAccountController>/5
