@@ -11,8 +11,7 @@ class APIService {
   static const String baseUrl = 'http://localhost:5225/api';
 
   // Variable para obtener el token JWT
-    final storage = const FlutterSecureStorage();
-
+  final storage = const FlutterSecureStorage();
 
   Future<Map<String, dynamic>> login(String user, String password) async {
     if (user.isEmpty || password.isEmpty) {
@@ -53,16 +52,16 @@ class APIService {
     return await storage.read(key: 'token');
   }
 
-
   //---------------------------------------------------------//
   //--------------- Método para cerrar sesion  --------------//
   //---------------------------------------------------------//
-  Future<String?> cerrarSesion() async {
-    await storage.delete(key: 'token');
-
-    String mensaje = 'Se elimino el token de manera exitosa.';
-
-    return mensaje;
+  Future<void> cerrarSesion() async {
+    try {
+      await storage.delete(key: 'token');
+      print('El token se eliminó correctamente.');
+    } catch (e) {
+      print('Error al eliminar el token: $e');
+    }
   }
 
   //--------------------------------------------------------------//
@@ -71,7 +70,7 @@ class APIService {
 
   Future<Map<String, dynamic>> actualizarPassword({
     required String Oldpassword,
-    required String password
+    required String password,
   }) async {
     String? token = await getToken(); // Obtener el token guardado
 
@@ -85,19 +84,25 @@ class APIService {
     };
 
     final response = await http.put(
-      Uri.parse('$baseUrl/MyAccount/change-password'), // Reemplaza 'updatePassword' con la ruta correcta en tu API
+      Uri.parse('$baseUrl/MyAccount/change-password'),
       body: jsonEncode(payload),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer $token', // Añadir el token al encabezado de autorización
+        'Authorization': 'Bearer $token',
       },
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      responseBody['success'] = true;
+      return responseBody;
     } else {
-      throw Exception('Failed to update password');
+      Map<String, dynamic> errorResponse = {
+        'success': false,
+        'message':
+            jsonDecode(response.body)['message'] ?? 'Failed to update password',
+      };
+      return errorResponse;
     }
   }
 

@@ -69,9 +69,9 @@ class _Logo extends StatelessWidget {
   }
 }
 
-//-----------------------------------------------------------//
-//----------- Clase Formulario de Inciar Sesión -------------//
-//-----------------------------------------------------------//
+//----------------------------------------------------------------//
+//----------- Clase Formulario de cambiar contraseña -------------//
+//----------------------------------------------------------------//
 
 class _FormContent extends StatefulWidget {
   final GlobalKey<FormState>
@@ -177,6 +177,7 @@ class __FormContentState extends State<_FormContent> {
             ),
           ),
           _gap(),
+
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -196,9 +197,9 @@ class __FormContentState extends State<_FormContent> {
                       password: password,
                     );
 
-                    if (response.containsKey('success') &&
-                        response['success'] == true) {
-                      // Actualización exitosa, puedes redirigir a donde necesites
+                    if (response['success'] == true) {
+                      // Inicio de sesión exitoso, redirigir a la página de inicio de administrador
+                      Navigator.pushReplacementNamed(context, 'home_admin');
                     } else {
                       // Mostrar un diálogo de error con el mensaje del servidor
                       showDialog(
@@ -221,9 +222,8 @@ class __FormContentState extends State<_FormContent> {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text('Error'),
-                        content:
-                            Text('Hubo un error al actualizar la contraseña.'),
+                        title: Text('Inténtalo nuevamente'),
+                        content: Text('La contraseña actual es incorrecta.'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -243,6 +243,49 @@ class __FormContentState extends State<_FormContent> {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          _gap(),
+
+          //-------------------------------------------------------------//
+          //----------- Hyperbinculo a recuperar contraseña -------------//
+          //-------------------------------------------------------------//
+          SizedBox(
+            width: double.infinity,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () async {
+                  // Llama al método cerrarSesion para eliminar el token
+                  await apiService.cerrarSesion();
+
+                  // Redirige directamente a la página de inicio de sesión
+                  Navigator.pushReplacementNamed(context, 'login');
+                },
+                child: const Material(
+                  color: Color.fromARGB(0, 0, 0, 0),
+                  child: Center(
+                    // Centra el texto
+                    child: Text(
+                      'Regresar a Iniciar Sesión',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(
+                            0xFF094293), // Cambia el color para que parezca un enlace
+                        decoration: TextDecoration
+                            .underline, // Agrega subrayado al texto
+                        decorationThickness:
+                            2.0, // Ajusta el grosor de la línea de subrayado
+                        decorationColor: const Color(
+                            0xFF094293), // Color de la línea de subrayado
+                        decorationStyle: TextDecorationStyle
+                            .solid, // Estilo de la línea de subrayado
+                      ),
+                    ),
                   ),
                 ),
               ),

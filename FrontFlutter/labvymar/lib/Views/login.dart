@@ -220,26 +220,6 @@ class __FormContentState extends State<_FormContent> {
           ),
           _gap(),
 
-          //---------------------------------------------------------//
-          //----------- Checkbox de recordar contraseña -------------//
-          //---------------------------------------------------------//
-          // CheckboxListTile(
-          //   checkColor: Colors.white,
-          //   activeColor: Color(0xFF094293),
-          //   value: _rememberMe,
-          //   onChanged: (value) {
-          //     if (value == null) return;
-          //     setState(() {
-          //       _rememberMe = value;
-          //     });
-          //   },
-          //   title: const Text('Recordar contraseña'),
-          //   controlAffinity: ListTileControlAffinity.leading,
-          //   dense: true,
-          //   contentPadding: const EdgeInsets.all(0),
-          // ),
-          // _gap(),
-
           //-----------------------------------------//
           //----------- Boton de submit -------------//
           //-----------------------------------------//
@@ -269,7 +249,7 @@ class __FormContentState extends State<_FormContent> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text('Error'),
+                      title: Text('Intentalo nuevamente'),
                       content: Text('Por favor ingrese usuario y contraseña.'),
                       actions: [
                         TextButton(
@@ -304,9 +284,8 @@ class __FormContentState extends State<_FormContent> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text('Error'),
-                      content: Text(
-                          'Inicio de sesión fallido. Por favor revise sus credenciales.'),
+                      title: Text('Intentalo nuevamente'),
+                      content: Text('Inicio de sesión fallido. Por favor revise sus credenciales.'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
