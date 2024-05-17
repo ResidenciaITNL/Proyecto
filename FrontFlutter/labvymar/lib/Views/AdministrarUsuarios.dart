@@ -236,7 +236,12 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
               ),
               onPressed: () {
                 // Lógica para eliminar el usuario
-                _showDeleteUserDialog(context, user['name']);
+
+                // Obtener los datos relevantes de la fila seleccionada
+                int userId = user['userId'];
+                String name = user['name'];
+
+                _showDeleteUserDialog(context, userId, name);
               },
             ),
           ],
@@ -250,7 +255,8 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 //-------- ShowDialog de la opcion de Editar Usuario  ---------//
 //-------------------------------------------------------------//
 
-void _showEditUserDialog(BuildContext context, int userId, String name, String email) {
+void _showEditUserDialog(
+    BuildContext context, int userId, String name, String email) {
   final Map<String, int> roleMap = {
     'Selecciona un rol': -1,
     'Doctor': 3,
@@ -329,17 +335,22 @@ void _showEditUserDialog(BuildContext context, int userId, String name, String e
 
                     try {
                       // Llamar al método updateUser de APIService para actualizar el usuario
-                      await APIService().updateUser(
-                          userId, {'name': newName, 'role': newRole, 'email': sameEmail});
+                      await APIService().updateUser(userId, {
+                        'name': newName,
+                        'role': newRole,
+                        'email': sameEmail
+                      });
 
                       // Mostrar mensaje de éxito
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Usuario actualizado exitosamente.'),
+                        const SnackBar(
+                          content: Text('Usuario actualizado con exito.'),
+                          duration: Duration(seconds: 3),
                         ),
                       );
-
                       Navigator.of(context).pop(); // Cerrar el diálogo
+                      Navigator.pushReplacementNamed(
+                          context, 'AdministrarUsuarios');
                     } catch (e) {
                       // Manejar cualquier error que pueda ocurrir durante la actualización
                       showDialog(
@@ -367,7 +378,7 @@ void _showEditUserDialog(BuildContext context, int userId, String name, String e
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Error'),
+                          title: Text('Intentalo nuevamente'),
                           content: Text('Por favor selecciona un rol válido.'),
                           actions: [
                             TextButton(
@@ -402,7 +413,9 @@ void _showEditUserDialog(BuildContext context, int userId, String name, String e
 //-------- ShowDialog de la opcion de Eliminar Usuario  ---------//
 //---------------------------------------------------------------//
 
-void _showDeleteUserDialog(BuildContext context, String name) {
+void _showDeleteUserDialog(BuildContext context, int userId, String name) {
+  final APIService apiService = APIService();
+
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -419,8 +432,43 @@ void _showDeleteUserDialog(BuildContext context, String name) {
                 child: Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Aquí puedes realizar la lógica para eliminar el usuario
+                  try {
+                    // Llamar al método updateUser de APIService para actualizar el usuario
+                    await apiService.deleteUser(userId);
+
+                    // Mostrar mensaje de éxito
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Usuario eliminado con exito.'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+                    Navigator.pushReplacementNamed(
+                        context, 'AdministrarUsuarios');
+                  } catch (e) {
+                    // Manejar cualquier error que pueda ocurrir durante la actualización
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Error'),
+                          content:
+                              Text('Hubo un error al eliminar al usuario.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Aceptar'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red, // Color de fondo rojo
@@ -620,7 +668,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         'name': name,
                         'email': email,
                         'role': role,
-                        'oldPassword': password,
+                        'password': password,
                       };
 
                       try {
@@ -632,15 +680,18 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         _emailController.clear();
                         _passwordController.clear();
                         selectedRole = null;
-                        Navigator.of(context).pop();
 
                         // Mostrar un mensaje de éxito (puedes agregar esto si lo deseas)
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Usuario creado exitosamente'),
-                            duration: Duration(seconds: 2),
+                            duration: Duration(seconds: 3),
                           ),
                         );
+
+                        Navigator.of(context).pop();
+                        Navigator.pushReplacementNamed(
+                            context, 'AdministrarUsuarios');
                       } catch (e) {
                         // Si hay un error al crear el usuario, mostrar un mensaje de error
                         ScaffoldMessenger.of(context).showSnackBar(

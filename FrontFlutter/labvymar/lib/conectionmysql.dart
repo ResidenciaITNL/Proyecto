@@ -151,7 +151,11 @@ class APIService {
             'Bearer $token', // Añadir el token al encabezado de autorización
       },
     );
-    if (response.statusCode != 201) {
+
+    if (response.statusCode == 200) {
+      // Usuario creado exitosamente, no es necesario hacer nada más aquí
+      return;
+    } else {
       throw Exception('Failed to create user');
     }
   }
@@ -176,7 +180,7 @@ class APIService {
       },
     );
 
-    if (response.statusCode != 204) {
+    if (response.statusCode != 200) {
       throw Exception('Failed to update user');
     }
   }
@@ -184,12 +188,24 @@ class APIService {
   //---------------------------------------------------//
   //-------- Método para eliminar un usuario  ---------//
   //---------------------------------------------------//
-  Future<void> deleteUser(int userId) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/SLC_bd/Users/$userId'),
-    );
-    if (response.statusCode != 204) {
-      throw Exception('Failed to delete user');
-    }
+Future<void> deleteUser(int userId) async {
+  String? token = await getToken(); // Obtener el token guardado
+
+  if (token == null) {
+    throw Exception('Token not found');
   }
+
+  final response = await http.delete(
+    Uri.parse('$baseUrl/Users/$userId'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token', // Añadir el token al encabezado de autorización
+    },
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to delete user');
+  }
+}
+
 }
