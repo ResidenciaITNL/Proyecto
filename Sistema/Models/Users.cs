@@ -35,5 +35,11 @@ namespace Sistema.Models
         {
             return BCrypt.Net.BCrypt.EnhancedVerify(password, this.password);
         }
+
+        public bool CheckEmail(string email)
+        {
+            // Supongamos que this.email es el correo electrónico almacenado en tu sistema
+            return string.Equals(email, this.email, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

@@ -22,14 +22,34 @@ namespace Sistema.Controllers
         }
 
         // GET: api/Pacientes
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Paciente>>> GetPaciente()
+        //{
+        //  if (_context.Paciente == null)
+        //  {
+        //      return NotFound();
+        //  }
+        //    return await _context.Paciente.ToListAsync();
+        //}
+
+        // GET: api/Pacientes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Paciente>>> GetPaciente()
+        public async Task<IActionResult> GetPaciente()
         {
-          if (_context.Paciente == null)
-          {
-              return NotFound();
-          }
-            return await _context.Paciente.ToListAsync();
+            var pacientes = await _context.Paciente.Select(x => new
+            {
+                PacienteId = x.PacienteId,
+                Nombre = x.Nombre,
+                Apellido = x.Apellido,
+                Edad = x.Edad,
+                Sexo = x.Sexo,
+                Estatura = x.Estatura,
+                Peso = x.Peso,
+                Alergias = x.Alergias,
+                Estudio_medico = x.Estudio_medico,
+                Consulta = x.Consulta,
+            }).ToListAsync();
+            return Ok(pacientes);
         }
 
         // GET: api/Pacientes/5
