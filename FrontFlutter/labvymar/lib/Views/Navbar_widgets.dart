@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:labvymar/conectionmysql.dart';
 
 enum Menu { itemOne, itemTwo, itemThree }
 
@@ -77,7 +78,8 @@ final List<String> _menuItems = <String>[
 ];
 
 class _ProfileIcon extends StatelessWidget {
-  const _ProfileIcon({Key? key}) : super(key: key);
+  _ProfileIcon({Key? key}) : super(key: key);
+  final APIService apiService = APIService();
 
   @override
   Widget build(BuildContext context) {
@@ -89,12 +91,16 @@ class _ProfileIcon extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         color: Colors.white,
-        onSelected: (Menu item) {
+        onSelected: (Menu item) async {
           switch (item) {
             case Menu.itemOne:
               Navigator.pushReplacementNamed(context, 'Cuenta');
               break;
             case Menu.itemThree:
+              // Llama al método cerrarSesion para eliminar el token
+              await apiService.cerrarSesion();
+
+              // Redirige directamente a la página de inicio de sesión
               Navigator.pushReplacementNamed(context, 'login');
               break;
             case Menu.itemTwo:

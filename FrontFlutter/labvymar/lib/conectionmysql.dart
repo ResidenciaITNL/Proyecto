@@ -106,6 +106,49 @@ class APIService {
     }
   }
 
+
+  //--------------------------------------------------------------//
+  //--------------- Método para cambiar contraseña  --------------//
+  //--------------------------------------------------------------//
+
+  Future<Map<String, dynamic>> actualizarEmail({
+    required String Oldemail,
+    required String email,
+  }) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    Map<String, String> payload = {
+      'oldEmail': Oldemail,
+      'email': email,
+    };
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/MyAccount/change-email'),
+      body: jsonEncode(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      responseBody['success'] = true;
+      return responseBody;
+    } else {
+      Map<String, dynamic> errorResponse = {
+        'success': false,
+        'message':
+            jsonDecode(response.body)['message'] ?? 'Failed to update password',
+      };
+      return errorResponse;
+    }
+  }
+
   //---------------------------------------------------------//
   //-------- Método para obtener lista de usuarios  ---------//
   //---------------------------------------------------------//

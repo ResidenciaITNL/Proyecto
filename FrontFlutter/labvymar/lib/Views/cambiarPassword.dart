@@ -205,7 +205,7 @@ class __FormContentState extends State<_FormContent> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Text('Error'),
+                          title: Text('Inténtalo nuevamente'),
                           content:
                               Text(response['message'] ?? 'Error desconocido'),
                           actions: [

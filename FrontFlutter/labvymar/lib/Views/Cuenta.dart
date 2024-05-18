@@ -3,10 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:labvymar/Views/Navbar_widgets.dart';
 import 'package:labvymar/conectionmysql.dart';
 
+//----------------------------------------------------------//
+//----------------- Clase de CuentaUser --------------------//
+//----------------------------------------------------------//
+
 class CuentaUser extends StatelessWidget {
   CuentaUser({Key? key}) : super(key: key);
 
+  final APIService apiService = APIService();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  //-------------------------------------------------------------//
+  //-------- Widget que hace referencia al navbar y body --------//
+  //-------------------------------------------------------------//
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +56,8 @@ class CuentaUser extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (isLargeScreen) Expanded(child: NavBarWidgets.navBarItems(context))
+                if (isLargeScreen)
+                  Expanded(child: NavBarWidgets.navBarItems(context))
               ],
             ),
           ),
@@ -62,7 +73,7 @@ class CuentaUser extends StatelessWidget {
           color: Colors.white,
           child: Center(
             child: Container(
-              width: 410,
+              width: 420,
               margin: const EdgeInsets.only(top: 25),
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
@@ -83,9 +94,12 @@ class CuentaUser extends StatelessWidget {
                   _nameRow("Jorge Cantú"),
                   const SizedBox(height: 25),
                   _buildInfoRow(
-                      "Correo electrónico", "jorge.c@example.com", context),
-                  const SizedBox(height: 15),
-                  _buildInfoRow("Número de teléfono", "+528121041241", context),
+                      "Correo electrónico", "alberto@mail.com", context),
+
+                  // --------- Campo de telefono oculto ---------
+
+                  // const SizedBox(height: 15),
+                  // _buildInfoRow("Número de teléfono", "+528141", context),
                   const SizedBox(height: 15),
                   _buildInfoRow("Contraseña", "************", context),
                 ],
@@ -96,6 +110,10 @@ class CuentaUser extends StatelessWidget {
       ),
     );
   }
+
+  //---------------------------------------------------//
+  //-------- Widget que hace referencia nombre --------//
+  //---------------------------------------------------//
 
   Widget _nameRow(String label) {
     return Row(
@@ -112,6 +130,10 @@ class CuentaUser extends StatelessWidget {
       ],
     );
   }
+
+  //------------------------------------------------------------------------------------//
+  //-------- Widget que hace referencia a los nombres de los datos de la cuenta --------//
+  //------------------------------------------------------------------------------------//
 
   Widget _buildInfoRow(String label, String value, BuildContext context) {
     return Builder(
@@ -159,121 +181,201 @@ class CuentaUser extends StatelessWidget {
     );
   }
 
-void _showEditEmailDialog(BuildContext context, String currentValue) {
-  TextEditingController _emailController = TextEditingController(text: currentValue);
-  TextEditingController _newEmailController = TextEditingController();
-  TextEditingController _confirmEmailController = TextEditingController();
-  bool _isEmailValid = false;
+  //--------------------------------------------------------------//
+  //-------- ShowDialog de la opcion de Editar el email  ---------//
+  //--------------------------------------------------------------//
 
-  // Función para validar el correo electrónico
-  void _validateEmail(String value) {
-    // Utilizamos una expresión regular para validar el formato del correo electrónico
-    bool isValidFormat = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
-    // Actualizamos el estado de la validez del correo electrónico
-    _isEmailValid = isValidFormat && _newEmailController.text == _confirmEmailController.text;
-  }
+  void _showEditEmailDialog(BuildContext context, String currentValue) {
+    TextEditingController _emailController =
+        TextEditingController(text: currentValue);
+    TextEditingController _newEmailController = TextEditingController();
+    TextEditingController _confirmEmailController = TextEditingController();
+    bool _isEmailValid = false;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: const Text("Editar correo electrónico"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _emailController,
-                  enabled: false,
-                  decoration: const InputDecoration(
-                    hintText: "Correo electrónico actual",
-                  ),
-                ),
-                TextField(
-                  controller: _newEmailController,
-                  onChanged: (value) {
-                    setState(() {
-                      _validateEmail(value);
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: "Ingrese el nuevo correo electrónico",
-                  ),
-                ),
-                TextField(
-                  controller: _confirmEmailController,
-                  onChanged: (value) {
-                    setState(() {
-                      _validateEmail(value);
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: "Confirme el nuevo correo electrónico",
-                  ),
-                ),
-                if (!_isEmailValid)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 25.0),
-                    child: Text(
-                      "Los correos electrónicos deben coincidir y tener un formato válido.",
-                      style: TextStyle(color: Colors.red,),
+    // Función para validar el correo electrónico
+    void _validateEmail(String value) {
+      // Utilizamos una expresión regular para validar el formato del correo electrónico
+      bool isValidFormat =
+          RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
+      // Actualizamos el estado de la validez del correo electrónico
+      _isEmailValid = isValidFormat &&
+          _newEmailController.text == _confirmEmailController.text;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text("Editar correo electrónico"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: _emailController,
+                    enabled: false,
+                    decoration: const InputDecoration(
+                      hintText: "Correo electrónico actual",
                     ),
                   ),
+                  TextField(
+                    controller: _newEmailController,
+                    onChanged: (value) {
+                      setState(() {
+                        _validateEmail(value);
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "Ingrese el nuevo correo electrónico",
+                    ),
+                  ),
+                  TextField(
+                    controller: _confirmEmailController,
+                    onChanged: (value) {
+                      setState(() {
+                        _validateEmail(value);
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "Confirme el nuevo correo electrónico",
+                    ),
+                  ),
+                  if (!_isEmailValid)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 25.0),
+                      child: Text(
+                        "Los correos electrónicos deben coincidir y tener un formato válido.",
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+                  },
+                  child: const Text("Cancelar"),
+                ),
+                ElevatedButton(
+                  onPressed: _isEmailValid
+                      ? () async {
+                          if (_newEmailController.text !=
+                              _confirmEmailController.text) {
+                            // Los correos electrónicos no coinciden
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Error'),
+                                content: Text(
+                                    'Los correos electrónicos no coinciden.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return;
+                          }
+
+                          try {
+                            // Realizar la actualización del correo electrónico
+                            Map<String, dynamic> response =
+                                await apiService.actualizarEmail(
+                              Oldemail: _emailController.text,
+                              email: _newEmailController.text,
+                            );
+
+                            if (response['success'] == true) {
+                              // Actualización exitosa
+                              Navigator.of(context).pop(); // Cerrar el diálogo
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        "Email actualizado exitosamente."),
+                                  ),
+                                );
+
+                            } else {
+                              // Mostrar un diálogo de error con el mensaje del servidor
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Inténtelo nuevamente'),
+                                  content: Text(response['message'] ??
+                                      'Error desconocido'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            // Manejar cualquier error que pueda ocurrir durante la actualización
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Error'),
+                                content: Text(
+                                    'Error al actualizar el correo electrónico.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        }
+                      : null,
+                  style: ButtonStyle(
+                    backgroundColor: _isEmailValid
+                        ? MaterialStateProperty.all<Color>(
+                            const Color(0xFF094293))
+                        : MaterialStateProperty.all<Color>(
+                            const Color(0xFFBBDEFB)),
+                  ),
+                  child: const Text(
+                    "Guardar",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Cerrar el diálogo
-                },
-                child: const Text("Cancelar"),
-              ),
-              ElevatedButton(
-                onPressed: _isEmailValid
-                    ? () {
-                        // Aquí puedes realizar la lógica para guardar el nuevo correo electrónico
-                        String newEmail = _newEmailController.text;
-                        // Por ahora, simplemente imprimo el nuevo correo electrónico
-                        print("Nuevo correo electrónico: $newEmail");
-                        Navigator.of(context).pop(); // Cerrar el diálogo
-                      }
-                    : null,
-                style: ButtonStyle(
-                  backgroundColor: _isEmailValid
-                      ? MaterialStateProperty.all<Color>(const Color(0xFF094293)) // Color del botón de guardar
-                      : MaterialStateProperty.all<Color>(const Color(0xFFBBDEFB)), // Color de botón desactivado
-                ),
-                child: const Text(
-                  "Guardar",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
 
-
-
+  //-----------------------------------------------------------------//
+  //-------- ShowDialog de la opcion de Editar el password  ---------//
+  //-----------------------------------------------------------------//
 
   void _showEditPasswordDialog(BuildContext context, String currentValue) {
     TextEditingController _currentPasswordController = TextEditingController();
     TextEditingController _newPasswordController = TextEditingController();
     TextEditingController _confirmPasswordController = TextEditingController();
 
+    bool _isPasswordVisible = false;
+    bool _isPasswordVisible1 = false;
+    bool _isPasswordVisible2 = false;
     bool _isPasswordValid = false;
 
     // Función para validar si la contraseña cumple con los requisitos
     void _validatePassword(String value) {
-      if (value.length >= 8 &&
-          value.contains(RegExp(r'[A-Z]')) &&
-          value.contains(RegExp(r'[a-z]')) &&
-          value.contains(RegExp(r'[0-9]'))) {
+      if (value.length >= 8) {
         _isPasswordValid = true;
       } else {
         _isPasswordValid = false;
@@ -291,40 +393,79 @@ void _showEditEmailDialog(BuildContext context, String currentValue) {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(
+                  TextFormField(
                     controller: _currentPasswordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      hintText: "Contraseña actual",
+                    obscureText: !_isPasswordVisible,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña actual',
+                      prefixIcon: const Icon(Icons.lock_outline_rounded),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
                   ),
-                  TextField(
+                  TextFormField(
                     controller: _newPasswordController,
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible1,
                     onChanged: (value) {
                       setState(() {
                         _validatePassword(value);
                       });
                     },
-                    decoration: const InputDecoration(
-                      hintText: "Nueva contraseña",
+                    decoration: InputDecoration(
+                      labelText: 'Nueva Contraseña',
+                      prefixIcon: const Icon(Icons.lock_outline_rounded),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible1
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible1 = !_isPasswordVisible1;
+                          });
+                        },
+                      ),
                     ),
                   ),
-                  TextField(
+                  TextFormField(
                     controller: _confirmPasswordController,
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible2,
                     onChanged: (value) {
                       setState(() {
                         _validatePassword(value);
                       });
                     },
-                    decoration: const InputDecoration(
-                      hintText: "Confirmar nueva contraseña",
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar nueva contraseña',
+                      prefixIcon: const Icon(Icons.lock_outline_rounded),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible2
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible2 = !_isPasswordVisible2;
+                          });
+                        },
+                      ),
                     ),
                   ),
                   if (!_isPasswordValid)
                     const Text(
-                      "\nRequisitos de la contraseña:\n- Mínimo de 8 caracteres\n- Mayúsculas, minúsculas y un número",
+                      "\nRequisitos de la contraseña:\n- Mínimo de 8 caracteres",
                       style: TextStyle(
                         color: Colors.red,
                       ),
@@ -340,20 +481,76 @@ void _showEditEmailDialog(BuildContext context, String currentValue) {
                 ),
                 ElevatedButton(
                   onPressed: _isPasswordValid
-                      ? () {
+                      ? () async {
                           // Verificar si las contraseñas coinciden
                           if (_newPasswordController.text ==
                               _confirmPasswordController.text) {
-                            // Aquí puedes realizar la lógica para guardar la nueva contraseña
-                            String newPassword = _newPasswordController.text;
-                            // Por ahora, simplemente imprimo la nueva contraseña
-                            print("Nueva contraseña: $newPassword");
-                            Navigator.of(context).pop(); // Cerrar el diálogo
+                            try {
+                              // Realizar la actualización de la contraseña
+                              Map<String, dynamic> response =
+                                  await apiService.actualizarPassword(
+                                Oldpassword: _currentPasswordController.text,
+                                password: _newPasswordController.text,
+                              );
+
+                              if (response['success'] == true) {
+                                // Contraseña actualizada con éxito, redirigir o mostrar un mensaje de éxito
+                                Navigator.of(context)
+                                    .pop(); // Cerrar el diálogo
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        "Contraseña actualizada exitosamente."),
+                                  ),
+                                );
+                              } else {
+                                // Mostrar un diálogo de error con el mensaje del servidor
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Inténtalo nuevamente'),
+                                    content: Text(response['message'] ??
+                                        'Error desconocido'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              // Manejar cualquier error que pueda ocurrir durante la actualización
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Inténtalo nuevamente'),
+                                  content: const Text(
+                                      'La contraseña actual es incorrecta.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
                           } else {
                             // Mostrar mensaje si las contraseñas no coinciden
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Las contraseñas no coinciden."),
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Error'),
+                                content:
+                                    const Text("Las contraseñas no coinciden."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
                               ),
                             );
                           }
@@ -378,6 +575,10 @@ void _showEditEmailDialog(BuildContext context, String currentValue) {
       },
     );
   }
+
+  //-----------------------------------------------------------------//
+  //-------- ShowDialog de la opcion de Editar el telefono  ---------//
+  //-----------------------------------------------------------------//
 
   void _showEditPhoneDialog(BuildContext context, String currentValue) {
     TextEditingController _phoneController =
