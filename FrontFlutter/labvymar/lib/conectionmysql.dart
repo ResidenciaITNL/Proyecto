@@ -13,6 +13,10 @@ class APIService {
   // Variable para obtener el token JWT
   final storage = const FlutterSecureStorage();
 
+  //----------------------------------------//
+  //-- Método para obtener iniciar sesion --//
+  //----------------------------------------//
+
   Future<Map<String, dynamic>> login(String user, String password) async {
     if (user.isEmpty || password.isEmpty) {
       return {'error': 'Usuario y contraseña son requeridos'};
@@ -45,16 +49,18 @@ class APIService {
     }
   }
 
-  //---------------------------------------------------------//
-  //-------- Método para obtener el token guardado  ---------//
-  //---------------------------------------------------------//
+  //-------------------------------------------//
+  //-- Método para obtener el token guardado --//
+  //-------------------------------------------//
+
   Future<String?> getToken() async {
     return await storage.read(key: 'token');
   }
 
-  //---------------------------------------------------------//
-  //--------------- Método para cerrar sesion  --------------//
-  //---------------------------------------------------------//
+  //-------------------------------//
+  //-- Método para cerrar sesion --//
+  //-------------------------------//
+
   Future<void> cerrarSesion() async {
     try {
       await storage.delete(key: 'token');
@@ -64,9 +70,9 @@ class APIService {
     }
   }
 
-  //--------------------------------------------------------------//
-  //--------------- Método para cambiar contraseña  --------------//
-  //--------------------------------------------------------------//
+  //------------------------------------------------//
+  //-- Método para cambiar contraseña del usuario --//
+  //------------------------------------------------//
 
   Future<Map<String, dynamic>> actualizarPassword({
     required String Oldpassword,
@@ -106,10 +112,9 @@ class APIService {
     }
   }
 
-
-  //--------------------------------------------------------------//
-  //--------------- Método para cambiar contraseña  --------------//
-  //--------------------------------------------------------------//
+  //---------------------------------------//
+  //-- Método para cambiar email usuario --//
+  //---------------------------------------//
 
   Future<Map<String, dynamic>> actualizarEmail({
     required String Oldemail,
@@ -149,9 +154,16 @@ class APIService {
     }
   }
 
-  //---------------------------------------------------------//
-  //-------- Método para obtener lista de usuarios  ---------//
-  //---------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+  //-------------------------- MODULO DE USUARIOS ----------------------------//
+  //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+
+  //-------------------------------------------//
+  //-- Método para obtener lista de usuarios --//
+  //-------------------------------------------//
+
   Future<List<Map<String, dynamic>>> getUsers() async {
     String? token = await getToken(); // Obtener el token guardado
 
@@ -175,9 +187,10 @@ class APIService {
     }
   }
 
-  //------------------------------------------------//
-  //-------- Método para crear un usuario  ---------//
-  //------------------------------------------------//
+  //----------------------------------//
+  //-- Método para crear un usuario --//
+  //----------------------------------//
+
   Future<void> createUser(Map<String, dynamic> userData) async {
     String? token = await getToken(); // Obtener el token guardado
 
@@ -203,9 +216,10 @@ class APIService {
     }
   }
 
-  //-----------------------------------------------------//
-  //-------- Método para actualizar un usuario  ---------//
-  //-----------------------------------------------------//
+  //----------------------------------------------//
+  //-- Método para actualizar datos del usuario --//
+  //----------------------------------------------//
+
   Future<void> updateUser(int userId, Map<String, dynamic> newData) async {
     String? token = await getToken(); // Obtener el token guardado
 
@@ -228,27 +242,142 @@ class APIService {
     }
   }
 
-  //---------------------------------------------------//
-  //-------- Método para eliminar un usuario  ---------//
-  //---------------------------------------------------//
-Future<void> deleteUser(int userId) async {
-  String? token = await getToken(); // Obtener el token guardado
+  //-------------------------------------//
+  //-- Método para eliminar un usuario --//
+  //-------------------------------------//
 
-  if (token == null) {
-    throw Exception('Token not found');
+  Future<void> deleteUser(int userId) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/Users/$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete user');
+    }
   }
 
-  final response = await http.delete(
-    Uri.parse('$baseUrl/Users/$userId'),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token', // Añadir el token al encabezado de autorización
-    },
-  );
+  //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+  //-------------------------- MODULO DE PACIENTES ---------------------------//
+  //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
 
-  if (response.statusCode != 200) {
-    throw Exception('Failed to delete user');
+  //--------------------------------------------//
+  //-- Método para obtener lista de pacientes --//
+  //--------------------------------------------//
+
+  Future<List<Map<String, dynamic>>> getPacientes() async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/Pacientes'),
+      headers: {
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+    print('Toke generado desde el get: $token');
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load pacientes');
+    }
   }
-}
 
+  //----------------------------------//
+  //-- Método para crear un usuario --//
+  //----------------------------------//
+
+  Future<void> createPaciente(Map<String, dynamic> pacienteData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/Pacientes'),
+      body: jsonEncode(pacienteData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Usuario creado exitosamente, no es necesario hacer nada más aquí
+      return;
+    } else {
+      throw Exception('Failed to create paciente');
+    }
+  }
+
+  //-----------------------------------------------//
+  //-- Método para actualizar datos del paciente --//
+  //-----------------------------------------------//
+
+  Future<void> updatePaciente(
+      int PacienteId, Map<String, dynamic> newData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/Pacientes/$PacienteId'),
+      body: jsonEncode(newData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update paciente');
+    }
+  }
+
+  //-------------------------------------//
+  //-- Método para eliminar un usuario --//
+  //-------------------------------------//
+
+  Future<void> deletePaciente(int PacienteId) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/Pacientes/$PacienteId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete user');
+    }
+  }
 }
