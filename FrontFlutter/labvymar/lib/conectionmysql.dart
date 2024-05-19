@@ -300,9 +300,9 @@ class APIService {
     }
   }
 
-  //----------------------------------//
-  //-- Método para crear un usuario --//
-  //----------------------------------//
+  //-----------------------------------//
+  //-- Método para crear un paciente --//
+  //-----------------------------------//
 
   Future<void> createPaciente(Map<String, dynamic> pacienteData) async {
     String? token = await getToken(); // Obtener el token guardado
@@ -333,8 +333,7 @@ class APIService {
   //-- Método para actualizar datos del paciente --//
   //-----------------------------------------------//
 
-  Future<void> updatePaciente(
-      int PacienteId, Map<String, dynamic> newData) async {
+  Future<void> updatePaciente(int pacienteId, Map<String, dynamic> newData) async {
     String? token = await getToken(); // Obtener el token guardado
 
     if (token == null) {
@@ -342,7 +341,7 @@ class APIService {
     }
 
     final response = await http.put(
-      Uri.parse('$baseUrl/Pacientes/$PacienteId'),
+      Uri.parse('$baseUrl/Pacientes/$pacienteId'),
       body: jsonEncode(newData),
       headers: {
         'Content-Type': 'application/json',
@@ -376,8 +375,8 @@ class APIService {
       },
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to delete user');
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Failed to delete paciente');
     }
   }
 }

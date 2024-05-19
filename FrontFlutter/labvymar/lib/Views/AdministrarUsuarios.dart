@@ -1,4 +1,4 @@
-import 'dart:js';
+// import 'dart:js';
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -435,7 +435,7 @@ void _showDeleteUserDialog(BuildContext context, int userId, String name) {
                 onPressed: () async {
                   // Aquí puedes realizar la lógica para eliminar el usuario
                   try {
-                    // Llamar al método updateUser de APIService para actualizar el usuario
+                    // Llamar al método deleteUser de APIService para eliminar el usuario
                     await apiService.deleteUser(userId);
 
                     // Mostrar mensaje de éxito
