@@ -5,10 +5,18 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:labvymar/Views/Navbar_widgets.dart';
 import 'package:labvymar/conectionmysql.dart';
 
+//--------------------------------------------------------------//
+//----------------- Clase de InvMedicamento --------------------//
+//--------------------------------------------------------------//
+
 class InvMedicamento extends StatelessWidget {
   InvMedicamento({Key? key}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  //-------------------------------------------------------------//
+  //-------- Widget que hace referencia al navbar y body --------//
+  //-------------------------------------------------------------//
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +28,10 @@ class InvMedicamento extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         key: _scaffoldKey,
+
+        //------------------------//
+        //-------- Navbar --------//
+        //------------------------//
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -48,7 +60,8 @@ class InvMedicamento extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (isLargeScreen) Expanded(child: NavBarWidgets.navBarItems(context))
+                if (isLargeScreen)
+                  Expanded(child: NavBarWidgets.navBarItems(context))
               ],
             ),
           ),
@@ -60,6 +73,11 @@ class InvMedicamento extends StatelessWidget {
           ],
         ),
         drawer: isLargeScreen ? null : NavBarWidgets.drawer(context),
+
+        //------------------------//
+        //--------- Body ---------//
+        //------------------------//
+
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(
@@ -68,7 +86,7 @@ class InvMedicamento extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const UserManagementScreen(),
-                _buildUserDataTable(), // Tu DataTable aquí
+                _medicamentoDataTable(), // Tu DataTable aquí
               ],
             ),
           ),
@@ -77,7 +95,11 @@ class InvMedicamento extends StatelessWidget {
     );
   }
 
-  Widget _buildUserDataTable() {
+  //----------------------------------------------------------------//
+  //-------- Widget de la tabla de la lista de Medicamento ---------//
+  //----------------------------------------------------------------//
+
+  Widget _medicamentoDataTable() {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
@@ -169,6 +191,10 @@ class InvMedicamento extends StatelessWidget {
     );
   }
 
+  //---------------------------------------------------------------//
+  //-------- Lista de medicamento que se obtiene del API  ---------//
+  //---------------------------------------------------------------//
+
   List<DataRow> _userDataRows(BuildContext context) {
     final List<Map<String, String>> users = [
       {
@@ -244,7 +270,15 @@ class InvMedicamento extends StatelessWidget {
               onPressed: () {
                 // Lógica para editar el medicamento
                 _showEditMedicineDialog(
-                    context, user['nombre']!, user['descripcion']!,  user['fecha_cad']!, user['contenido']!, user['unidad_Medida']!, user['inventario_Actual']!, user['precio']!,);
+                  context,
+                  user['nombre']!,
+                  user['descripcion']!,
+                  user['fecha_cad']!,
+                  user['contenido']!,
+                  user['unidad_Medida']!,
+                  user['inventario_Actual']!,
+                  user['precio']!,
+                );
               },
             ),
             IconButton(
@@ -264,6 +298,10 @@ class InvMedicamento extends StatelessWidget {
     }).toList();
   }
 }
+
+//-----------------------------------------------------------------//
+//-------- ShowDialog de la opcion de Editar Medicamento  ---------//
+//-----------------------------------------------------------------//
 
 void _showEditMedicineDialog(
     BuildContext context,
@@ -349,8 +387,7 @@ void _showEditMedicineDialog(
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: unidMedidaController,
-                    decoration:
-                        InputDecoration(labelText: 'Unidad de medida'),
+                    decoration: InputDecoration(labelText: 'Unidad de medida'),
                     onChanged: (value) {
                       // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
@@ -358,8 +395,7 @@ void _showEditMedicineDialog(
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: invActualController,
-                    decoration:
-                        InputDecoration(labelText: 'Inventario Actual'),
+                    decoration: InputDecoration(labelText: 'Inventario Actual'),
                     onChanged: (value) {
                       // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
                     },
@@ -387,8 +423,8 @@ void _showEditMedicineDialog(
                 onPressed: () {
                   String newName = nameController.text;
                   String newDescripcion = descriptionController.text;
-                  String newFechaCaducidad =
-                      fechaCaducidadController.text; // Aquí obtienes la nueva fecha
+                  String newFechaCaducidad = fechaCaducidadController
+                      .text; // Aquí obtienes la nueva fecha
                   String newContenido = contenidoController.text;
                   String newUnidMedida = unidMedidaController.text;
                   String newInvActual = invActualController.text;
@@ -401,11 +437,14 @@ void _showEditMedicineDialog(
                   print('la actualizacion es: $newInvActual');
                   print('la actualizacion es: $newPrecio');
                   Navigator.of(context).pop();
-                },                
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:  Color(0xFF094293), // Color de fondo rojo
+                  backgroundColor: Color(0xFF094293), // Color de fondo rojo
                 ),
-                child: Text('Guardar', style: TextStyle(color: Colors.white),),
+                child: Text(
+                  'Guardar',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -415,6 +454,10 @@ void _showEditMedicineDialog(
   );
 }
 
+
+//-------------------------------------------------------------------//
+//-------- ShowDialog de la opcion de Eliminar Medicamento  ---------//
+//-------------------------------------------------------------------//
 
 void _showDeleteUserDialog(BuildContext context, String name) {
   showDialog(
@@ -439,7 +482,10 @@ void _showDeleteUserDialog(BuildContext context, String name) {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red, // Color de fondo rojo
                 ),
-                child: Text('Eliminar', style: TextStyle(color: Colors.white),),
+                child: Text(
+                  'Eliminar',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -449,6 +495,10 @@ void _showDeleteUserDialog(BuildContext context, String name) {
   );
 }
 
+//-----------------------------------//
+//--------  Header del body ---------//
+//-----------------------------------//
+
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
 
@@ -456,6 +506,11 @@ class UserManagementScreen extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _UserManagementScreenState createState() => _UserManagementScreenState();
 }
+
+
+//----------------------------------------------------------//
+//-------- Clase del boton de agregar medicamento  ---------//
+//----------------------------------------------------------//
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
   final TextEditingController _nameController = TextEditingController();
@@ -509,6 +564,12 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       ),
     );
   }
+
+
+
+  //---------------------------------------------------------------//
+  //-------- ShowDialog del boton de Agregar Medicamento  ---------//
+  //---------------------------------------------------------------//
 
   void _showAddmedicineDialog(BuildContext context) {
     showDialog(

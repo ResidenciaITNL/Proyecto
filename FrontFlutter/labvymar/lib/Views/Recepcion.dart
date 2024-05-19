@@ -97,6 +97,10 @@ class Recep extends StatelessWidget {
     );
   }
 
+  //--------------------------------------------------------------//
+  //-------- Widget de la tabla de la lista de pacientes ---------//
+  //--------------------------------------------------------------//
+
   Widget _buildUserDataTable() {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
@@ -237,6 +241,10 @@ class Recep extends StatelessWidget {
     );
   }
 
+  //-------------------------------------------------------------//
+  //-------- Lista de pacientes que se obtiene del API  ---------//
+  //-------------------------------------------------------------//
+
   Future<List<DataRow>> _pacientesDataRows(BuildContext context) async {
     final List<Map<String, dynamic>> users = await apiService.getPacientes();
 
@@ -354,6 +362,10 @@ class Recep extends StatelessWidget {
     }).toList();
   }
 }
+
+//--------------------------------------------------------------//
+//-------- ShowDialog de la opcion de Editar Paciente  ---------//
+//--------------------------------------------------------------//
 
 void _showEditPacienteDialog(
     BuildContext context,
@@ -584,6 +596,10 @@ void _showEditPacienteDialog(
   );
 }
 
+//----------------------------------------------------------------//
+//-------- ShowDialog de la opcion de Eliminar Paciente  ---------//
+//----------------------------------------------------------------//
+
 void _showDeletePacienteDialog(
     BuildContext context, int pacienteId, String nombre) {
   final APIService apiService = APIService();
@@ -656,6 +672,10 @@ void _showDeletePacienteDialog(
   );
 }
 
+//-----------------------------------//
+//--------  Header del body ---------//
+//-----------------------------------//
+
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
 
@@ -663,6 +683,10 @@ class UserManagementScreen extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _UserManagementScreenState createState() => _UserManagementScreenState();
 }
+
+//-------------------------------------------------------//
+//-------- Clase del boton de agregar paciente  ---------//
+//-------------------------------------------------------//
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
   final APIService apiService = APIService();
@@ -721,6 +745,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       ),
     );
   }
+
+  //------------------------------------------------------------//
+  //-------- ShowDialog del boton de Agregar Paciente  ---------//
+  //------------------------------------------------------------//
 
   void _showAddPacienteDialog(BuildContext context) {
     showDialog(

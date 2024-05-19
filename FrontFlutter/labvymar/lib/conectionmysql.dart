@@ -333,7 +333,8 @@ class APIService {
   //-- Método para actualizar datos del paciente --//
   //-----------------------------------------------//
 
-  Future<void> updatePaciente(int pacienteId, Map<String, dynamic> newData) async {
+  Future<void> updatePaciente(
+      int pacienteId, Map<String, dynamic> newData) async {
     String? token = await getToken(); // Obtener el token guardado
 
     if (token == null) {
@@ -377,6 +378,119 @@ class APIService {
 
     if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Failed to delete paciente');
+    }
+  }
+
+  //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+  //------------------ MODULO DE INVENTARIO DE MEDICAMENTO -------------------//
+  //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+
+  //-----------------------------------------------//
+  //-- Método para obtener lista de medicamentos --//
+  //-----------------------------------------------//
+
+  Future<List<Map<String, dynamic>>> getMedicamento() async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/Medicamento'),
+      headers: {
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+    print('Toke generado desde el get: $token');
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load medicamentos');
+    }
+  }
+
+  //-----------------------------------------//
+  //-- Método para ingresar un medicamento --//
+  //-----------------------------------------//
+
+  Future<void> createMedicamento(Map<String, dynamic> medicamentoData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/Medicamento'),
+      body: jsonEncode(medicamentoData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // medicamento creado exitosamente, no es necesario hacer nada más aquí
+      return;
+    } else {
+      throw Exception('Failed to create medicamento');
+    }
+  }
+
+  //--------------------------------------------------//
+  //-- Método para actualizar datos del medicamento --//
+  //--------------------------------------------------//
+
+  Future<void> updateMedicamento(int medicamentoId, Map<String, dynamic> newData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/Medicamento/$medicamentoId'),
+      body: jsonEncode(newData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update medicamento');
+    }
+  }
+
+  //-----------------------------------------//
+  //-- Método para eliminar un medicamento --//
+  //-----------------------------------------//
+
+  Future<void> deleteMedicamento(int medicamentoId) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/Medicamento/$medicamentoId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete medicamento');
     }
   }
 }
