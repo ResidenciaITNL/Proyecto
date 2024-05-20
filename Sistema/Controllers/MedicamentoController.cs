@@ -62,8 +62,8 @@ namespace Sistema.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMedicamento(int id, MedicamentoUpdate medicamentoUpdate)
         {
-            var CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
-            var medicamento = await _context.Medicamento.FirstOrDefaultAsync(x => x.MedicamentoId == id && x.UserId == CustomerId);
+            var CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
+            var medicamento = await _context.Medicamento.FirstOrDefaultAsync(x => x.MedicamentoId == id && x.User.CustomersId == CustomerId);
             if (medicamento == null)
             {
                 return NotFound();

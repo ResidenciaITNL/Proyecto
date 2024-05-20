@@ -10,6 +10,10 @@ namespace Sistema.Models
         public string? email { get; set; }
         public string? oldPassword { get; set; }
         public string? password { get; set; }
+        public string? titulo { get; set; }
+        public string? cedula { get; set; }
+        public string? institucion { get; set; }
+        public int? year { get; set; }
         public Role? role { get; set; }
         public bool? active { get; set; }
         public void HashPassword()
