@@ -22,15 +22,41 @@ namespace Sistema.Controllers
         }
 
         // GET: api/Medicamento
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Medicamento>>> GetMedicamento()
+        //{
+        //  if (_context.Medicamento == null)
+        //  {
+        //      return NotFound();
+        //  }
+        //    return await _context.Medicamento.ToListAsync();
+        //}
+
+
+
+        // GET: api/Medicamento
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Medicamento>>> GetMedicamento()
+        public async Task<IActionResult> GetMedicamento()
         {
-          if (_context.Medicamento == null)
-          {
-              return NotFound();
-          }
-            return await _context.Medicamento.ToListAsync();
+            var medicamentos = await _context.Medicamento.Select(x => new
+            {
+                MedicamentoId = x.MedicamentoId,
+                Nombre = x.Nombre,
+                Descripcion = x.Descripcion,
+                Imagen = x.Imagen,
+                FechaVencimiento = x.FechaVencimiento.ToString("MM-yyyy"),
+                Stock = x.Stock,
+                Precio = x.Precio,
+                Contenido = x.Contenido,
+                unidad = x.unidad,
+            }).ToListAsync();
+
+            return Ok(medicamentos);
         }
+
+
+
+
 
         // GET: api/Medicamento/5
         [HttpGet("{id}")]
