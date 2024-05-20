@@ -89,6 +89,95 @@ namespace Sistema.Controllers
             return Ok(new { message = "El email se actualizó con éxito" });
         }
 
+        [HttpPut("change-titulo")]
+        public async Task<IActionResult> ChangeTitulo([FromBody] UsersUpdate value)
+        {
+            int UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == UserId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado" });
+            }
+
+            if (value.titulo != null)
+            {
+                user.titulo = value.titulo;
+            }
+
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "El titulo se actualizó con éxito" });
+        }
+
+        [HttpPut("change-cedula")]
+        public async Task<IActionResult> ChangeCedula([FromBody] UsersUpdate value)
+        {
+            int UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == UserId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado" });
+            }
+
+            if (value.cedula != null)
+            {
+                user.cedula = value.cedula;
+            }
+
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "La cedula se actualizó con éxito" });
+        }
+
+        [HttpPut("change-institucion")]
+        public async Task<IActionResult> ChangeInstitucion([FromBody] UsersUpdate value)
+        {
+            int UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == UserId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado" });
+            }
+
+            if (value.institucion != null)
+            {
+                user.institucion = value.institucion;
+            }
+
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "La institucion se actualizó con éxito" });
+        }
+
+        [HttpPut("change-year")]
+        public async Task<IActionResult> ChangeYear([FromBody] UsersUpdate value)
+        {
+            int UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == UserId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado" });
+            }
+
+            if (value.year != null)
+            {
+                user.year = value.year;
+            }
+
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "El año se actualizó con éxito" });
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
