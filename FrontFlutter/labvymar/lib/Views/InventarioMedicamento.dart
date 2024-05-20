@@ -4,6 +4,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 import 'package:labvymar/Views/Navbar_widgets.dart';
 import 'package:labvymar/conectionmysql.dart';
+import 'package:intl/intl.dart';
 
 //--------------------------------------------------------------//
 //----------------- Clase de InvMedicamento --------------------//
@@ -11,6 +12,8 @@ import 'package:labvymar/conectionmysql.dart';
 
 class InvMedicamento extends StatelessWidget {
   InvMedicamento({Key? key}) : super(key: key);
+
+  final APIService apiService = APIService();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -103,160 +106,158 @@ class InvMedicamento extends StatelessWidget {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
-        double columnSpacing =
-            screenWidth * 0.015; // Espacio de columna predeterminado
-        double fontSize = screenWidth * 0.01; // Tamaño de fuente predeterminado
-        double fontSizeEdit =
-            screenWidth * 0.01; // Tamaño de fuente predeterminado
+        double columnSpacing = screenWidth * 0.015;
+        double fontSize = screenWidth * 0.01;
+        double fontSizeEdit = screenWidth * 0.01;
 
-        return DataTable(
-          columnSpacing: columnSpacing, // Espacio entre columnas
-          columns: [
-            DataColumn(
-              label: Text(
-                'Nombre',
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Descripcion',
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Fecha de caducidad',
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Contenido',
-                style: TextStyle(
-                  fontSize: fontSizeEdit,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Unidad de Medida',
-                style: TextStyle(
-                  fontSize: fontSizeEdit,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Inventario Actual',
-                style: TextStyle(
-                  fontSize: fontSizeEdit,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Precio',
-                style: TextStyle(
-                  fontSize: fontSizeEdit,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Editar | Eliminar',
-                style: TextStyle(
-                  fontSize: fontSizeEdit,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-          rows: _userDataRows(context),
+        return FutureBuilder<List<DataRow>>(
+          future: _medicamentoDataRows(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child:
+                    CircularProgressIndicator(), // Muestra un indicador de carga mientras se espera
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                    'Error: ${snapshot.error}'), // Muestra un mensaje de error si ocurre algún problema
+              );
+            } else {
+              return DataTable(
+                columnSpacing: columnSpacing,
+                columns: [
+                  DataColumn(
+                    label: Text(
+                      'Nombre',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Descripcion',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Fecha de caducidad',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Stock',
+                      style: TextStyle(
+                        fontSize: fontSizeEdit,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Precio',
+                      style: TextStyle(
+                        fontSize: fontSizeEdit,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Contenido',
+                      style: TextStyle(
+                        fontSize: fontSizeEdit,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Unidad de medida',
+                      style: TextStyle(
+                        fontSize: fontSizeEdit,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Editar | Eliminar',
+                      style: TextStyle(
+                        fontSize: fontSizeEdit,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+                rows: snapshot
+                    .data!, // Utiliza los datos devueltos por _medicamentoDataRows
+              );
+            }
+          },
         );
       },
     );
   }
 
-  //---------------------------------------------------------------//
-  //-------- Lista de medicamento que se obtiene del API  ---------//
-  //---------------------------------------------------------------//
+//---------------------------------------------------------------//
+//-------- Lista de medicamento que se obtiene del API  ---------//
+//---------------------------------------------------------------//
 
-  List<DataRow> _userDataRows(BuildContext context) {
-    final List<Map<String, String>> users = [
-      {
-        'nombre': 'omeprasol',
-        'descripcion': 'para la gastritis',
-        'fecha_cad': '02/12/2024',
-        'contenido': '20 capsulas',
-        'unidad_Medida': '20 mg',
-        'inventario_Actual': '80',
-        'precio': '120',
-      },
-      {
-        'nombre': 'riopan',
-        'descripcion': 'para la acides',
-        'fecha_cad': '27/05/2025',
-        'contenido': '20 bolsas',
-        'unidad_Medida': '10 ml',
-        'inventario_Actual': '132',
-        'precio': '250',
-      },
-      {
-        'nombre': 'aspirina',
-        'descripcion': 'para el dolor de cabeza',
-        'fecha_cad': '12/07/2025',
-        'contenido': '20 capsulas',
-        'unidad_Medida': '400 mg',
-        'inventario_Actual': '206',
-        'precio': '80',
-      },
-    ];
+  Future<List<DataRow>> _medicamentoDataRows(BuildContext context) async {
+    final List<Map<String, dynamic>> medicamento =
+        await apiService.getMedicamento();
 
     final double screenWidth2 = MediaQuery.of(context).size.width;
     double fontSize = screenWidth2 * 0.009;
 
-    return users.map((user) {
+    return medicamento.map((medicamento) {
+      DateTime fechaVencimiento;
+      try {
+        fechaVencimiento =
+            DateFormat('MM-yyyy').parse(medicamento['fechaVencimiento']);
+      } catch (e) {
+        fechaVencimiento = DateTime
+            .now(); // Manejar el error o asignar una fecha predeterminada
+      }
+
       return DataRow(cells: [
         DataCell(Text(
-          user['nombre']!,
+          medicamento['nombre']!,
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['descripcion']!,
+          medicamento['descripcion']!,
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['fecha_cad']!,
+          DateFormat('dd-MM-yyyy').format(fechaVencimiento),
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['contenido']!,
+          medicamento['stock'].toString(),
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['unidad_Medida']!,
+          medicamento['precio'].toString(),
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['inventario_Actual']!,
+          medicamento['contenido']!,
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          user['precio']!,
+          medicamento['unidad']!,
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Row(
@@ -268,17 +269,26 @@ class InvMedicamento extends StatelessWidget {
                 size: fontSize,
               ),
               onPressed: () {
-                // Lógica para editar el medicamento
+                int medicamentoId = medicamento['medicamentoId'];
+                String nombre = medicamento['nombre'];
+                String descripcion = medicamento['descripcion'];
+                DateTime fechaVencimiento = DateFormat('MM-yyyy')
+                    .parse(medicamento['fechaVencimiento']);
+                int stock = medicamento['stock'];
+                double precio = medicamento['precio'];
+                String unidad = medicamento['unidad'];
+                String contenido = medicamento['contenido'];
+
                 _showEditMedicineDialog(
-                  context,
-                  user['nombre']!,
-                  user['descripcion']!,
-                  user['fecha_cad']!,
-                  user['contenido']!,
-                  user['unidad_Medida']!,
-                  user['inventario_Actual']!,
-                  user['precio']!,
-                );
+                    context,
+                    medicamentoId,
+                    nombre,
+                    descripcion,
+                    fechaVencimiento,
+                    stock,
+                    precio,
+                    unidad,
+                    contenido);
               },
             ),
             IconButton(
@@ -288,8 +298,13 @@ class InvMedicamento extends StatelessWidget {
                 size: fontSize,
               ),
               onPressed: () {
-                // Lógica para eliminar el medicamento
-                _showDeleteUserDialog(context, user['nombre']!);
+                int medicamentoId = medicamento['medicamentoId'];
+                String nombre = medicamento['nombre'];
+                String contenido = medicamento['contenido'];
+                String unidad = medicamento['unidad'];
+
+                _showDeleteUserDialog(
+                    context, medicamentoId, nombre, contenido, unidad);
               },
             ),
           ],
@@ -297,169 +312,191 @@ class InvMedicamento extends StatelessWidget {
       ]);
     }).toList();
   }
-}
 
-//-----------------------------------------------------------------//
-//-------- ShowDialog de la opcion de Editar Medicamento  ---------//
-//-----------------------------------------------------------------//
+  void _showEditMedicineDialog(
+      BuildContext context,
+      int medicamentoId,
+      String nombre,
+      String descripcion,
+      DateTime fechaVencimiento,
+      int stock,
+      double precio,
+      String unidad,
+      String contenido) {
+    TextEditingController nameController = TextEditingController(text: nombre);
+    TextEditingController descriptionController =
+        TextEditingController(text: descripcion);
+    TextEditingController fechaCaducidadController = TextEditingController(
+        text: DateFormat('dd-MM-yyyy').format(fechaVencimiento));
+    TextEditingController contenidoController =
+        TextEditingController(text: contenido);
+    TextEditingController unidMedidaController =
+        TextEditingController(text: unidad);
+    TextEditingController invActualController =
+        TextEditingController(text: stock.toString());
+    TextEditingController precioController =
+        TextEditingController(text: precio.toString());
 
-void _showEditMedicineDialog(
-    BuildContext context,
-    String name,
-    String description,
-    String fechaCaducidad,
-    String contenido,
-    String unidMedida,
-    String invActual,
-    String precio) {
-  TextEditingController nameController = TextEditingController(text: name);
-  TextEditingController descriptionController =
-      TextEditingController(text: description);
-  TextEditingController fechaCaducidadController =
-      TextEditingController(text: fechaCaducidad);
-  TextEditingController contenidoController =
-      TextEditingController(text: contenido);
-  TextEditingController unidMedidaController =
-      TextEditingController(text: unidMedida);
-  TextEditingController invActualController =
-      TextEditingController(text: invActual);
-  TextEditingController precioController = TextEditingController(text: precio);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text('Editar producto',
+                  style: TextStyle(color: Colors.black)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(labelText: 'Nombre'),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: InputDecoration(labelText: 'Descripción'),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: fechaCaducidadController,
+                      decoration:
+                          InputDecoration(labelText: 'Fecha de caducidad'),
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: fechaVencimiento,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          String formattedDate =
+                              DateFormat('dd-MM-yyyy').format(pickedDate);
+                          setState(() {
+                            fechaCaducidadController.text = formattedDate;
+                          });
+                        }
+                      },
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: contenidoController,
+                      decoration: InputDecoration(labelText: 'Contenido'),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: unidMedidaController,
+                      decoration:
+                          InputDecoration(labelText: 'Unidad de medida'),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: invActualController,
+                      decoration:
+                          InputDecoration(labelText: 'Inventario Actual'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: precioController,
+                      decoration: InputDecoration(labelText: 'Precio'),
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancelar',
+                      style: TextStyle(color: Colors.black)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    String newName = nameController.text;
+                    String newDescripcion = descriptionController.text;
+                    String newFechaCaducidad = fechaCaducidadController.text;
+                    String newContenido = contenidoController.text;
+                    String newUnidMedida = unidMedidaController.text;
+                    int newInvActual =
+                        int.tryParse(invActualController.text) ?? stock;
+                    double newPrecio =
+                        double.tryParse(precioController.text) ?? precio;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: const Text('Editar producto',
-                style: TextStyle(color: Colors.black)),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextFormField(
-                    controller: nameController,
-                    decoration: InputDecoration(labelText: 'Nombre'),
-                    onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: descriptionController,
-                    decoration: InputDecoration(labelText: 'Descripción'),
-                    onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: fechaCaducidadController,
-                    decoration:
-                        InputDecoration(labelText: 'Fecha de caducidad'),
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2100),
+                    try {
+                      await APIService().updateMedicamento(medicamentoId, {
+                        'nombre': newName,
+                        'descripcion': newDescripcion,
+                        'fechaVencimiento': DateFormat('yyyy-MM-dd').format(
+                            DateFormat('dd-MM-yyyy').parse(newFechaCaducidad)),
+                        'stock': newInvActual,
+                        'precio': newPrecio,
+                        'contenido': newContenido,
+                        'unidad': newUnidMedida,
+                      });
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Medicamento actualizado con éxito.'),
+                          duration: Duration(seconds: 3),
+                        ),
                       );
-                      if (pickedDate != null) {
-                        String formattedDate =
-                            '${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}';
-                        setState(() {
-                          fechaCaducidadController.text = formattedDate;
-                        });
-                      }
-                    },
-                    readOnly: true,
+                      Navigator.of(context).pop(); // Cerrar el diálogo
+                      Navigator.pushReplacementNamed(
+                          context, 'InventarioMedicamento');
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Inténtalo nuevamente'),
+                            content: Text(
+                                'Hubo un error al actualizar el medicamento.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Aceptar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF094293), // Color de fondo azul
                   ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: contenidoController,
-                    decoration: InputDecoration(labelText: 'Contenido'),
-                    onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
-                    },
+                  child: Text(
+                    'Guardar',
+                    style: TextStyle(color: Colors.white),
                   ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: unidMedidaController,
-                    decoration: InputDecoration(labelText: 'Unidad de medida'),
-                    onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: invActualController,
-                    decoration: InputDecoration(labelText: 'Inventario Actual'),
-                    onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: precioController,
-                    decoration: InputDecoration(labelText: 'Precio'),
-                    onChanged: (value) {
-                      // Aquí puedes realizar alguna acción cuando cambia el valor del TextFormField
-                    },
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancelar',
-                    style: TextStyle(color: Colors.black)),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  String newName = nameController.text;
-                  String newDescripcion = descriptionController.text;
-                  String newFechaCaducidad = fechaCaducidadController
-                      .text; // Aquí obtienes la nueva fecha
-                  String newContenido = contenidoController.text;
-                  String newUnidMedida = unidMedidaController.text;
-                  String newInvActual = invActualController.text;
-                  String newPrecio = precioController.text;
-                  print('la actualizacion es: $newName');
-                  print('la actualizacion es: $newDescripcion');
-                  print('la actualizacion es: $newFechaCaducidad');
-                  print('la actualizacion es: $newContenido');
-                  print('la actualizacion es: $newUnidMedida');
-                  print('la actualizacion es: $newInvActual');
-                  print('la actualizacion es: $newPrecio');
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF094293), // Color de fondo rojo
                 ),
-                child: Text(
-                  'Guardar',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 }
-
 
 //-------------------------------------------------------------------//
 //-------- ShowDialog de la opcion de Eliminar Medicamento  ---------//
 //-------------------------------------------------------------------//
 
-void _showDeleteUserDialog(BuildContext context, String name) {
+void _showDeleteUserDialog(BuildContext context, int medicamentoId,
+    String nombre, String contenido, String unidad) {
+  final APIService apiService = APIService();
+
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -467,7 +504,7 @@ void _showDeleteUserDialog(BuildContext context, String name) {
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
             title: Text(
-                'Seguro que quieres dar de baja el producto seleccionado del sistema?\n\n$name'),
+                'Seguro que quieres dar de baja el producto seleccionado del sistema?\n\n$nombre'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -476,8 +513,43 @@ void _showDeleteUserDialog(BuildContext context, String name) {
                 child: Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  // Aquí puedes realizar la lógica para eliminar el usuario
+                onPressed: () async {
+                  // Aquí puedes realizar la lógica para eliminar el medicamento
+                  try {
+                    // Llamar al método deleteMedicamento de APIService para eliminar el medicamento
+                    await apiService.deleteMedicamento(medicamentoId);
+
+                    // Mostrar mensaje de éxito
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Medicamento eliminado con exito.'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+                    Navigator.pushReplacementNamed(
+                        context, 'InventarioMedicamento');
+                  } catch (e) {
+                    // Manejar cualquier error que pueda ocurrir durante la actualización
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Inténtelo nuevamente'),
+                          content:
+                              Text('Hubo un error al eliminar el medicamento.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Aceptar'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red, // Color de fondo rojo
@@ -506,7 +578,6 @@ class UserManagementScreen extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _UserManagementScreenState createState() => _UserManagementScreenState();
 }
-
 
 //----------------------------------------------------------//
 //-------- Clase del boton de agregar medicamento  ---------//
@@ -564,8 +635,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       ),
     );
   }
-
-
 
   //---------------------------------------------------------------//
   //-------- ShowDialog del boton de Agregar Medicamento  ---------//
@@ -730,9 +799,68 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   }
 
   // Lógica para manejar la adición de medicamento
-  void _handleAdd() {
-    // Realizar la lógica para agregar el medicamento aquí
-    _clearControllers();
-    Navigator.of(context).pop();
+  void _handleAdd() async {
+    // Obtener los datos del formulario
+    String nombre = _nameController.text;
+    String descripcion = _descriptionController.text;
+    String fechaVencimiento = _dateCadController
+        .text; // Asumiendo que este campo tiene el formato "dd-MM-yyyy"
+    String contenido = _contenidoController.text;
+    String unidadDeMedida = _unidadDeMedidaController.text;
+    int inventarioActual = int.tryParse(_inventarioActualController.text) ?? 0;
+    double precio = double.tryParse(_precioController.text) ?? 0.0;
+
+    // Verificar si todos los campos requeridos están llenos
+    if (nombre.isEmpty ||
+        descripcion.isEmpty ||
+        fechaVencimiento.isEmpty ||
+        contenido.isEmpty ||
+        unidadDeMedida.isEmpty ||
+        inventarioActual <= 0 ||
+        precio <= 0) {
+      // Mostrar un mensaje de error si algún campo requerido está vacío
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor completa todos los campos.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return; // Salir del método si hay campos vacíos
+    }
+
+    try {
+      // Llamar al método createMedicamento de APIService
+      await APIService().createMedicamento({
+        'nombre': nombre,
+        'descripcion': descripcion,
+        'fechaVencimiento': fechaVencimiento,
+        'contenido': contenido,
+        'unidadDeMedida': unidadDeMedida,
+        'inventarioActual': inventarioActual,
+        'precio': precio,
+      });
+
+      // Limpiar los controladores de texto y cerrar el diálogo
+      _clearControllers();
+      Navigator.of(context).pop();
+
+      // Mostrar un mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Medicamento agregado exitosamente'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+
+      // Puedes realizar cualquier otra acción necesaria después de agregar el medicamento, como recargar la lista de medicamentos.
+    } catch (e) {
+      // Manejar cualquier error que pueda ocurrir durante la creación del medicamento
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al agregar medicamento: $e'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
 }

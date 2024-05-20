@@ -464,6 +464,8 @@ class APIService {
       },
     );
 
+    print('medicamento actualizado: $medicamentoId');
+
     if (response.statusCode != 200) {
       throw Exception('Failed to update medicamento');
     }
@@ -489,7 +491,7 @@ class APIService {
       },
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Failed to delete medicamento');
     }
   }
