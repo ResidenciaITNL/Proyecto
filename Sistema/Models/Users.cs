@@ -21,6 +21,10 @@ namespace Sistema.Models
         public string password { get; set; }
         public string? codeRecovery { get; set; }
         public string? tokenRefresh { get; set; }
+        public string? titulo { get; set; }
+        public string? cedula { get; set; }
+        public string? institucion { get; set; }
+        public int? year { get; set; }
         public bool? firstLogin { get; set; } = true;
         public Role role { get; set; }
         public int? CustomersId { get; set; }
