@@ -97,7 +97,7 @@ namespace Sistema.Controllers
             {
                 return BadRequest(new { message = "Stock y Precio deben ser mayores a 0" });
             }
-            medicamento.UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+            medicamento.UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
             _context.Medicamento.Add(medicamento);
             await _context.SaveChangesAsync();
             return Ok();
