@@ -14,7 +14,7 @@ namespace Sistema.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetReceta([FromQuery] string id, [FromQuery] string hash)
+        public IActionResult GetReceta([FromQuery] string iure, [FromQuery] string sd)
         {
             return Ok();
         }
