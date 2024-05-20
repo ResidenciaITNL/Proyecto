@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sistema.DataBase;
 using Sistema.Models;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 
@@ -88,6 +87,19 @@ namespace Sistema.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "El email se actualizó con éxito" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            int UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == UserId);
+            if (user == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado" });
+            }
+
+            return Ok(new { user.name, user.email });
         }
 
 

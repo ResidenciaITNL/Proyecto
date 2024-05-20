@@ -15,8 +15,8 @@ namespace Sistema.Models
         public string Contenido { get; set; }
         public string unidad { get; set; }
         public bool active { get; set; } = true;
-        public int UserId { get; set; }
-        public virtual Users User { get; set; }
+        public int? UserId { get; set; }
+        public virtual Users? User { get; set; }
 
     }
 }

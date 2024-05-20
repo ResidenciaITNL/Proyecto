@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sistema.DataBase;
 using Sistema.Models;
+using System.Security.Claims;
 
 namespace Sistema.Controllers
 {
@@ -22,21 +19,12 @@ namespace Sistema.Controllers
         }
 
         // GET: api/Pacientes
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Paciente>>> GetPaciente()
-        //{
-        //  if (_context.Paciente == null)
-        //  {
-        //      return NotFound();
-        //  }
-        //    return await _context.Paciente.ToListAsync();
-        //}
-
-        // GET: api/Pacientes
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetPaciente()
         {
-            var pacientes = await _context.Paciente.Select(x => new
+            int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
+            var pacientes = await _context.Paciente.Where(x => !x.isDeleted && x.User.CustomersId == CustomerId).Select(x => new
             {
                 PacienteId = x.PacienteId,
                 Nombre = x.Nombre,
@@ -46,20 +34,59 @@ namespace Sistema.Controllers
                 Estatura = x.Estatura,
                 Peso = x.Peso,
                 Alergias = x.Alergias,
-                Estudio_medico = x.Estudio_medico,
-                Consulta = x.Consulta,
+                Estudio_medico = x.Estudio_medico ? "Si" : "No",
+                Consulta = x.Consulta ? "Si" : "No",
             }).ToListAsync();
             return Ok(pacientes);
         }
+
+        [HttpGet("EstudioMedico")]
+        [Authorize(Roles = "Especialista")]
+        public async Task<IActionResult> GetPacienteEstudioMedico()
+        {
+            int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
+            var pacientes = await _context.Paciente.Where(x => x.Estudio_medico && !x.isDeleted && x.User.CustomersId == CustomerId).Select(x => new
+            {
+                PacienteId = x.PacienteId,
+                Nombre = x.Nombre,
+                Apellido = x.Apellido,
+                Edad = x.Edad,
+                Sexo = x.Sexo,
+                Estatura = x.Estatura,
+                Peso = x.Peso,
+                Alergias = x.Alergias
+            }).ToListAsync();
+            return Ok(pacientes);
+        }
+
+        [HttpGet("Doctor")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetPacienteDoctor()
+        {
+            int CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
+            var pacientes = await _context.Paciente.Where(x => x.Consulta && !x.isDeleted && x.User.CustomersId == CustomerId).Select(x => new
+            {
+                PacienteId = x.PacienteId,
+                Nombre = x.Nombre,
+                Apellido = x.Apellido,
+                Edad = x.Edad,
+                Sexo = x.Sexo,
+                Estatura = x.Estatura,
+                Peso = x.Peso,
+                Alergias = x.Alergias
+            }).ToListAsync();
+            return Ok(pacientes);
+        }
+
 
         // GET: api/Pacientes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Paciente>> GetPaciente(int id)
         {
-          if (_context.Paciente == null)
-          {
-              return NotFound();
-          }
+            if (_context.Paciente == null)
+            {
+                return NotFound();
+            }
             var paciente = await _context.Paciente.FindAsync(id);
 
             if (paciente == null)
@@ -106,14 +133,15 @@ namespace Sistema.Controllers
         [HttpPost]
         public async Task<ActionResult<Paciente>> PostPaciente(Paciente paciente)
         {
-          if (_context.Paciente == null)
-          {
-              return Problem("Entity set 'BDContext.Paciente'  is null.");
-          }
+            var userId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            if (_context.Paciente == null)
+            {
+                return Problem();
+            }
+            paciente.UserId = userId;
             _context.Paciente.Add(paciente);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPaciente", new { id = paciente.PacienteId }, paciente);
+            return Ok();
         }
 
         // DELETE: api/Pacientes/5
@@ -130,9 +158,9 @@ namespace Sistema.Controllers
                 return NotFound();
             }
 
-            _context.Paciente.Remove(paciente);
+            paciente.isDeleted = true;
+            _context.Entry(paciente).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 

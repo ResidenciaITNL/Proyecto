@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sistema.DataBase;
 using Sistema.Models;
@@ -44,7 +39,7 @@ namespace Sistema.Controllers
                 Nombre = x.Nombre,
                 Descripcion = x.Descripcion,
                 Imagen = x.Imagen,
-                FechaVencimiento = x.FechaVencimiento.ToString("MM-yyyy"),
+                FechaVencimiento = x.FechaVencimiento,
                 Stock = x.Stock,
                 Precio = x.Precio,
                 Contenido = x.Contenido,
@@ -62,10 +57,10 @@ namespace Sistema.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Medicamento>> GetMedicamento(int id)
         {
-          if (_context.Medicamento == null)
-          {
-              return NotFound();
-          }
+            if (_context.Medicamento == null)
+            {
+                return NotFound();
+            }
             var medicamento = await _context.Medicamento.FindAsync(id);
 
             if (medicamento == null)
@@ -112,10 +107,10 @@ namespace Sistema.Controllers
         [HttpPost]
         public async Task<ActionResult<Medicamento>> PostMedicamento(Medicamento medicamento)
         {
-          if (_context.Medicamento == null)
-          {
-              return Problem("Entity set 'BDContext.Medicamento'  is null.");
-          }
+            if (_context.Medicamento == null)
+            {
+                return Problem("Entity set 'BDContext.Medicamento'  is null.");
+            }
             _context.Medicamento.Add(medicamento);
             await _context.SaveChangesAsync();
 
