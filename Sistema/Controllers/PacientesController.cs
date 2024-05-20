@@ -9,6 +9,7 @@ namespace Sistema.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PacientesController : ControllerBase
     {
         private readonly BDContext _context;
