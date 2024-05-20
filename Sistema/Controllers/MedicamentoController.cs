@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Sistema.DataBase;
 using Sistema.Models;
+using System.Security.Claims;
 
 namespace Sistema.Controllers
 {
@@ -17,23 +18,10 @@ namespace Sistema.Controllers
         }
 
         // GET: api/Medicamento
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Medicamento>>> GetMedicamento()
-        //{
-        //  if (_context.Medicamento == null)
-        //  {
-        //      return NotFound();
-        //  }
-        //    return await _context.Medicamento.ToListAsync();
-        //}
-
-
-
-        // GET: api/Medicamento
         [HttpGet]
         public async Task<IActionResult> GetMedicamento()
         {
-            var medicamentos = await _context.Medicamento.Select(x => new
+            var medicamentos = await _context.Medicamento.Where(x => (bool)x.active).Select(x => new
             {
                 MedicamentoId = x.MedicamentoId,
                 Nombre = x.Nombre,
@@ -48,10 +36,6 @@ namespace Sistema.Controllers
 
             return Ok(medicamentos);
         }
-
-
-
-
 
         // GET: api/Medicamento/5
         [HttpGet("{id}")]
@@ -74,32 +58,31 @@ namespace Sistema.Controllers
         // PUT: api/Medicamento/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMedicamento(int id, Medicamento medicamento)
+        public async Task<IActionResult> PutMedicamento(int id, MedicamentoUpdate medicamentoUpdate)
         {
-            if (id != medicamento.MedicamentoId)
+            var CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            var medicamento = await _context.Medicamento.FirstOrDefaultAsync(x => x.MedicamentoId == id && x.UserId == CustomerId);
+            if (medicamento == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
+            medicamento.Nombre = medicamentoUpdate.Nombre ?? medicamento.Nombre;
+            medicamento.Descripcion = medicamentoUpdate.Descripcion ?? medicamento.Descripcion;
+            medicamento.Imagen = medicamentoUpdate.Imagen ?? medicamento.Imagen;
+            medicamento.FechaVencimiento = medicamentoUpdate.FechaVencimiento ?? medicamento.FechaVencimiento;
+            if (medicamentoUpdate.Stock >= 0)
+            {
+                medicamento.Stock = medicamentoUpdate.Stock ?? medicamento.Stock;
+            }
+            if (medicamentoUpdate.Precio >= 0)
+            {
+                medicamento.Precio = medicamentoUpdate.Precio ?? medicamento.Precio;
+            }
+            medicamento.Contenido = medicamentoUpdate.Contenido ?? medicamento.Contenido;
+            medicamento.unidad = medicamentoUpdate.unidad ?? medicamento.unidad;
             _context.Entry(medicamento).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MedicamentoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         // POST: api/Medicamento
@@ -107,39 +90,31 @@ namespace Sistema.Controllers
         [HttpPost]
         public async Task<ActionResult<Medicamento>> PostMedicamento(Medicamento medicamento)
         {
-            if (_context.Medicamento == null)
+            var userId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            if (medicamento.Stock < 0 || medicamento.Precio < 0)
             {
-                return Problem("Entity set 'BDContext.Medicamento'  is null.");
+                return BadRequest(new { message = "Stock y Precio deben ser mayores a 0" });
             }
+            medicamento.UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value);
             _context.Medicamento.Add(medicamento);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMedicamento", new { id = medicamento.MedicamentoId }, medicamento);
+            return Ok();
         }
 
         // DELETE: api/Medicamento/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMedicamento(int id)
         {
-            if (_context.Medicamento == null)
-            {
-                return NotFound();
-            }
-            var medicamento = await _context.Medicamento.FindAsync(id);
+            var CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            var medicamento = await _context.Medicamento.FirstOrDefaultAsync(x => x.MedicamentoId == id && x.UserId == CustomerId);
             if (medicamento == null)
             {
                 return NotFound();
             }
-
-            _context.Medicamento.Remove(medicamento);
+            medicamento.active = false;
+            _context.Entry(medicamento).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool MedicamentoExists(int id)
-        {
-            return (_context.Medicamento?.Any(e => e.MedicamentoId == id)).GetValueOrDefault();
+            return Ok();
         }
     }
 }

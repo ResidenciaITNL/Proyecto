@@ -100,32 +100,28 @@ namespace Sistema.Controllers
         // PUT: api/Pacientes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPaciente(int id, Paciente paciente)
+        public async Task<IActionResult> PutPaciente(int id, PacienteUpdate pacienteUpdate)
         {
-            if (id != paciente.PacienteId)
+            var CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
+            var paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == id && x.User.CustomersId == CustomerId);
+            if (paciente == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
+            paciente.Nombre = pacienteUpdate.Nombre ?? paciente.Nombre;
+            paciente.Apellido = pacienteUpdate.Apellido ?? paciente.Apellido;
+            if (pacienteUpdate.Edad >= 0)
+            {
+                paciente.Edad = pacienteUpdate.Edad ?? paciente.Edad;
+            }
+            paciente.Estatura = pacienteUpdate.Estatura ?? paciente.Estatura;
+            paciente.Peso = pacienteUpdate.Peso ?? paciente.Peso;
+            paciente.Alergias = pacienteUpdate.Alergias ?? paciente.Alergias;
+            paciente.Estudio_medico = pacienteUpdate.Estudio_medico ?? paciente.Estudio_medico;
+            paciente.Consulta = pacienteUpdate.Consulta ?? paciente.Consulta;
             _context.Entry(paciente).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PacienteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         // POST: api/Pacientes
