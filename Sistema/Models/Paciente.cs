@@ -14,6 +14,7 @@ namespace Sistema.Models
         public decimal Peso { get; set; }
         public string Alergias { get; set; }
         public bool Estudio_medico { get; set; }
+        public string? Estudio_medico_detalle { get; set; }
         public bool Consulta { get; set; }
         public bool isDeleted { get; set; } = false;
         public int? UserId { get; set; }
