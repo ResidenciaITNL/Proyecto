@@ -106,9 +106,9 @@ class InvMedicamento extends StatelessWidget {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
-        double columnSpacing = screenWidth * 0.015;
-        double fontSize = screenWidth * 0.01;
-        double fontSizeEdit = screenWidth * 0.01;
+        double columnSpacing = screenWidth * 0.02;
+        double fontSize = screenWidth * 0.014;
+        double fontSizeEdit = screenWidth * 0.011;
 
         return FutureBuilder<List<DataRow>>(
           future: _medicamentoDataRows(context),
@@ -158,7 +158,7 @@ class InvMedicamento extends StatelessWidget {
                     label: Text(
                       'Stock',
                       style: TextStyle(
-                        fontSize: fontSizeEdit,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -167,7 +167,7 @@ class InvMedicamento extends StatelessWidget {
                     label: Text(
                       'Precio',
                       style: TextStyle(
-                        fontSize: fontSizeEdit,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -176,7 +176,7 @@ class InvMedicamento extends StatelessWidget {
                     label: Text(
                       'Contenido',
                       style: TextStyle(
-                        fontSize: fontSizeEdit,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -185,7 +185,7 @@ class InvMedicamento extends StatelessWidget {
                     label: Text(
                       'Unidad de medida',
                       style: TextStyle(
-                        fontSize: fontSizeEdit,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -219,13 +219,13 @@ class InvMedicamento extends StatelessWidget {
         await apiService.getMedicamento();
 
     final double screenWidth2 = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth2 * 0.009;
+    double fontSize = screenWidth2 * 0.012;
 
     return medicamento.map((medicamento) {
       DateTime fechaVencimiento;
       try {
         fechaVencimiento =
-            DateFormat('MM-yyyy').parse(medicamento['fechaVencimiento']);
+            DateFormat('yy-MM-dd').parse(medicamento['fechaVencimiento']);
       } catch (e) {
         fechaVencimiento = DateTime
             .now(); // Manejar el error o asignar una fecha predeterminada
@@ -241,7 +241,7 @@ class InvMedicamento extends StatelessWidget {
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
-          DateFormat('dd-MM-yyyy').format(fechaVencimiento),
+          DateFormat('yy-MM-dd').format(fechaVencimiento),
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
@@ -272,8 +272,6 @@ class InvMedicamento extends StatelessWidget {
                 int medicamentoId = medicamento['medicamentoId'];
                 String nombre = medicamento['nombre'];
                 String descripcion = medicamento['descripcion'];
-                DateTime fechaVencimiento = DateFormat('MM-yyyy')
-                    .parse(medicamento['fechaVencimiento']);
                 int stock = medicamento['stock'];
                 double precio = medicamento['precio'];
                 String unidad = medicamento['unidad'];
@@ -327,7 +325,7 @@ class InvMedicamento extends StatelessWidget {
     TextEditingController descriptionController =
         TextEditingController(text: descripcion);
     TextEditingController fechaCaducidadController = TextEditingController(
-        text: DateFormat('dd-MM-yyyy').format(fechaVencimiento));
+        text: DateFormat('yyyy-MM-dd').format(fechaVencimiento));
     TextEditingController contenidoController =
         TextEditingController(text: contenido);
     TextEditingController unidMedidaController =
@@ -368,13 +366,15 @@ class InvMedicamento extends StatelessWidget {
                       onTap: () async {
                         DateTime? pickedDate = await showDatePicker(
                           context: context,
-                          initialDate: fechaVencimiento,
+                          initialDate: fechaVencimiento.isBefore(DateTime.now())
+                              ? DateTime.now()
+                              : fechaVencimiento,
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2100),
                         );
                         if (pickedDate != null) {
                           String formattedDate =
-                              DateFormat('dd-MM-yyyy').format(pickedDate);
+                              DateFormat('yyyy-MM-dd').format(pickedDate);
                           setState(() {
                             fechaCaducidadController.text = formattedDate;
                           });
@@ -434,8 +434,7 @@ class InvMedicamento extends StatelessWidget {
                       await APIService().updateMedicamento(medicamentoId, {
                         'nombre': newName,
                         'descripcion': newDescripcion,
-                        'fechaVencimiento': DateFormat('yyyy-MM-dd').format(
-                            DateFormat('dd-MM-yyyy').parse(newFechaCaducidad)),
+                        'fechaVencimiento': newFechaCaducidad,
                         'stock': newInvActual,
                         'precio': newPrecio,
                         'contenido': newContenido,
@@ -678,7 +677,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         );
                         if (pickedDate != null) {
                           String formattedDate =
-                              '${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}';
+                              DateFormat('yyyy-MM-dd').format(pickedDate);
                           setState(() {
                             _dateCadController.text = formattedDate;
                           });
@@ -803,8 +802,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     // Obtener los datos del formulario
     String nombre = _nameController.text;
     String descripcion = _descriptionController.text;
-    String fechaVencimiento = _dateCadController
-        .text; // Asumiendo que este campo tiene el formato "dd-MM-yyyy"
+    String fechaVencimiento = _dateCadController.text;
     String contenido = _contenidoController.text;
     String unidadDeMedida = _unidadDeMedidaController.text;
     int inventarioActual = int.tryParse(_inventarioActualController.text) ?? 0;
@@ -835,8 +833,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         'descripcion': descripcion,
         'fechaVencimiento': fechaVencimiento,
         'contenido': contenido,
-        'unidadDeMedida': unidadDeMedida,
-        'inventarioActual': inventarioActual,
+        'unidad': unidadDeMedida,
+        'stock': inventarioActual,
         'precio': precio,
       });
 
@@ -851,6 +849,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           duration: Duration(seconds: 3),
         ),
       );
+
+      
+                    Navigator.pushReplacementNamed(
+                        context, 'InventarioMedicamento');
 
       // Puedes realizar cualquier otra acción necesaria después de agregar el medicamento, como recargar la lista de medicamentos.
     } catch (e) {

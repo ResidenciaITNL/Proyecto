@@ -252,6 +252,11 @@ class Recep extends StatelessWidget {
     double fontSize = screenWidth2 * 0.015;
 
     return users.map((user) {
+      // Convertir los valores de 'estudio_medico' y 'consulta' a booleanos si son cadenas
+      bool estudioMedico =
+          user['estudio_medico'].toString().toLowerCase() == 'true';
+      bool consulta = user['consulta'].toString().toLowerCase() == 'true';
+
       return DataRow(cells: [
         DataCell(Text(
           user['nombre'].toString(),
@@ -322,8 +327,6 @@ class Recep extends StatelessWidget {
                 double estatura = user['estatura'];
                 double peso = user['peso'];
                 String alergias = user['alergias'];
-                bool estudioMedico = user['estudio_medico'];
-                bool consulta = user['consulta'];
 
                 // Llamar al método para mostrar el diálogo de edición
                 _showEditPacienteDialog(
@@ -352,8 +355,9 @@ class Recep extends StatelessWidget {
                 // Obtener los datos relevantes de la fila seleccionada
                 int pacienteId = user['pacienteId'];
                 String nombre = user['nombre'];
+                String apellido = user['apellido'];
 
-                _showDeletePacienteDialog(context, pacienteId, nombre);
+                _showDeletePacienteDialog(context, pacienteId, nombre, apellido);
               },
             ),
           ],
@@ -377,8 +381,8 @@ void _showEditPacienteDialog(
     double estatura,
     double peso,
     String alergias,
-    bool? estudioMedico,
-    bool? consulta) {
+    bool estudioMedico,
+    bool consulta) {
   TextEditingController nameController = TextEditingController(text: nombre);
   TextEditingController apellidoController =
       TextEditingController(text: apellido);
@@ -463,7 +467,7 @@ void _showEditPacienteDialog(
                         value: estudioMedico,
                         onChanged: (newValue) {
                           setState(() {
-                            estudioMedico = newValue;
+                            estudioMedico = newValue ?? false;
                           });
                         },
                       ),
@@ -476,7 +480,7 @@ void _showEditPacienteDialog(
                         value: consulta,
                         onChanged: (newValue) {
                           setState(() {
-                            consulta = newValue;
+                            consulta = newValue ?? false;
                           });
                         },
                       ),
@@ -601,7 +605,7 @@ void _showEditPacienteDialog(
 //----------------------------------------------------------------//
 
 void _showDeletePacienteDialog(
-    BuildContext context, int pacienteId, String nombre) {
+    BuildContext context, int pacienteId, String nombre, String apellido) {
   final APIService apiService = APIService();
   showDialog(
     context: context,
@@ -610,7 +614,7 @@ void _showDeletePacienteDialog(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
             title: Text(
-                'Seguro que quieres dar de baja al paciente seleccionado del sistema?\n\n$nombre'),
+                'Seguro que quieres dar de baja al paciente seleccionado del sistema?\n\n$nombre $apellido'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -830,13 +834,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         Row(
                           children: [
                             Checkbox(
-                              value: isConsulted,
+                              value: isEstudioMed,
                               onChanged: (newValue) {
                                 setState(() {
-                                  isConsulted = newValue!;
-                                  _updateButtonState(setState);
-                                  _EstudioMedController.text =
-                                      isConsulted ? 'si' : 'no';
+                                  isEstudioMed = newValue ?? false;
                                 });
                               },
                             ),
@@ -851,13 +852,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         Row(
                           children: [
                             Checkbox(
-                              value: isEstudioMed,
+                              value: isConsulted,
                               onChanged: (newValue) {
                                 setState(() {
-                                  isEstudioMed = newValue!;
-                                  _updateButtonState(setState);
-                                  _ConsultaController.text =
-                                      isEstudioMed ? 'si' : 'no';
+                                  isConsulted = newValue ?? false;
                                 });
                               },
                             ),

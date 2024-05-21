@@ -23,6 +23,27 @@ class CuentaUser extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final bool isLargeScreen = width > 870;
 
+    Future<List<DataRow>> _userData(BuildContext context) async {
+      final List<Map<String, dynamic>> MyAccount =
+          await apiService.getMicuenta();
+
+      final double screenWidth2 = MediaQuery.of(context).size.width;
+      double fontSize = screenWidth2 * 0.018;
+
+      return MyAccount.map((user) {
+        return DataRow(cells: [
+          DataCell(Text(
+            user['name'], // Acceder a 'name' en minúsculas
+            style: TextStyle(fontSize: fontSize),
+          )),
+          DataCell(Text(
+            user['email'], // Acceder a 'email' en minúsculas
+            style: TextStyle(fontSize: fontSize),
+          )),
+        ]);
+      }).toList();
+    }
+
     return Theme(
       data: ThemeData.light(),
       child: Scaffold(
@@ -102,6 +123,15 @@ class CuentaUser extends StatelessWidget {
                   // _buildInfoRow("Número de teléfono", "+528141", context),
                   const SizedBox(height: 15),
                   _buildInfoRow("Contraseña", "************", context),
+                  const SizedBox(height: 15),
+                  _buildInfoRow("Cedula", "", context),
+                  const SizedBox(height: 15),
+                  _buildInfoRow("Año", "", context),
+                  const SizedBox(height: 15),
+                  _buildInfoRow("Titulo", "", context),
+                  const SizedBox(height: 15),
+                  _buildInfoRow("Institución Educativa", "", context),
+                  const SizedBox(height: 15),
                 ],
               ),
             ),
@@ -296,13 +326,12 @@ class CuentaUser extends StatelessWidget {
                               // Actualización exitosa
                               Navigator.of(context).pop(); // Cerrar el diálogo
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        "Email actualizado exitosamente."),
-                                  ),
-                                );
-
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text("Email actualizado exitosamente."),
+                                ),
+                              );
                             } else {
                               // Mostrar un diálogo de error con el mensaje del servidor
                               showDialog(

@@ -154,6 +154,37 @@ class APIService {
     }
   }
 
+
+  //------------------------------------------------//
+  //-- Método para obtener los datos de la cuenta --//
+  //------------------------------------------------//
+
+  Future<List<Map<String, dynamic>>> getMicuenta() async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/MyAccont'),
+      headers: {
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+    print('Toke generado desde el get: $token');
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load mis datos');
+    }
+  }
+
+
+
+
   //--------------------------------------------------------------------------//
   //--------------------------------------------------------------------------//
   //-------------------------- MODULO DE USUARIOS ----------------------------//
@@ -435,7 +466,7 @@ class APIService {
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode != 200 || response.statusCode != 204) {
       // medicamento creado exitosamente, no es necesario hacer nada más aquí
       return;
     } else {
