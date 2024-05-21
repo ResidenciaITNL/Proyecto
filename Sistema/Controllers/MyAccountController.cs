@@ -181,17 +181,30 @@ namespace Sistema.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            int UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
-            Users? user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == UserId);
-            if (user == null)
+            int UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value);
+            if (UserId == 0)
             {
                 return NotFound(new { message = "Usuario no encontrado" });
             }
 
-            return Ok(new { user.name, user.email });
+            List<Users> users = await _context.Users.Where(x => x.UserId == UserId).ToListAsync();
+            if (users == null || !users.Any())
+            {
+                return NotFound(new { message = "Usuario no encontrado" });
+            }
+
+            var result = users.Select(user => new
+            {
+                user.name,
+                user.email,
+                role = user.role.ToString(),
+                user.titulo,
+                user.cedula,
+                user.institucion,
+                user.year
+            }).ToList();
+
+            return Ok(result);
         }
-
-
-
     }
 }

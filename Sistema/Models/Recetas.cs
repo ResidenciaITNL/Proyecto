@@ -12,6 +12,7 @@ namespace Sistema.Models
         public string? hash { get; set; }
         public int? UserId { get; set; }
         public virtual Users? User { get; set; }
-
+        public int PacienteId { get; set; }
+        public virtual Paciente? Paciente { get; set; }
     }
 }
