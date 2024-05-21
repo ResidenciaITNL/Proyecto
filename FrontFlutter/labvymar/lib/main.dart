@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       routes: {
         'login' : (_) => Login(), // Agregando la ruta para la vista login
         'recoverpass' : (_) => RecoverPass(), // Agregando la ruta para la vista recoverpass
-        'cambiarPassword' : (_) => CambiarPassword(), // Agregando la ruta para la vista recoverpass
+        'cambiarPassword' : (_) => CambiarPassword(), // Agregando la ruta para la vista cambiarPassword
         'home_admin' : (_) => HomeAdmin(), // Agregando la ruta para la vista home_admin
         'AdministrarUsuarios' : (_) => AdminUsuarios(), // Agregando la ruta para la vista AdministrarUsuarios
         'ConsultaMedica' : (_) => ConsMedica(), // Agregando la ruta para la vista ConsultaMedica

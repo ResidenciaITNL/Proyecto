@@ -306,6 +306,8 @@ void _showCapturarReceta(
   TextEditingController sexoController = TextEditingController(text: sexo);
   TextEditingController pesoController =
       TextEditingController(text: peso.toString());
+  TextEditingController estaturaController =
+      TextEditingController(text: estatura.toString());
   TextEditingController alergiasController =
       TextEditingController(text: alergias);
   DateTime fechaActual = DateTime.now();
@@ -334,11 +336,12 @@ void _showCapturarReceta(
                           flex: 2,
                           child: TextFormField(
                             controller: nombreCompletoController,
-                            decoration: InputDecoration(labelText: 'Nombre'),
+                            decoration: InputDecoration(
+                                labelText: 'Nombre del paciente'),
                             readOnly: true, // Campo no editable
                           ),
                         ),
-                        const SizedBox(width: 150),
+                        SizedBox(width: constraints.maxWidth * 0.1),
                         Expanded(
                           flex: 1,
                           child: TextFormField(
@@ -348,7 +351,7 @@ void _showCapturarReceta(
                             readOnly: true, // Campo no editable
                           ),
                         ),
-                        const SizedBox(width: 150),
+                        SizedBox(width: constraints.maxWidth * 0.1),
                         Expanded(
                           flex: 1,
                           child: TextFormField(
@@ -359,7 +362,7 @@ void _showCapturarReceta(
                             readOnly: true, // Campo no editable
                           ),
                         ),
-                        const SizedBox(width: 150),
+                        SizedBox(width: constraints.maxWidth * 0.1),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -370,19 +373,33 @@ void _showCapturarReceta(
                           child: TextFormField(
                             controller: sexoController,
                             decoration: InputDecoration(labelText: 'Sexo'),
-                            readOnly: true, 
+                            readOnly: true,
                           ),
                         ),
-                        const SizedBox(width: 150),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: estaturaController,
+                            decoration: InputDecoration(labelText: 'Temperatura'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
                         Expanded(
                           flex: 1,
                           child: TextFormField(
                             controller: alergiasController,
                             decoration: InputDecoration(labelText: 'Alergias'),
-                            readOnly: true, // Campo no editable
+                            readOnly: true, 
                           ),
                         ),
-                        const SizedBox(width: 150),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
                         Expanded(
                           flex: 1,
                           child: TextFormField(
@@ -392,14 +409,14 @@ void _showCapturarReceta(
                             readOnly: true, // Campo no editable
                           ),
                         ),
-                        const SizedBox(width: 150),
+                        SizedBox(width: constraints.maxWidth * 0.56),
                       ],
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: contenidoController,
                       decoration: InputDecoration(labelText: 'Rx'),
-                      maxLines: 5,
+                      maxLines: 10,
                       keyboardType: TextInputType.multiline,
                     ),
                   ],

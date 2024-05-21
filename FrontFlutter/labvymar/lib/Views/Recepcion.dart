@@ -167,7 +167,7 @@ class Recep extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Text(
-                      'Estatura',
+                      'Temperatura',
                       style: TextStyle(
                         fontSize: fontSize,
                         fontWeight: FontWeight.bold,
@@ -436,7 +436,7 @@ void _showEditPacienteDialog(
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: estaturaController,
-                    decoration: InputDecoration(labelText: 'Estatura'),
+                    decoration: InputDecoration(labelText: 'Temperatura'),
                     keyboardType:
                         TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
@@ -803,7 +803,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     ),
                     TextFormField(
                       controller: _EstaturaController,
-                      decoration: const InputDecoration(labelText: 'Estatura'),
+                      decoration: const InputDecoration(labelText: 'Temperatura'),
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [

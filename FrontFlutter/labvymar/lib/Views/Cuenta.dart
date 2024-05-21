@@ -11,38 +11,12 @@ class CuentaUser extends StatelessWidget {
   CuentaUser({Key? key}) : super(key: key);
 
   final APIService apiService = APIService();
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  //-------------------------------------------------------------//
-  //-------- Widget que hace referencia al navbar y body --------//
-  //-------------------------------------------------------------//
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final bool isLargeScreen = width > 870;
-
-    Future<List<DataRow>> _userData(BuildContext context) async {
-      final List<Map<String, dynamic>> MyAccount =
-          await apiService.getMicuenta();
-
-      final double screenWidth2 = MediaQuery.of(context).size.width;
-      double fontSize = screenWidth2 * 0.018;
-
-      return MyAccount.map((user) {
-        return DataRow(cells: [
-          DataCell(Text(
-            user['name'], // Acceder a 'name' en minúsculas
-            style: TextStyle(fontSize: fontSize),
-          )),
-          DataCell(Text(
-            user['email'], // Acceder a 'email' en minúsculas
-            style: TextStyle(fontSize: fontSize),
-          )),
-        ]);
-      }).toList();
-    }
 
     return Theme(
       data: ThemeData.light(),
@@ -90,60 +64,89 @@ class CuentaUser extends StatelessWidget {
           ],
         ),
         drawer: isLargeScreen ? null : NavBarWidgets.drawer(context),
-        body: Container(
-          color: Colors.white,
-          child: Center(
-            child: Container(
-              width: 420,
-              margin: const EdgeInsets.only(top: 25),
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
+        body: FutureBuilder<List<Map<String, dynamic>>>(
+          future: apiService.getMicuenta(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error al cargar los datos'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No hay datos disponibles'));
+            } else {
+              final user = snapshot.data!.first;
+
+              return Container(
                 color: Colors.white,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Información de la cuenta",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                child: Center(
+                  child: Container(
+                    width: 420,
+                    margin: const EdgeInsets.only(top: 25),
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Información de la cuenta",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 50),
+                        _nameRow(user['name'] ?? 'Nombre no disponible'),
+                        const SizedBox(height: 25),
+                        _buildInfoRow(
+                          "Correo electrónico",
+                          user['email'] ?? 'Correo no disponible',
+                          context,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildInfoRow(
+                          "Contraseña",
+                          "********",
+                          context,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildInfoRow(
+                          "Cédula",
+                          user['cedula'] ?? 'Cedula no disponible',
+                          context,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildInfoRow(
+                          "Año",
+                          user['year'] ?? 'Año no disponible',
+                          context,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildInfoRow(
+                          "Título",
+                          user['titulo'] ?? 'Titulo no disponible',
+                          context,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildInfoRow(
+                          "Institución Educativa",
+                          user['institucion'] ?? 'Institución no disponible',
+                          context,
+                        ),
+                        const SizedBox(height: 15),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 50),
-                  _nameRow("Jorge Cantú"),
-                  const SizedBox(height: 25),
-                  _buildInfoRow(
-                      "Correo electrónico", "alberto@mail.com", context),
-
-                  // --------- Campo de telefono oculto ---------
-
-                  // const SizedBox(height: 15),
-                  // _buildInfoRow("Número de teléfono", "+528141", context),
-                  const SizedBox(height: 15),
-                  _buildInfoRow("Contraseña", "************", context),
-                  const SizedBox(height: 15),
-                  _buildInfoRow("Cedula", "", context),
-                  const SizedBox(height: 15),
-                  _buildInfoRow("Año", "", context),
-                  const SizedBox(height: 15),
-                  _buildInfoRow("Titulo", "", context),
-                  const SizedBox(height: 15),
-                  _buildInfoRow("Institución Educativa", "", context),
-                  const SizedBox(height: 15),
-                ],
-              ),
-            ),
-          ),
+                ),
+              );
+            }
+          },
         ),
       ),
     );
   }
-
-  //---------------------------------------------------//
-  //-------- Widget que hace referencia nombre --------//
-  //---------------------------------------------------//
 
   Widget _nameRow(String label) {
     return Row(
@@ -161,11 +164,8 @@ class CuentaUser extends StatelessWidget {
     );
   }
 
-  //------------------------------------------------------------------------------------//
-  //-------- Widget que hace referencia a los nombres de los datos de la cuenta --------//
-  //------------------------------------------------------------------------------------//
-
-  Widget _buildInfoRow(String label, String value, BuildContext context) {
+  Widget _buildInfoRow(String label, dynamic value, BuildContext context) {
+    String displayValue = value.toString(); // Convertir el valor a String
     return Builder(
       builder: (BuildContext context) {
         return Row(
@@ -182,7 +182,7 @@ class CuentaUser extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Text(
-                value,
+                displayValue, // Utilizar el valor convertido
                 textAlign: TextAlign.right,
                 style: const TextStyle(
                   fontSize: 16,
@@ -197,11 +197,19 @@ class CuentaUser extends StatelessWidget {
               onPressed: () {
                 // Implementar la lógica de edición aquí
                 if (label == "Correo electrónico") {
-                  _showEditEmailDialog(context, value);
+                  _showEditEmailDialog(context, displayValue);
                 } else if (label == "Número de teléfono") {
-                  _showEditPhoneDialog(context, value);
+                  _showEditPhoneDialog(context, displayValue);
                 } else if (label == "Contraseña") {
-                  _showEditPasswordDialog(context, value);
+                  _showEditPasswordDialog(context, displayValue);
+                } else if (label == "Título") {
+                  _showEditTituloDialog(context, displayValue);
+                } else if (label == "Cédula") {
+                  _showEditCedulaDialog(context, displayValue);
+                } else if (label == "Institución Educativa") {
+                  _showEditInstitucionDialog(context, displayValue);
+                } else if (label == "Año") {
+                  _showEditYearDialog(context, displayValue);
                 }
               },
             ),
@@ -643,6 +651,357 @@ class CuentaUser extends StatelessWidget {
                   backgroundColor: MaterialStateProperty.all<Color>(
                       const Color(0xFF094293)) // Color del botón de guardar
                   ),
+              child: const Text(
+                "Guardar",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //---------------------------------------------------------------//
+  //-------- ShowDialog de la opcion de Editar el Titulo  ---------//
+  //---------------------------------------------------------------//
+
+  void _showEditTituloDialog(BuildContext context, String titulo) {
+    TextEditingController _tituloController =
+        TextEditingController(text: titulo);
+    TextEditingController _newTituloController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Verifica tu título"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _tituloController,
+                enabled: false, // Bloquea la edición del título antiguo
+                decoration: const InputDecoration(
+                  hintText: "Título",
+                ),
+              ),
+              TextField(
+                controller: _newTituloController,
+                decoration: const InputDecoration(
+                  hintText: "Modifica tu título",
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String oldTitulo = _tituloController.text;
+                String newTitulo = _newTituloController.text;
+                try {
+                  Map<String, dynamic> response =
+                      await APIService().actualizarTitulo(
+                    Oldtitulo: oldTitulo,
+                    titulo: newTitulo,
+                  );
+                  if (response['success']) {
+                    // Manejar el éxito, por ejemplo, mostrar un mensaje de éxito
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Título actualizado correctamente')),
+                    );
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+
+                    Navigator.pushReplacementNamed(context, 'Cuenta');
+                  } else {
+                    // Manejar el error, por ejemplo, mostrar un mensaje de error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(response['message'])),
+                    );
+                  }
+                } catch (e) {
+                  // Manejar errores de conexión u otros errores
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al actualizar el título')),
+                  );
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  const Color(0xFF094293),
+                ), // Color del botón de guardar
+              ),
+              child: const Text(
+                "Guardar",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //------------------------------------------------------------//
+  //-------- ShowDialog de la opcion de Editar Cedula  ---------//
+  //------------------------------------------------------------//
+
+  void _showEditCedulaDialog(BuildContext context, String cedula) {
+    TextEditingController _cedulaController =
+        TextEditingController(text: cedula);
+    TextEditingController _newCedulaController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Verifica tu cédula"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _cedulaController,
+                enabled: false, // Bloquea la edición de la cédula antigua
+                decoration: const InputDecoration(
+                  hintText: "Cédula",
+                ),
+              ),
+              TextField(
+                controller: _newCedulaController,
+                decoration: const InputDecoration(
+                  hintText: "Modifica tu cédula",
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String oldCedula = _cedulaController.text;
+                String newCedula = _newCedulaController.text;
+                try {
+                  Map<String, dynamic> response =
+                      await APIService().actualizarCedula(
+                    Oldcedula: oldCedula,
+                    cedula: newCedula,
+                  );
+                  if (response['success']) {
+                    // Manejar el éxito, por ejemplo, mostrar un mensaje de éxito
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Cédula actualizada correctamente')),
+                    );
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+
+                    Navigator.pushReplacementNamed(context, 'Cuenta');
+                  } else {
+                    // Manejar el error, por ejemplo, mostrar un mensaje de error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(response['message'])),
+                    );
+                  }
+                } catch (e) {
+                  // Manejar errores de conexión u otros errores
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al actualizar la cédula')),
+                  );
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  const Color(0xFF094293),
+                ), // Color del botón de guardar
+              ),
+              child: const Text(
+                "Guardar",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //-----------------------------------------------------------------//
+  //-------- ShowDialog de la opcion de Editar Institución  ---------//
+  //-----------------------------------------------------------------//
+
+  void _showEditInstitucionDialog(BuildContext context, String institucion) {
+    TextEditingController _institucionController =
+        TextEditingController(text: institucion);
+    TextEditingController _newInstitucionController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Verifica tu institución"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _institucionController,
+                enabled: false, // Bloquea la edición de la institución antigua
+                decoration: const InputDecoration(
+                  hintText: "Institución",
+                ),
+              ),
+              TextField(
+                controller: _newInstitucionController,
+                decoration: const InputDecoration(
+                  hintText: "Modifica tu Institución",
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String oldInstitucion = _institucionController.text;
+                String newInstitucion = _newInstitucionController.text;
+                try {
+                  Map<String, dynamic> response =
+                      await APIService().actualizarInstitucion(
+                    Oldinstitucion: oldInstitucion,
+                    institucion: newInstitucion,
+                  );
+                  if (response['success']) {
+                    // Manejar el éxito, por ejemplo, mostrar un mensaje de éxito
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Institución actualizada correctamente')),
+                    );
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+
+                    Navigator.pushReplacementNamed(context, 'Cuenta');
+                  } else {
+                    // Manejar el error, por ejemplo, mostrar un mensaje de error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(response['message'])),
+                    );
+                  }
+                } catch (e) {
+                  // Manejar errores de conexión u otros errores
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Error al actualizar la institución')),
+                  );
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  const Color(0xFF094293),
+                ), // Color del botón de guardar
+              ),
+              child: const Text(
+                "Guardar",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //---------------------------------------------------------//
+  //-------- ShowDialog de la opcion de Editar Año  ---------//
+  //---------------------------------------------------------//
+
+  void _showEditYearDialog(BuildContext context, String year) {
+    TextEditingController _yearController = TextEditingController(text: year);
+    TextEditingController _newYearController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Verifica tu año"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _yearController,
+                enabled: false, // Bloquea la edición del año antiguo
+                decoration: const InputDecoration(
+                  hintText: "Año",
+                ),
+              ),
+              TextField(
+                controller: _newYearController,
+                keyboardType:
+                    TextInputType.number, // Teclado numérico para el nuevo año
+                decoration: const InputDecoration(
+                  hintText: "Modifica el año",
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String oldYear = _yearController.text;
+                int newYear = int.tryParse(_newYearController.text) ??
+                    0; // Convertir a int, 0 si no se puede convertir
+                try {
+                  Map<String, dynamic> response =
+                      await APIService().actualizarYear(
+                    Oldyear: oldYear,
+                    year: newYear,
+                  );
+                  if (response['success']) {
+                    // Manejar el éxito, por ejemplo, mostrar un mensaje de éxito
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Año actualizado correctamente')),
+                    );
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+
+                    Navigator.pushReplacementNamed(context, 'Cuenta');
+                  } else {
+                    // Manejar el error, por ejemplo, mostrar un mensaje de error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(response['message'])),
+                    );
+                  }
+                } catch (e) {
+                  // Manejar errores de conexión u otros errores
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al actualizar el año')),
+                  );
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  const Color(0xFF094293),
+                ), // Color del botón de guardar
+              ),
               child: const Text(
                 "Guardar",
                 style: TextStyle(color: Colors.white),

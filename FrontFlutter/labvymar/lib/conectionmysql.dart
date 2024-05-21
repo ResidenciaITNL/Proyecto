@@ -154,7 +154,6 @@ class APIService {
     }
   }
 
-
   //------------------------------------------------//
   //-- Método para obtener los datos de la cuenta --//
   //------------------------------------------------//
@@ -167,7 +166,7 @@ class APIService {
     }
 
     final response = await http.get(
-      Uri.parse('$baseUrl/MyAccont'),
+      Uri.parse('$baseUrl/MyAccount'),
       headers: {
         'Authorization':
             'Bearer $token', // Añadir el token al encabezado de autorización
@@ -178,12 +177,177 @@ class APIService {
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load mis datos');
+      throw Exception('Failed to load mi cuenta');
     }
   }
 
+  //--------------------------------------------//
+  //-- Método para cambiar cedula del usuario --//
+  //--------------------------------------------//
 
+  Future<Map<String, dynamic>> actualizarCedula({
+    required String Oldcedula,
+    required String cedula,
+  }) async {
+    String? token = await getToken(); // Obtener el token guardado
 
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    Map<String, String> payload = {
+      'oldCedula': Oldcedula,
+      'cedula': cedula,
+    };
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/MyAccount/change-cedula'),
+      body: jsonEncode(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      responseBody['success'] = true;
+      return responseBody;
+    } else {
+      Map<String, dynamic> errorResponse = {
+        'success': false,
+        'message':
+            jsonDecode(response.body)['message'] ?? 'Failed to update cedula',
+      };
+      return errorResponse;
+    }
+  }
+
+  //--------------------------------------------//
+  //-- Método para cambiar Titulo del usuario --//
+  //--------------------------------------------//
+
+  Future<Map<String, dynamic>> actualizarTitulo({
+    required String Oldtitulo,
+    required String titulo,
+  }) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    Map<String, String> payload = {
+      'oldTitulo': Oldtitulo,
+      'titulo': titulo,
+    };
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/MyAccount/change-titulo'),
+      body: jsonEncode(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      responseBody['success'] = true;
+      return responseBody;
+    } else {
+      Map<String, dynamic> errorResponse = {
+        'success': false,
+        'message':
+            jsonDecode(response.body)['message'] ?? 'Failed to update titulo',
+      };
+      return errorResponse;
+    }
+  }
+
+  //--------------------------------------------//
+  //-- Método para cambiar Titulo del usuario --//
+  //--------------------------------------------//
+
+  Future<Map<String, dynamic>> actualizarInstitucion({
+    required String Oldinstitucion,
+    required String institucion,
+  }) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    Map<String, String> payload = {
+      'oldInstitucion': Oldinstitucion,
+      'institucion': institucion,
+    };
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/MyAccount/change-institucion'),
+      body: jsonEncode(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      responseBody['success'] = true;
+      return responseBody;
+    } else {
+      Map<String, dynamic> errorResponse = {
+        'success': false,
+        'message': jsonDecode(response.body)['message'] ??
+            'Failed to update institucion',
+      };
+      return errorResponse;
+    }
+  }
+
+  //-----------------------------------------//
+  //-- Método para cambiar Año del usuario --//
+  //-----------------------------------------//
+
+  Future<Map<String, dynamic>> actualizarYear({
+    required String Oldyear,
+    required int year,
+  }) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    Map<String, dynamic> payload = {
+      'oldYear': Oldyear,
+      'year': year.toString(), // Convertir el año a String
+    };
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/MyAccount/change-year'),
+      body: jsonEncode(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      responseBody['success'] = true;
+      return responseBody;
+    } else {
+      Map<String, dynamic> errorResponse = {
+        'success': false,
+        'message':
+            jsonDecode(response.body)['message'] ?? 'Failed to update year',
+      };
+      return errorResponse;
+    }
+  }
 
   //--------------------------------------------------------------------------//
   //--------------------------------------------------------------------------//
@@ -478,7 +642,8 @@ class APIService {
   //-- Método para actualizar datos del medicamento --//
   //--------------------------------------------------//
 
-  Future<void> updateMedicamento(int medicamentoId, Map<String, dynamic> newData) async {
+  Future<void> updateMedicamento(
+      int medicamentoId, Map<String, dynamic> newData) async {
     String? token = await getToken(); // Obtener el token guardado
 
     if (token == null) {
