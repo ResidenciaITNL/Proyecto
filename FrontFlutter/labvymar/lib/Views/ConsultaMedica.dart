@@ -158,7 +158,7 @@ class ConsMedica extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Text(
-                      'Consultar ',
+                      'Realizar Consulta',
                       style: TextStyle(
                         fontSize: fontSizeEdit,
                         fontWeight: FontWeight.bold,
@@ -167,7 +167,7 @@ class ConsMedica extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Text(
-                      'Receta PDF',
+                      'Receta',
                       style: TextStyle(
                         fontSize: fontSizeEdit,
                         fontWeight: FontWeight.bold,
@@ -262,7 +262,7 @@ class ConsMedica extends StatelessWidget {
           Center(
             child: IconButton(
               icon: Icon(
-                Icons.picture_as_pdf_rounded,
+                Icons.library_books_rounded,
                 color: Colors.black,
                 size: iconSize,
               ),
@@ -381,7 +381,7 @@ void _showCapturarReceta(
                           flex: 1,
                           child: TextFormField(
                             controller: estaturaController,
-                            decoration: InputDecoration(labelText: 'Temperatura'),
+                            decoration: InputDecoration(labelText: 'Estatura'),
                             readOnly: true, // Campo no editable
                           ),
                         ),

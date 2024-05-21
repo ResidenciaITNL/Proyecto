@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:labvymar/Views/recoverpass.dart';
+
 import 'package:labvymar/conectionmysql.dart';
 
 class CambiarPassword extends StatelessWidget {

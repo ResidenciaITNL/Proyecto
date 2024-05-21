@@ -140,15 +140,6 @@ class Recep extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Text(
-                      'Apellido',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
                       'Edad',
                       style: TextStyle(
                         fontSize: fontSize,
@@ -165,44 +156,33 @@ class Recep extends StatelessWidget {
                       ),
                     ),
                   ),
-                  DataColumn(
-                    label: Text(
-                      'Temperatura',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Peso',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Alergias',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  // ----------- Campo de presion oculto
                   // DataColumn(
                   //   label: Text(
-                  //     'Presión arterial',
+                  //     'Estatura',
                   //     style: TextStyle(
                   //       fontSize: fontSize,
                   //       fontWeight: FontWeight.bold,
                   //     ),
                   //   ),
                   // ),
-
+                  // DataColumn(
+                  //   label: Text(
+                  //     'Peso',
+                  //     style: TextStyle(
+                  //       fontSize: fontSize,
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  // ),
+                  // DataColumn(
+                  //   label: Text(
+                  //     'Alergias',
+                  //     style: TextStyle(
+                  //       fontSize: fontSize,
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  // ),
                   DataColumn(
                     label: Text(
                       'Estudio Medico',
@@ -257,13 +237,11 @@ class Recep extends StatelessWidget {
           user['estudio_medico'].toString().toLowerCase() == 'true';
       bool consulta = user['consulta'].toString().toLowerCase() == 'true';
 
+      String nombreCompleto = user['nombre'] + ' ' + user['apellido'];
+
       return DataRow(cells: [
         DataCell(Text(
-          user['nombre'].toString(),
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(Text(
-          user['apellido'].toString(),
+          nombreCompleto,
           style: TextStyle(fontSize: fontSize),
         )),
         DataCell(Text(
@@ -274,23 +252,23 @@ class Recep extends StatelessWidget {
           user['sexo'].toString(),
           style: TextStyle(fontSize: fontSize),
         )),
-        DataCell(Text(
-          user['estatura'].toString(),
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(Text(
-          user['peso'].toString(),
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(
-          Container(
-            alignment: Alignment.center,
-            child: Text(
-              user['alergias'].toString(),
-              style: TextStyle(fontSize: fontSize),
-            ),
-          ),
-        ),
+        // DataCell(Text(
+        //   user['estatura'].toString(),
+        //   style: TextStyle(fontSize: fontSize),
+        // )),
+        // DataCell(Text(
+        //   user['peso'].toString(),
+        //   style: TextStyle(fontSize: fontSize),
+        // )),
+        // DataCell(
+        //   Container(
+        //     alignment: Alignment.center,
+        //     child: Text(
+        //       user['alergias'].toString(),
+        //       style: TextStyle(fontSize: fontSize),
+        //     ),
+        //   ),
+        // ),
         DataCell(
           Container(
             alignment: Alignment.center,
@@ -326,6 +304,8 @@ class Recep extends StatelessWidget {
                 String sexo = user['sexo'];
                 double estatura = user['estatura'];
                 double peso = user['peso'];
+                double temperatura = user['temperatura'];
+                double presion = user['presion'];
                 String alergias = user['alergias'];
 
                 // Llamar al método para mostrar el diálogo de edición
@@ -338,6 +318,8 @@ class Recep extends StatelessWidget {
                     sexo,
                     estatura,
                     peso,
+                    temperatura,
+                    presion,
                     alergias,
                     estudioMedico,
                     consulta);
@@ -357,7 +339,8 @@ class Recep extends StatelessWidget {
                 String nombre = user['nombre'];
                 String apellido = user['apellido'];
 
-                _showDeletePacienteDialog(context, pacienteId, nombre, apellido);
+                _showDeletePacienteDialog(
+                    context, pacienteId, nombre, apellido);
               },
             ),
           ],
@@ -380,6 +363,8 @@ void _showEditPacienteDialog(
     String sexo,
     double estatura,
     double peso,
+    double temperatura,
+    double presion,
     String alergias,
     bool estudioMedico,
     bool consulta) {
@@ -393,8 +378,13 @@ void _showEditPacienteDialog(
       TextEditingController(text: estatura.toString());
   TextEditingController pesoController =
       TextEditingController(text: peso.toString());
+  TextEditingController temperaturaController =
+      TextEditingController(text: temperatura.toString());
+  TextEditingController presionController =
+      TextEditingController(text: presion.toString());
   TextEditingController alergiasController =
       TextEditingController(text: alergias);
+  TextEditingController EstudioMedDetalleController = TextEditingController();
 
   showDialog(
     context: context,
@@ -436,7 +426,7 @@ void _showEditPacienteDialog(
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: estaturaController,
-                    decoration: InputDecoration(labelText: 'Temperatura'),
+                    decoration: InputDecoration(labelText: 'Estatura'),
                     keyboardType:
                         TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
@@ -448,6 +438,28 @@ void _showEditPacienteDialog(
                   TextFormField(
                     controller: pesoController,
                     decoration: InputDecoration(labelText: 'Peso'),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: temperaturaController,
+                    decoration: InputDecoration(labelText: 'Temperatura'),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: presionController,
+                    decoration: InputDecoration(labelText: 'Presión'),
                     keyboardType:
                         TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
@@ -473,6 +485,10 @@ void _showEditPacienteDialog(
                       ),
                       Text('¿Estudio Medico?'),
                     ],
+                  ),
+                  TextFormField(
+                    controller: EstudioMedDetalleController,
+                    decoration: InputDecoration(labelText: 'Selecciona estudio medico'),
                   ),
                   Row(
                     children: [
@@ -513,8 +529,12 @@ void _showEditPacienteDialog(
                     String newSexo = sexoController.text;
                     double newEstatura = double.parse(estaturaController.text);
                     double newPeso = double.parse(pesoController.text);
+                    double newTemperatura =
+                        double.parse(temperaturaController.text);
+                    double newPresion = double.parse(presionController.text);
                     String newAlergias = alergiasController.text;
                     bool? newEstudioMedico = estudioMedico;
+                    String newEstudioMedDetalle = EstudioMedDetalleController.text;
                     bool? newConsulta = consulta;
 
                     try {
@@ -526,8 +546,11 @@ void _showEditPacienteDialog(
                         'sexo': newSexo,
                         'estatura': newEstatura,
                         'peso': newPeso,
+                        'temperatura': newTemperatura,
+                        'presion': newPresion,
                         'alergias': newAlergias,
                         'estudio_medico': newEstudioMedico,
+                        'estudio_medico_detalle': newEstudioMedDetalle,
                         'consulta': newConsulta,
                       });
 
@@ -584,7 +607,7 @@ void _showEditPacienteDialog(
                     );
                   }
                 },
-                style: ElevatedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF094293),
                 ),
                 child: Text(
@@ -701,13 +724,28 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   final TextEditingController _sexoController = TextEditingController();
   final TextEditingController _EstaturaController = TextEditingController();
   final TextEditingController _PesoController = TextEditingController();
+  final TextEditingController _TemperaturaController = TextEditingController();
+  final TextEditingController _PresionController = TextEditingController();
   final TextEditingController _AlergiasController = TextEditingController();
   final TextEditingController _ConsultaController = TextEditingController();
-  final TextEditingController _EstudioMedController = TextEditingController();
-  bool _isButtonEnabled = false;
+  final TextEditingController _EstudioMedDetalleController =
+      TextEditingController();
 
+  bool _isButtonEnabled = false;
   bool isConsulted = false;
   bool isEstudioMed = false;
+
+  List<String> estudioMedicoOptions = [
+    'Biometria Hecatica',
+    'Quimica Sanginea 1',
+    'Quimica Sanginea 3',
+    'Perfil bioquimico 24',
+    'EGO',
+    'Prueba de embarazo',
+    'Reacciones Febriles',
+    'Antidoping 3',
+    'Antidoping 5'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -749,10 +787,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       ),
     );
   }
-
-  //------------------------------------------------------------//
-  //-------- ShowDialog del boton de Agregar Paciente  ---------//
-  //------------------------------------------------------------//
 
   void _showAddPacienteDialog(BuildContext context) {
     showDialog(
@@ -803,7 +837,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     ),
                     TextFormField(
                       controller: _EstaturaController,
-                      decoration: const InputDecoration(labelText: 'Temperatura'),
+                      decoration: const InputDecoration(labelText: 'Estatura'),
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [
@@ -815,6 +849,29 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     TextFormField(
                       controller: _PesoController,
                       decoration: const InputDecoration(labelText: 'Peso'),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\.?\d{0,2}')),
+                      ],
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _TemperaturaController,
+                      decoration:
+                          const InputDecoration(labelText: 'Temperatura'),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\.?\d{0,2}')),
+                      ],
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _PresionController,
+                      decoration: const InputDecoration(labelText: 'Presión'),
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [
@@ -839,11 +896,35 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                 setState(() {
                                   isEstudioMed = newValue ?? false;
                                 });
+                                _updateButtonState(setState);
                               },
                             ),
                             Text('¿Estudio Medico?'),
                           ],
                         ),
+                        SizedBox(height: 20),
+                        if (isEstudioMed)
+                          DropdownButtonFormField<String>(
+                            value: _EstudioMedDetalleController.text.isNotEmpty
+                                ? _EstudioMedDetalleController.text
+                                : null,
+                            items: estudioMedicoOptions
+                                .map(
+                                    (String option) => DropdownMenuItem<String>(
+                                          value: option,
+                                          child: Text(option),
+                                        ))
+                                .toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _EstudioMedDetalleController.text =
+                                    newValue ?? '';
+                              });
+                              _updateButtonState(setState);
+                            },
+                            decoration: const InputDecoration(
+                                labelText: 'Selecciona estudio medico'),
+                          ),
                       ],
                     ),
                     Column(
@@ -857,6 +938,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                 setState(() {
                                   isConsulted = newValue ?? false;
                                 });
+                                _updateButtonState(setState);
                               },
                             ),
                             Text('¿Consulta Medica?'),
@@ -886,8 +968,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           double estatura =
                               double.parse(_EstaturaController.text);
                           double peso = double.parse(_PesoController.text);
+                          double temperatura =
+                              double.parse(_TemperaturaController.text);
+                          double presion =
+                              double.parse(_PresionController.text);
                           String alergias = _AlergiasController.text;
                           bool? estudioMedico = isEstudioMed;
+                          String estudioMedDetalle =
+                              _EstudioMedDetalleController.text;
                           bool? consulta = isConsulted;
 
                           Map<String, dynamic> pacienteData = {
@@ -897,8 +985,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                             'Sexo': sexo,
                             'Estatura': estatura,
                             'Peso': peso,
+                            'temperatura': temperatura,
+                            'presion': presion,
                             'Alergias': alergias,
                             'Estudio_Medico': estudioMedico,
+                            'Estudio_Medico_Detalle': estudioMedDetalle,
                             'Consulta': consulta,
                           };
 
@@ -957,7 +1048,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         _EdadController.text.isNotEmpty &&
         _EstaturaController.text.isNotEmpty &&
         _PesoController.text.isNotEmpty &&
-        _AlergiasController.text.isNotEmpty;
+        _TemperaturaController.text.isNotEmpty &&
+        _PresionController.text.isNotEmpty &&
+        _AlergiasController.text.isNotEmpty &&
+        (isConsulted ||
+            (isEstudioMed && _EstudioMedDetalleController.text.isNotEmpty));
   }
 
   void _updateButtonState(void Function(void Function()) setState) {
@@ -968,11 +1063,17 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
   void _clearControllers() {
     _nameController.clear();
+    _apellidoController.clear();
     _EdadController.clear();
+    _sexoController.clear();
     _EstaturaController.clear();
     _PesoController.clear();
+    _TemperaturaController.clear();
+    _PresionController.clear();
     _AlergiasController.clear();
     _ConsultaController.clear();
-    _EstudioMedController.clear();
+    _EstudioMedDetalleController.clear();
+    isEstudioMed = false;
+    isConsulted = false;
   }
 }

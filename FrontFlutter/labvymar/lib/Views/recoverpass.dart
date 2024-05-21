@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:labvymar/Views/login.dart';
 
 class RecoverPass extends StatelessWidget {
   const RecoverPass({Key? key}) : super(key: key);

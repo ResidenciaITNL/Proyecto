@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:labvymar/Views/recoverpass.dart';
+
 import 'package:labvymar/conectionmysql.dart';
 
 class Login extends StatelessWidget {
@@ -88,7 +88,7 @@ class __FormContentState extends State<_FormContent> {
   String password = '';
 
   bool _isPasswordVisible = false;
-  bool _rememberMe = false;
+  // bool _rememberMe = false;
 
   //-----------------------------------------//
   //----------- Título ----------------------//
