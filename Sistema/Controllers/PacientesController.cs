@@ -33,6 +33,9 @@ namespace Sistema.Controllers
                 Edad = x.Edad,
                 Sexo = x.Sexo,
                 Estatura = x.Estatura,
+                Presion = x.presion,
+                Temperatura = x.temperatura,
+                Estudio_detalle = x.Estudio_medico_detalle,
                 Peso = x.Peso,
                 Alergias = x.Alergias,
                 Estudio_medico = x.Estudio_medico ? "Si" : "No",
@@ -54,6 +57,9 @@ namespace Sistema.Controllers
                 Edad = x.Edad,
                 Sexo = x.Sexo,
                 Estatura = x.Estatura,
+                Presion = x.presion,
+                Temperatura = x.temperatura,
+                Estudio_detalle = x.Estudio_medico_detalle,
                 Peso = x.Peso,
                 Alergias = x.Alergias
             }).ToListAsync();
@@ -73,6 +79,8 @@ namespace Sistema.Controllers
                 Edad = x.Edad,
                 Sexo = x.Sexo,
                 Estatura = x.Estatura,
+                Presion = x.presion,
+                Temperatura = x.temperatura,
                 Peso = x.Peso,
                 Alergias = x.Alergias
             }).ToListAsync();
@@ -120,6 +128,9 @@ namespace Sistema.Controllers
             paciente.Alergias = pacienteUpdate.Alergias ?? paciente.Alergias;
             paciente.Estudio_medico = pacienteUpdate.Estudio_medico ?? paciente.Estudio_medico;
             paciente.Consulta = pacienteUpdate.Consulta ?? paciente.Consulta;
+            paciente.Estudio_medico_detalle = pacienteUpdate.Estudio_medico_detalle ?? paciente.Estudio_medico_detalle;
+            paciente.presion = pacienteUpdate.presion ?? paciente.presion;
+            paciente.temperatura = pacienteUpdate.temperatura ?? paciente.temperatura;
             _context.Entry(paciente).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return Ok();
