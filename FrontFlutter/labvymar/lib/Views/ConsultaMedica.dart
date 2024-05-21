@@ -252,18 +252,8 @@ class ConsMedica extends StatelessWidget {
                 String alergias = user['alergias'];
 
                 // Llamar al método para mostrar el diálogo de edición
-                _showEditPacienteDialog(
-                    context,
-                    pacienteId,
-                    nombre,
-                    apellido,
-                    edad,
-                    sexo,
-                    estatura,
-                    peso,
-                    alergias,
-                    estudioMedico,
-                    consulta);
+                _showCapturarReceta(context, pacienteId, nombre, apellido, edad,
+                    sexo, estatura, peso, alergias, estudioMedico, consulta);
               },
             ),
           ),
@@ -297,7 +287,7 @@ class ConsMedica extends StatelessWidget {
 //-------- ShowDialog de la opcion de Editar Paciente  ---------//
 //--------------------------------------------------------------//
 
-void _showEditPacienteDialog(
+void _showCapturarReceta(
     BuildContext context,
     int pacienteId,
     String nombre,
@@ -309,111 +299,111 @@ void _showEditPacienteDialog(
     String alergias,
     bool estudioMedico,
     bool consulta) {
-  TextEditingController nameController = TextEditingController(text: nombre);
-  TextEditingController apellidoController =
-      TextEditingController(text: apellido);
+  TextEditingController nombreCompletoController =
+      TextEditingController(text: '$nombre $apellido');
   TextEditingController edadController =
       TextEditingController(text: edad.toString());
   TextEditingController sexoController = TextEditingController(text: sexo);
-  TextEditingController estaturaController =
-      TextEditingController(text: estatura.toString());
   TextEditingController pesoController =
       TextEditingController(text: peso.toString());
   TextEditingController alergiasController =
       TextEditingController(text: alergias);
+  DateTime fechaActual = DateTime.now();
+  TextEditingController contenidoController = TextEditingController();
 
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
+      return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            title: const Text('Editar datos del paciente',
+            title: const Text('Receta medica',
                 style: TextStyle(color: Colors.black)),
             content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextFormField(
-                    controller: nameController,
-                    decoration: InputDecoration(labelText: 'Nombre'),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: apellidoController,
-                    decoration: InputDecoration(labelText: 'Apellido'),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: edadController,
-                    decoration: InputDecoration(labelText: 'Edad'),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d+')),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: sexoController,
-                    decoration: InputDecoration(labelText: 'Sexo'),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: estaturaController,
-                    decoration: InputDecoration(labelText: 'Estatura'),
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d+\.?\d{0,2}')),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: pesoController,
-                    decoration: InputDecoration(labelText: 'Peso'),
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d+\.?\d{0,2}')),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: alergiasController,
-                    decoration: InputDecoration(labelText: 'Alergias'),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: estudioMedico,
-                        onChanged: (newValue) {
-                          setState(() {
-                            estudioMedico = newValue ?? false;
-                          });
-                        },
-                      ),
-                      Text('¿Estudio Medico?'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: consulta,
-                        onChanged: (newValue) {
-                          setState(() {
-                            consulta = newValue ?? false;
-                          });
-                        },
-                      ),
-                      Text('¿Consulta Medica?'),
-                    ],
-                  ),
-                ],
+              child: Container(
+                width:
+                    constraints.maxWidth * 0.95, // Ancho del 95% de la pantalla
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: nombreCompletoController,
+                            decoration: InputDecoration(labelText: 'Nombre'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        const SizedBox(width: 150),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: edadController,
+                            decoration: InputDecoration(labelText: 'Edad'),
+                            keyboardType: TextInputType.number,
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        const SizedBox(width: 150),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: pesoController,
+                            decoration: InputDecoration(labelText: 'Peso'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        const SizedBox(width: 150),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: sexoController,
+                            decoration: InputDecoration(labelText: 'Sexo'),
+                            readOnly: true, 
+                          ),
+                        ),
+                        const SizedBox(width: 150),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: alergiasController,
+                            decoration: InputDecoration(labelText: 'Alergias'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        const SizedBox(width: 150),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            decoration: InputDecoration(labelText: 'Fecha'),
+                            initialValue:
+                                '${fechaActual.toLocal()}'.split(' ')[0],
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        const SizedBox(width: 150),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: contenidoController,
+                      decoration: InputDecoration(labelText: 'Rx'),
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
+                    ),
+                  ],
+                ),
               ),
             ),
             actions: [
@@ -427,40 +417,20 @@ void _showEditPacienteDialog(
               ElevatedButton(
                 onPressed: () async {
                   // Validar los datos antes de enviar la actualización
-                  if (nameController.text.isNotEmpty &&
-                      apellidoController.text.isNotEmpty &&
-                      int.tryParse(edadController.text) != null &&
-                      sexoController.text.isNotEmpty &&
-                      double.tryParse(estaturaController.text) != null &&
-                      double.tryParse(pesoController.text) != null) {
-                    String newName = nameController.text;
-                    String newApellido = apellidoController.text;
-                    int newEdad = int.parse(edadController.text);
-                    String newSexo = sexoController.text;
-                    double newEstatura = double.parse(estaturaController.text);
-                    double newPeso = double.parse(pesoController.text);
-                    String newAlergias = alergiasController.text;
-                    bool? newEstudioMedico = estudioMedico;
-                    bool? newConsulta = consulta;
+                  if (contenidoController.text.isNotEmpty) {
+                    String contenido = contenidoController.text;
 
                     try {
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
                       await APIService().updatePaciente(pacienteId, {
-                        'nombre': newName,
-                        'apellido': newApellido,
-                        'edad': newEdad,
-                        'sexo': newSexo,
-                        'estatura': newEstatura,
-                        'peso': newPeso,
-                        'alergias': newAlergias,
-                        'estudio_medico': newEstudioMedico,
-                        'consulta': newConsulta,
+                        'contenido': contenido,
+                        'fecha': fechaActual.toIso8601String(),
                       });
 
                       // Mostrar mensaje de éxito
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Paciente actualizado con éxito.'),
+                          content: Text('Receta capturada con éxito.'),
                           duration: Duration(seconds: 3),
                         ),
                       );
@@ -474,8 +444,8 @@ void _showEditPacienteDialog(
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text('Inténtalo nuevamente'),
-                            content: Text(
-                                'Hubo un error al actualizar el paciente.'),
+                            content:
+                                Text('Hubo un error al capturar la receta.'),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -496,7 +466,7 @@ void _showEditPacienteDialog(
                         return AlertDialog(
                           title: Text('Inténtalo nuevamente'),
                           content: Text(
-                              'Por favor ingresa todos los datos correctamente.'),
+                              'Por favor ingresa el contenido de la receta.'),
                           actions: [
                             TextButton(
                               onPressed: () {
