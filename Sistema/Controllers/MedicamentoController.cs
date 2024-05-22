@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sistema.DataBase;
 using Sistema.Models;
-using System.Diagnostics;
 using System.Security.Claims;
 
 namespace Sistema.Controllers
@@ -119,13 +118,9 @@ namespace Sistema.Controllers
                     var venta = new Ventas
                     {
                         Total = 0,
+                        Contenido = "",
                         UserId = userId,
                     };
-                    if (venta.VentaMedicamentos == null)
-                    {
-                        venta.VentaMedicamentos = new List<VentaMedicamento>();
-                    }
-
                     foreach (var item in medicamento.Items)
                     {
                         var medicamentoDB = await _context.Medicamento.FirstOrDefaultAsync(x => x.MedicamentoId == int.Parse(item.Id) && (bool)x.active);
@@ -141,21 +136,15 @@ namespace Sistema.Controllers
                         {
                             throw new Exception(message: $"No hay suficiente stock de {medicamentoDB.Nombre} {medicamentoDB.Descripcion}");
                         }
-                        var ventaMedicamento = new VentaMedicamento
-                        {
-                            Venta = venta,
-                            MedicamentoId = int.Parse(item.Id),
-                        };
                         medicamentoDB.Stock -= item.cantidad;
                         venta.Total += medicamentoDB.Precio * item.cantidad;
+                        venta.Contenido += $"{medicamentoDB.Nombre} {medicamentoDB.Descripcion} x {item.cantidad} Precio:${medicamentoDB.Precio} \n ";
                         _context.Entry(medicamentoDB).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
-                        venta.VentaMedicamentos.Add(ventaMedicamento);
-
                     }
-                    Debug.WriteLine(venta.Total);
                     _context.Ventas.Add(venta);
                     await _context.SaveChangesAsync();
+
                     transaction.Commit();
                     return Ok();
 
