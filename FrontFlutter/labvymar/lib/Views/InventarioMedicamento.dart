@@ -284,6 +284,15 @@ class _InvMedicamentoState extends State<InvMedicamento> {
                 ),
               ),
             ),
+            DataColumn(
+              label: Text(
+                'Venta',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ],
           rows: _currentRows,
         );
@@ -328,8 +337,10 @@ class _InvMedicamentoState extends State<InvMedicamento> {
   //---------------------------------------------------------------//
 
   Future<List<DataRow>> _medicamentoDataRows(BuildContext context) async {
-    final List<Map<String, dynamic>> medicamento = await apiService.getMedicamento();
-    medicamento.sort((a, b) => b['medicamentoId'].compareTo(a['medicamentoId']));
+    final List<Map<String, dynamic>> medicamento =
+        await apiService.getMedicamento();
+    medicamento
+        .sort((a, b) => b['medicamentoId'].compareTo(a['medicamentoId']));
 
     final double screenWidth2 = MediaQuery.of(context).size.width;
     double fontSize = screenWidth2 * 0.012;
@@ -374,53 +385,85 @@ class _InvMedicamentoState extends State<InvMedicamento> {
           medicamento['unidad']!,
           style: TextStyle(fontSize: fontSize),
         )),
-        DataCell(Row(
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.edit,
-                color: const Color(0xFF094293),
-                size: iconSize,
-              ),
-              onPressed: () {
-                int medicamentoId = medicamento['medicamentoId'];
-                String nombre = medicamento['nombre'];
-                String descripcion = medicamento['descripcion'];
-                int stock = medicamento['stock'];
-                double precio = medicamento['precio'];
-                String unidad = medicamento['unidad'];
-                String contenido = medicamento['contenido'];
+        DataCell(
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.edit,
+                    color: const Color(0xFF094293),
+                    size: iconSize,
+                  ),
+                  onPressed: () {
+                    int medicamentoId = medicamento['medicamentoId'];
+                    String nombre = medicamento['nombre'];
+                    String descripcion = medicamento['descripcion'];
+                    int stock = medicamento['stock'];
+                    double precio = medicamento['precio'];
+                    String unidad = medicamento['unidad'];
+                    String contenido = medicamento['contenido'];
 
-                _showEditMedicineDialog(
-                    context,
-                    medicamentoId,
-                    nombre,
-                    descripcion,
-                    fechaVencimiento,
-                    stock,
-                    precio,
-                    unidad,
-                    contenido);
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.delete_forever,
-                color: Colors.red,
-                size: iconSize,
-              ),
-              onPressed: () {
-                int medicamentoId = medicamento['medicamentoId'];
-                String nombre = medicamento['nombre'];
-                String contenido = medicamento['contenido'];
-                String unidad = medicamento['unidad'];
+                    _showEditMedicineDialog(
+                        context,
+                        medicamentoId,
+                        nombre,
+                        descripcion,
+                        fechaVencimiento,
+                        stock,
+                        precio,
+                        unidad,
+                        contenido);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_forever,
+                    color: Colors.red,
+                    size: iconSize,
+                  ),
+                  onPressed: () {
+                    int medicamentoId = medicamento['medicamentoId'];
+                    String nombre = medicamento['nombre'];
+                    String contenido = medicamento['contenido'];
+                    String unidad = medicamento['unidad'];
 
-                _showDeleteUserDialog(
-                    context, medicamentoId, nombre, contenido, unidad);
-              },
+                    _showDeleteMedicamentoDialog(
+                        context, medicamentoId, nombre, contenido, unidad);
+                  },
+                ),
+              ],
             ),
-          ],
-        )),
+          ),
+        ),
+        DataCell(
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.add_shopping_cart_rounded,
+                    color: Colors.green,
+                    size: iconSize,
+                  ),
+                  onPressed: () {
+                    int medicamentoId = medicamento['medicamentoId'];
+                    String nombre = medicamento['nombre'];
+                    String contenido = medicamento['contenido'];
+                    String unidad = medicamento['unidad'];
+                    int stock = medicamento['stock'];
+                    double precio = medicamento['precio'];
+
+                    _showCartMedicamentoDialog(context, medicamentoId, nombre,
+                        precio, stock, unidad, contenido);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ]);
     }).toList();
   }
@@ -610,7 +653,7 @@ class _InvMedicamentoState extends State<InvMedicamento> {
 //-------- ShowDialog de la opcion de Eliminar Medicamento  ---------//
 //-------------------------------------------------------------------//
 
-void _showDeleteUserDialog(BuildContext context, int medicamentoId,
+void _showDeleteMedicamentoDialog(BuildContext context, int medicamentoId,
     String nombre, String contenido, String unidad) {
   final APIService apiService = APIService();
 
@@ -621,7 +664,7 @@ void _showDeleteUserDialog(BuildContext context, int medicamentoId,
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
             title: Text(
-                'Seguro que quieres dar de baja el producto seleccionado del sistema?\n\n$nombre'),
+                'Seguro que quieres dar de baja el producto seleccionado del sistema?\n\nProducto: $nombre\nContenido: $contenido\nUnidad de medida: $unidad'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -684,6 +727,215 @@ void _showDeleteUserDialog(BuildContext context, int medicamentoId,
   );
 }
 
+//--------------------------------------------------------------------------------//
+//-------- ShowDialog de la opcion de agregar al carrito el Medicamento  ---------//
+//--------------------------------------------------------------------------------//
+
+void _showCartMedicamentoDialog(BuildContext context, int medicamentoId,
+    String nombre, double precio, int stock, String unidad, String contenido) {
+  TextEditingController nameController = TextEditingController(text: nombre);
+  TextEditingController contenidoController =
+      TextEditingController(text: contenido);
+  TextEditingController unidMedidaController =
+      TextEditingController(text: unidad);
+  TextEditingController invActualController =
+      TextEditingController(text: stock.toString());
+  TextEditingController precioController =
+      TextEditingController(text: '\$' + precio.toString());
+
+  int? venta = 0;
+  TextEditingController cantidadVentaController =
+      TextEditingController(text: venta.toString());
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text('Agregar el producto al carrito de venta',
+                style: TextStyle(color: Colors.black)),
+            content: SingleChildScrollView(
+              child: Container(
+                width:
+                    constraints.maxWidth * 0.30, // Ancho del 40% de la pantalla
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: nameController,
+                            decoration: InputDecoration(labelText: 'Nombre'),
+                            readOnly: true,
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: contenidoController,
+                            decoration: InputDecoration(labelText: 'Contenido'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: unidMedidaController,
+                            decoration:
+                                InputDecoration(labelText: 'Unidad de medida'),
+                            readOnly: true,
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: precioController,
+                            decoration: InputDecoration(labelText: 'Precio'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: cantidadVentaController,
+                            decoration: const InputDecoration(
+                                labelText: 'Ingresa la cantidad:'),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              TextInputFormatter.withFunction(
+                                  (oldValue, newValue) {
+                                // Evita números negativos
+                                if (newValue.text.isEmpty) {
+                                  return newValue.copyWith(text: '');
+                                } else if (double.tryParse(newValue.text) ==
+                                    null) {
+                                  return oldValue;
+                                } else {
+                                  return newValue;
+                                }
+                              }),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancelar',
+                    style: TextStyle(color: Colors.black)),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  // Validar los datos antes de enviar la actualización
+                  if (contenidoController.text.isNotEmpty) {
+                    int cantidad = int.tryParse(cantidadVentaController.text) ?? 0;
+
+                    try {
+                      // Llamar al método updatePaciente de APIService para actualizar el paciente
+                      await APIService().updatePaciente(medicamentoId, {
+                        'cantidad': cantidad,
+                      });
+
+                      // Mostrar mensaje de éxito
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Receta capturada con éxito.'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                      Navigator.of(context).pop(); // Cerrar el diálogo
+
+                      Navigator.pushReplacementNamed(context, 'Recepcion');
+                    } catch (e) {
+                      // Manejar cualquier error que pueda ocurrir durante la actualización
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Inténtalo nuevamente'),
+                            content:
+                                Text('Hubo un error al capturar la receta.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Aceptar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  } else {
+                    // Mostrar alerta si no se ingresan datos válidos
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Inténtalo nuevamente'),
+                          content: Text(
+                              'Por favor ingresa el contenido de la receta.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Aceptar'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF094293),
+                ),
+                child: Text(
+                  'Agregar',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
+
+
 //-----------------------------------//
 //--------  Header del body ---------//
 //-----------------------------------//
@@ -744,6 +996,25 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               label: const Text(
                 'Agregar medicamento',
                 style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton.icon(
+              onPressed: () {
+                _showAddmedicineDialog(context);
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.green),
+              ),
+              icon: const Icon(
+                Icons.shopping_cart_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+              label: const Text(
+                'Carrito de Venta',
+                style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ),
             const SizedBox(height: 10),

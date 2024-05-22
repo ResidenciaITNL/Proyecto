@@ -234,6 +234,13 @@ class _RecepState extends State<Recep> {
             ),
             DataColumn(
               label: Text(
+                'Teléfono',
+                style:
+                    TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
                 'Estudio Medico',
                 style:
                     TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
@@ -248,7 +255,14 @@ class _RecepState extends State<Recep> {
             ),
             DataColumn(
               label: Text(
-                'Editar | Eliminar ',
+                'Editar | Eliminar',
+                style: TextStyle(
+                    fontSize: fontSizeEdit, fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Historial',
                 style: TextStyle(
                     fontSize: fontSizeEdit, fontWeight: FontWeight.bold),
               ),
@@ -302,23 +316,24 @@ class _RecepState extends State<Recep> {
 
     double screenWidth2 = MediaQuery.of(context).size.width;
     double fontSize = screenWidth2 * 0.012;
-    double iconSize = screenWidth2 * 0.015;
+    double iconSize = screenWidth2 * 0.020;
 
     return users.map((user) {
       bool estudioMedico =
           user['estudio_medico'].toString().toLowerCase() == 'true';
       bool consulta = user['consulta'].toString().toLowerCase() == 'true';
-      
+
       String nombreCompleto = user['nombre'] + ' ' + user['apellido'];
 
-            // Asignar valor predeterminado si 'estudio_detalle' es null o está vacío
+      // Asignar valor predeterminado si 'estudio_detalle' es null o está vacío
       String estudioDetalle = user['estudio_detalle']?.toString() ?? '';
       if (estudioDetalle.isEmpty) {
         estudioDetalle = 'No requerido';
       }
 
       return DataRow(cells: [
-        DataCell(Text(nombreCompleto, style: TextStyle(fontSize: fontSize))),        DataCell(
+        DataCell(Text(nombreCompleto, style: TextStyle(fontSize: fontSize))),
+        DataCell(
           Container(
             alignment: Alignment.center,
             child: Text(
@@ -329,8 +344,16 @@ class _RecepState extends State<Recep> {
         ),
         DataCell(Text(user['sexo'].toString(),
             style: TextStyle(fontSize: fontSize))),
-        DataCell(Text(estudioDetalle,
-            style: TextStyle(fontSize: fontSize))),
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              user['telefono'].toString(),
+              style: TextStyle(fontSize: fontSize),
+            ),
+          ),
+        ),
+        DataCell(Text(estudioDetalle, style: TextStyle(fontSize: fontSize))),
         DataCell(
           Container(
             alignment: Alignment.center,
@@ -340,38 +363,61 @@ class _RecepState extends State<Recep> {
             ),
           ),
         ),
-        DataCell(Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.edit,
-                  color: const Color(0xFF094293), size: iconSize),
-              onPressed: () {
-                _showEditPacienteDialog(
-                    context,
-                    user['pacienteId'],
-                    user['nombre'],
-                    user['apellido'],
-                    user['edad'],
-                    user['sexo'],
-                    user['estatura'],
-                    user['peso'],
-                    user['temperatura'],
-                    user['presion'],
-                    user['alergias'],
-                    estudioMedico,
-                    consulta);
-              },
+        DataCell(
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit,
+                      color: const Color(0xFF094293), size: iconSize),
+                  onPressed: () {
+                    _showEditPacienteDialog(
+                        context,
+                        user['pacienteId'],
+                        user['nombre'],
+                        user['apellido'],
+                        user['edad'],
+                        user['telefono'],
+                        user['sexo'],
+                        user['estatura'],
+                        user['peso'],
+                        user['temperatura'],
+                        user['presion'],
+                        user['alergias'],
+                        estudioMedico,
+                        consulta);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.person_off_sharp,
+                      color: Colors.red, size: iconSize),
+                  onPressed: () {
+                    _showDeletePacienteDialog(context, user['pacienteId'],
+                        user['nombre'], user['apellido']);
+                  },
+                ),
+              ],
             ),
-            IconButton(
-              icon: Icon(Icons.person_off_sharp,
-                  color: Colors.red, size: iconSize),
-              onPressed: () {
-                _showDeletePacienteDialog(context, user['pacienteId'],
-                    user['nombre'], user['apellido']);
-              },
+          ),
+        ),
+        DataCell(
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.folder_shared,
+                      color: Colors.green, size: iconSize),
+                  onPressed: () {
+                    _showHistorialPacienteDialog(context, user['pacienteId'],
+                        user['nombre'], user['apellido']);
+                  },
+                ),
+              ],
             ),
-          ],
-        )),
+          ),
+        ),
       ]);
     }).toList();
   }
@@ -387,6 +433,7 @@ void _showEditPacienteDialog(
     String nombre,
     String apellido,
     int edad,
+    int telefono,
     String sexo,
     double estatura,
     double peso,
@@ -400,6 +447,8 @@ void _showEditPacienteDialog(
       TextEditingController(text: apellido);
   TextEditingController edadController =
       TextEditingController(text: edad.toString());
+  TextEditingController telefonoController =
+      TextEditingController(text: telefono.toString());
   TextEditingController sexoController = TextEditingController(text: sexo);
   TextEditingController estaturaController =
       TextEditingController(text: estatura.toString());
@@ -456,6 +505,15 @@ void _showEditPacienteDialog(
                   TextFormField(
                     controller: edadController,
                     decoration: InputDecoration(labelText: 'Edad'),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+')),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: edadController,
+                    decoration: InputDecoration(labelText: 'Teléfono'),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d+')),
@@ -595,6 +653,7 @@ void _showEditPacienteDialog(
                     String newName = nameController.text;
                     String newApellido = apellidoController.text;
                     int newEdad = int.parse(edadController.text);
+                    int newTelefono = int.parse(telefonoController.text);
                     String newSexo = sexoController.text;
                     double newEstatura = double.parse(estaturaController.text);
                     double newPeso = double.parse(pesoController.text);
@@ -613,6 +672,7 @@ void _showEditPacienteDialog(
                         'nombre': newName,
                         'apellido': newApellido,
                         'edad': newEdad,
+                        'telefono': newTelefono,
                         'sexo': newSexo,
                         'estatura': newEstatura,
                         'peso': newPeso,
@@ -769,6 +829,82 @@ void _showDeletePacienteDialog(
   );
 }
 
+//-----------------------------------------------------------------//
+//-------- ShowDialog de la opcion de Historial Paciente  ---------//
+//-----------------------------------------------------------------//
+
+void _showHistorialPacienteDialog(
+    BuildContext context, int pacienteId, String nombre, String apellido) {
+  final APIService apiService = APIService();
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Text(
+                'Historial Medico de: $nombre $apellido'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cerrar'),
+              ),
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     // Aquí puedes realizar la lógica para eliminar el paciente
+              //     try {
+              //       // Llamar al método deletePaciente de APIService para eleiminar al paciente
+              //       await apiService.deletePaciente(pacienteId);
+
+              //       // Mostrar mensaje de éxito
+              //       ScaffoldMessenger.of(context).showSnackBar(
+              //         const SnackBar(
+              //           content: Text('Paciente eliminado con exito.'),
+              //           duration: Duration(seconds: 3),
+              //         ),
+              //       );
+              //       Navigator.of(context).pop(); // Cerrar el diálogo
+              //       Navigator.pushReplacementNamed(context, 'Recepcion');
+              //     } catch (e) {
+              //       // Manejar cualquier error que pueda ocurrir durante la actualización
+              //       showDialog(
+              //         context: context,
+              //         builder: (BuildContext context) {
+              //           return AlertDialog(
+              //             title: Text('Inténtelo nuevamente'),
+              //             content:
+              //                 Text('Hubo un error al eliminar al paciente.'),
+              //             actions: [
+              //               TextButton(
+              //                 onPressed: () {
+              //                   Navigator.of(context).pop();
+              //                 },
+              //                 child: Text('Aceptar'),
+              //               ),
+              //             ],
+              //           );
+              //         },
+              //       );
+              //     }
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.red, // Color de fondo rojo
+              //   ),
+              //   child: Text(
+              //     'Eliminar',
+              //     style: TextStyle(color: Colors.white),
+              //   ),
+              // ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
 //-----------------------------------//
 //--------  Header del body ---------//
 //-----------------------------------//
@@ -791,6 +927,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _apellidoController = TextEditingController();
   final TextEditingController _EdadController = TextEditingController();
+  final TextEditingController _TelefonoController = TextEditingController();
   final TextEditingController _sexoController = TextEditingController();
   final TextEditingController _EstaturaController = TextEditingController();
   final TextEditingController _PesoController = TextEditingController();
@@ -885,6 +1022,24 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     TextFormField(
                       controller: _EdadController,
                       decoration: const InputDecoration(labelText: 'Edad'),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          if (newValue.text.isEmpty) {
+                            return newValue.copyWith(text: '');
+                          } else if (double.tryParse(newValue.text) == null) {
+                            return oldValue;
+                          } else {
+                            return newValue;
+                          }
+                        }),
+                      ],
+                      onChanged: (_) => _updateButtonState(setState),
+                    ),
+                    TextFormField(
+                      controller: _TelefonoController,
+                      decoration: const InputDecoration(labelText: 'Teléfono'),
                       keyboardType: TextInputType.number,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
@@ -1034,6 +1189,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           String nombre = _nameController.text;
                           String apellido = _apellidoController.text;
                           int edad = int.parse(_EdadController.text);
+                          int telefono = int.parse(_TelefonoController.text);
                           String sexo = _sexoController.text;
                           double estatura =
                               double.parse(_EstaturaController.text);
@@ -1052,6 +1208,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                             'Nombre': nombre,
                             'Apellido': apellido,
                             'Edad': edad,
+                            'Telefono': telefono,
                             'Sexo': sexo,
                             'Estatura': estatura,
                             'Peso': peso,
@@ -1116,6 +1273,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   bool _isValidForm() {
     return _nameController.text.isNotEmpty &&
         _EdadController.text.isNotEmpty &&
+        _TelefonoController.text.isNotEmpty &&
         _EstaturaController.text.isNotEmpty &&
         _PesoController.text.isNotEmpty &&
         _TemperaturaController.text.isNotEmpty &&
@@ -1135,6 +1293,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     _nameController.clear();
     _apellidoController.clear();
     _EdadController.clear();
+    _TelefonoController.clear();
     _sexoController.clear();
     _EstaturaController.clear();
     _PesoController.clear();
