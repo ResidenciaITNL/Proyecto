@@ -7,6 +7,7 @@ namespace Sistema.DataBase
         public BDContext(DbContextOptions<BDContext> options) : base(options)
         {
         }
+
         public DbSet<Models.Customers> Customers { get; set; }
         public DbSet<Models.Users> Users { get; set; }
         public DbSet<Models.Medicamento> Medicamento { get; set; }
