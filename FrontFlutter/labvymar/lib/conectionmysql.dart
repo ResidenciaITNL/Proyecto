@@ -40,8 +40,8 @@ class APIService {
 
       await storage.write(key: 'token', value: token);
 
-      print('Token JWT: $token');
-      print('First Login: $firstLogin'); // Para verificar en la consola
+      // print('Token JWT: $token');
+      // print('First Login: $firstLogin'); // Para verificar en la consola
 
       return {'success': true, 'token': token, 'firstLogin': firstLogin};
     } else {
@@ -172,7 +172,7 @@ class APIService {
             'Bearer $token', // Añadir el token al encabezado de autorización
       },
     );
-    print('Toke generado desde el get: $token');
+    // print('Toke generado desde el get: $token');
 
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(jsonDecode(response.body));
@@ -373,7 +373,7 @@ class APIService {
             'Bearer $token', // Añadir el token al encabezado de autorización
       },
     );
-    print('Toke generado desde el get: $token');
+    // print('Toke generado desde el get: $token');
 
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(jsonDecode(response.body));
@@ -486,7 +486,7 @@ class APIService {
             'Bearer $token', // Añadir el token al encabezado de autorización
       },
     );
-    print('Toke generado desde el get: $token');
+    // print('Toke generado desde el get: $token');
 
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(jsonDecode(response.body));
@@ -600,7 +600,7 @@ class APIService {
             'Bearer $token', // Añadir el token al encabezado de autorización
       },
     );
-    print('Toke generado desde el get: $token');
+    // print('Toke generado desde el get: $token');
 
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(jsonDecode(response.body));
@@ -660,7 +660,7 @@ class APIService {
       },
     );
 
-    print('medicamento actualizado: $medicamentoId');
+    // print('medicamento actualizado: $medicamentoId');
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update medicamento');

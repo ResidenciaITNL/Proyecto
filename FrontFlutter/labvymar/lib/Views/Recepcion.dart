@@ -9,16 +9,73 @@ import 'package:labvymar/conectionmysql.dart';
 //----------------- Clase de Recep --------------------//
 //-----------------------------------------------------//
 
-class Recep extends StatelessWidget {
+class Recep extends StatefulWidget {
   Recep({super.key});
 
-  final APIService apiService = APIService();
+  @override
+  _RecepState createState() => _RecepState();
+}
 
+class _RecepState extends State<Recep> {
+  final APIService apiService = APIService();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  //-------------------------------------------------------------//
-  //-------- Widget que hace referencia al navbar y body --------//
-  //-------------------------------------------------------------//
+  static const int rowsPerPage = 15;
+  int _currentPage = 0;
+  List<DataRow> _allRows = [];
+  List<DataRow> _currentRows = [];
+  List<DataRow> _filteredRows = [];
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _filterRows();
+  }
+
+  void _loadData() async {
+    _allRows = await _pacientesDataRows(context);
+    _filteredRows = List.from(_allRows);
+    _loadPage(0);
+  }
+
+  void _filterRows() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredRows = _allRows.where((row) {
+        return row.cells.any((cell) {
+          if (cell.child is Text) {
+            return (cell.child as Text).data!.toLowerCase().contains(query);
+          }
+          return false;
+        });
+      }).toList();
+    });
+    _loadPage(0);
+  }
+
+  void _loadPage(int page) {
+    int start = page * rowsPerPage;
+    int end = start + rowsPerPage;
+    setState(() {
+      _currentPage = page;
+      _currentRows = _filteredRows.sublist(
+          start, end > _filteredRows.length ? _filteredRows.length : end);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -29,11 +86,6 @@ class Recep extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         key: _scaffoldKey,
-
-        //------------------------//
-        //-------- Navbar --------//
-        //------------------------//
-
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -75,20 +127,16 @@ class Recep extends StatelessWidget {
           ],
         ),
         drawer: isLargeScreen ? null : NavBarWidgets.drawer(context),
-
-        //------------------------//
-        //--------- Body ---------//
-        //------------------------//
-
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(
-                16.0), // Agrega un padding en todos los lados
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const UserManagementScreen(),
-                _buildUserDataTable(), // Tu DataTable aquí
+                _buildSearchBar(context),
+                Expanded(child: _buildUserDataTable()),
+                _buildPaginationControls(),
               ],
             ),
           ),
@@ -97,250 +145,178 @@ class Recep extends StatelessWidget {
     );
   }
 
-  //--------------------------------------------------------------//
-  //-------- Widget de la tabla de la lista de pacientes ---------//
-  //--------------------------------------------------------------//
+  Widget _buildSearchBar(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final bool isLargeScreen = width > 870;
+
+    double searchBarHeight = isLargeScreen ? height * 0.04 : height * 0.07;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: isLargeScreen ? width * 0.5 : width * 0.8,
+            height: searchBarHeight, // Alto responsivo
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Buscar',
+                hintText: 'Buscar por nombre, edad, sexo, etc.',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: TextStyle(fontSize: 16.0),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildUserDataTable() {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
-        double columnSpacing =
-            screenWidth * 0.02; // Espacio de columna predeterminado
-        double fontSize =
-            screenWidth * 0.015; // Tamaño de fuente predeterminado
-        double fontSizeEdit =
-            screenWidth * 0.011; // Tamaño de fuente predeterminado
+        double columnSpacing = screenWidth * 0.02;
+        double fontSize = screenWidth * 0.014;
+        double fontSizeEdit = screenWidth * 0.011;
 
-        return FutureBuilder<List<DataRow>>(
-          future: _pacientesDataRows(context),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child:
-                    CircularProgressIndicator(), // Muestra un indicador de carga mientras se espera
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                    'Error: ${snapshot.error}'), // Muestra un mensaje de error si ocurre algún problema
-              );
-            } else {
-              return DataTable(
-                columnSpacing: columnSpacing,
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      'Nombre',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Edad',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Sexo',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  // DataColumn(
-                  //   label: Text(
-                  //     'Estatura',
-                  //     style: TextStyle(
-                  //       fontSize: fontSize,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ),
-                  // DataColumn(
-                  //   label: Text(
-                  //     'Peso',
-                  //     style: TextStyle(
-                  //       fontSize: fontSize,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ),
-                  // DataColumn(
-                  //   label: Text(
-                  //     'Alergias',
-                  //     style: TextStyle(
-                  //       fontSize: fontSize,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ),
-                  DataColumn(
-                    label: Text(
-                      'Estudio Medico',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Consulta',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Editar | Eliminar ',
-                      style: TextStyle(
-                        fontSize: fontSizeEdit,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-                rows: snapshot
-                    .data!, // Utiliza los datos devueltos por _userDataRows
-              );
-            }
-          },
+        return DataTable(
+          columnSpacing: columnSpacing,
+          columns: [
+            DataColumn(
+              label: Text(
+                'Nombre',
+                style:
+                    TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Edad',
+                style:
+                    TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Sexo',
+                style:
+                    TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Estudio Medico',
+                style:
+                    TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Consulta',
+                style:
+                    TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Editar | Eliminar ',
+                style: TextStyle(
+                    fontSize: fontSizeEdit, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+          rows: _currentRows,
         );
       },
     );
   }
 
-  //-------------------------------------------------------------//
-  //-------- Lista de pacientes que se obtiene del API  ---------//
-  //-------------------------------------------------------------//
+  Widget _buildPaginationControls() {
+    int totalRows = _filteredRows.length;
+    int totalPages = (totalRows / rowsPerPage).ceil();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: _currentPage > 0
+              ? () {
+                  _loadPage(_currentPage - 1);
+                }
+              : null,
+        ),
+        Text('Page ${_currentPage + 1} of $totalPages'),
+        IconButton(
+          icon: Icon(Icons.arrow_forward),
+          onPressed: _currentPage < totalPages - 1
+              ? () {
+                  _loadPage(_currentPage + 1);
+                }
+              : null,
+        ),
+      ],
+    );
+  }
 
   Future<List<DataRow>> _pacientesDataRows(BuildContext context) async {
     final List<Map<String, dynamic>> users = await apiService.getPacientes();
+    users.sort((a, b) => b['pacienteId'].compareTo(a['pacienteId']));
 
-    final double screenWidth2 = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth2 * 0.015;
+    double screenWidth2 = MediaQuery.of(context).size.width;
+    double fontSize = screenWidth2 * 0.012;
 
     return users.map((user) {
-      // Convertir los valores de 'estudio_medico' y 'consulta' a booleanos si son cadenas
       bool estudioMedico =
           user['estudio_medico'].toString().toLowerCase() == 'true';
       bool consulta = user['consulta'].toString().toLowerCase() == 'true';
-
       String nombreCompleto = user['nombre'] + ' ' + user['apellido'];
 
       return DataRow(cells: [
-        DataCell(Text(
-          nombreCompleto,
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(Text(
-          user['edad'].toString(),
-          style: TextStyle(fontSize: fontSize),
-        )),
-        DataCell(Text(
-          user['sexo'].toString(),
-          style: TextStyle(fontSize: fontSize),
-        )),
-        // DataCell(Text(
-        //   user['estatura'].toString(),
-        //   style: TextStyle(fontSize: fontSize),
-        // )),
-        // DataCell(Text(
-        //   user['peso'].toString(),
-        //   style: TextStyle(fontSize: fontSize),
-        // )),
-        // DataCell(
-        //   Container(
-        //     alignment: Alignment.center,
-        //     child: Text(
-        //       user['alergias'].toString(),
-        //       style: TextStyle(fontSize: fontSize),
-        //     ),
-        //   ),
-        // ),
-        DataCell(
-          Container(
-            alignment: Alignment.center,
-            child: Text(
-              user['estudio_medico'].toString(),
-              style: TextStyle(fontSize: fontSize),
-            ),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.center,
-            child: Text(
-              user['consulta'].toString(),
-              style: TextStyle(fontSize: fontSize),
-            ),
-          ),
-        ),
+        DataCell(Text(nombreCompleto, style: TextStyle(fontSize: fontSize))),
+        DataCell(Text(user['edad'].toString(),
+            style: TextStyle(fontSize: fontSize))),
+        DataCell(Text(user['sexo'].toString(),
+            style: TextStyle(fontSize: fontSize))),
+        DataCell(Text(user['estudio_medico'].toString(),
+            style: TextStyle(fontSize: fontSize))),
+        DataCell(Text(user['consulta'].toString(),
+            style: TextStyle(fontSize: fontSize))),
         DataCell(Row(
           children: [
             IconButton(
-              icon: Icon(
-                Icons.edit,
-                color: const Color(0xFF094293),
-                size: fontSize,
-              ),
+              icon: Icon(Icons.edit,
+                  color: const Color(0xFF094293), size: fontSize),
               onPressed: () {
-                // Obtener los datos relevantes de la fila seleccionada
-                int pacienteId = user['pacienteId'];
-                String nombre = user['nombre'];
-                String apellido = user['apellido'];
-                int edad = user['edad'];
-                String sexo = user['sexo'];
-                double estatura = user['estatura'];
-                double peso = user['peso'];
-                double temperatura = user['temperatura'];
-                double presion = user['presion'];
-                String alergias = user['alergias'];
-
-                // Llamar al método para mostrar el diálogo de edición
                 _showEditPacienteDialog(
                     context,
-                    pacienteId,
-                    nombre,
-                    apellido,
-                    edad,
-                    sexo,
-                    estatura,
-                    peso,
-                    temperatura,
-                    presion,
-                    alergias,
+                    user['pacienteId'],
+                    user['nombre'],
+                    user['apellido'],
+                    user['edad'],
+                    user['sexo'],
+                    user['estatura'],
+                    user['peso'],
+                    user['temperatura'],
+                    user['presion'],
+                    user['alergias'],
                     estudioMedico,
                     consulta);
               },
             ),
             IconButton(
-              icon: Icon(
-                Icons.person_off_sharp,
-                color: Colors.red,
-                size: fontSize,
-              ),
+              icon: Icon(Icons.person_off_sharp,
+                  color: Colors.red, size: fontSize),
               onPressed: () {
-                // Lógica para eliminar el usuario
-
-                // Obtener los datos relevantes de la fila seleccionada
-                int pacienteId = user['pacienteId'];
-                String nombre = user['nombre'];
-                String apellido = user['apellido'];
-
-                _showDeletePacienteDialog(
-                    context, pacienteId, nombre, apellido);
+                _showDeletePacienteDialog(context, user['pacienteId'],
+                    user['nombre'], user['apellido']);
               },
             ),
           ],
@@ -384,7 +360,24 @@ void _showEditPacienteDialog(
       TextEditingController(text: presion.toString());
   TextEditingController alergiasController =
       TextEditingController(text: alergias);
-  TextEditingController EstudioMedDetalleController = TextEditingController();
+  final TextEditingController EstudioMedDetalleController =
+      TextEditingController();
+
+  bool _isButtonEnabled = false;
+  bool isConsulted = false;
+  bool isEstudioMed = false;
+
+  List<String> estudioMedicoOptions = [
+    'Biometria Hecatica',
+    'Quimica Sanginea 1',
+    'Quimica Sanginea 3',
+    'Perfil bioquimico 24',
+    'EGO',
+    'Prueba de embarazo',
+    'Reacciones Febriles',
+    'Antidoping 3',
+    'Antidoping 5'
+  ];
 
   showDialog(
     context: context,
@@ -473,36 +466,64 @@ void _showEditPacienteDialog(
                     decoration: InputDecoration(labelText: 'Alergias'),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: estudioMedico,
-                        onChanged: (newValue) {
-                          setState(() {
-                            estudioMedico = newValue ?? false;
-                          });
-                        },
-                      ),
-                      Text('¿Estudio Medico?'),
-                    ],
-                  ),
-                  TextFormField(
-                    controller: EstudioMedDetalleController,
-                    decoration: InputDecoration(labelText: 'Selecciona estudio medico'),
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: consulta,
-                        onChanged: (newValue) {
-                          setState(() {
-                            consulta = newValue ?? false;
-                          });
-                        },
-                      ),
-                      Text('¿Consulta Medica?'),
-                    ],
-                  ),
+                                      Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: isEstudioMed,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  isEstudioMed = newValue ?? false;
+                                });
+                              },
+                            ),
+                            Text('¿Estudio Medico?'),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        if (isEstudioMed)
+                          DropdownButtonFormField<String>(
+                            value: EstudioMedDetalleController.text.isNotEmpty
+                                ? EstudioMedDetalleController.text
+                                : null,
+                            items: estudioMedicoOptions
+                                .map(
+                                    (String option) => DropdownMenuItem<String>(
+                                          value: option,
+                                          child: Text(option),
+                                        ))
+                                .toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                EstudioMedDetalleController.text =
+                                    newValue ?? '';
+                              });
+                            },
+                            decoration: const InputDecoration(
+                                labelText: 'Selecciona estudio medico'),
+                          ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: isConsulted,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  isConsulted = newValue ?? false;
+                                });
+                              },
+                            ),
+                            Text('¿Consulta Medica?'),
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -533,9 +554,10 @@ void _showEditPacienteDialog(
                         double.parse(temperaturaController.text);
                     double newPresion = double.parse(presionController.text);
                     String newAlergias = alergiasController.text;
-                    bool? newEstudioMedico = estudioMedico;
-                    String newEstudioMedDetalle = EstudioMedDetalleController.text;
-                    bool? newConsulta = consulta;
+                    bool? newEstudioMedico = isEstudioMed;
+                    String newEstudioMedDetalle =
+                        EstudioMedDetalleController.text;
+                    bool? newConsulta = isConsulted;
 
                     try {
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
@@ -607,7 +629,7 @@ void _showEditPacienteDialog(
                     );
                   }
                 },
-                  style: ElevatedButton.styleFrom(
+                style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF094293),
                 ),
                 child: Text(
@@ -781,7 +803,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 5),
           ],
         ),
       ),
