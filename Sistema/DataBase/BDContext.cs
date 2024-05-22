@@ -11,5 +11,7 @@ namespace Sistema.DataBase
         public DbSet<Models.Users> Users { get; set; }
         public DbSet<Models.Medicamento> Medicamento { get; set; }
         public DbSet<Models.Paciente> Paciente { get; set; }
+        public DbSet<Models.RecetasTB> RecetasTB { get; set; }
+        public DbSet<Models.Ventas> Ventas { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace Sistema.Models
         public string Alergias { get; set; }
         public decimal? temperatura { get; set; }
         public decimal? presion { get; set; }
+        public int telefono { get; set; }
         public bool Estudio_medico { get; set; }
         public string? Estudio_medico_detalle { get; set; }
         public bool Consulta { get; set; }

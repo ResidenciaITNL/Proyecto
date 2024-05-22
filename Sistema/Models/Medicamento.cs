@@ -18,6 +18,16 @@ namespace Sistema.Models
         public bool? active { get; set; } = true;
         public int? UserId { get; set; }
         public virtual Users? User { get; set; }
+        public virtual ICollection<VentaMedicamento> VentaMedicamentos { get; set; }
 
+
+    }
+
+    public class VentaMedicamento
+    {
+        public int VentaId { get; set; }
+        public Ventas Venta { get; set; }
+        public int MedicamentoId { get; set; }
+        public Medicamento Medicamento { get; set; }
     }
 }
