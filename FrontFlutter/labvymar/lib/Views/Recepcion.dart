@@ -86,6 +86,11 @@ class _RecepState extends State<Recep> {
       child: Scaffold(
         backgroundColor: Colors.white,
         key: _scaffoldKey,
+
+        //------------------------//
+        //-------- Navbar --------//
+        //------------------------//
+
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -127,6 +132,11 @@ class _RecepState extends State<Recep> {
           ],
         ),
         drawer: isLargeScreen ? null : NavBarWidgets.drawer(context),
+
+        //------------------------//
+        //--------- Body ---------//
+        //------------------------//
+
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -144,6 +154,10 @@ class _RecepState extends State<Recep> {
       ),
     );
   }
+
+  //--------------------------------------------------//
+  //-------- Widget del buscador de la tabla ---------//
+  //--------------------------------------------------//
 
   Widget _buildSearchBar(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -177,6 +191,10 @@ class _RecepState extends State<Recep> {
       ),
     );
   }
+
+  //--------------------------------------------------------------//
+  //-------- Widget de la tabla de la lista de pacientes ---------//
+  //--------------------------------------------------------------//
 
   Widget _buildUserDataTable() {
     return ResponsiveBuilder(
@@ -237,6 +255,10 @@ class _RecepState extends State<Recep> {
       },
     );
   }
+
+  //---------------------------------------------------//
+  //-------- Widget de paginación de la tabla ---------//
+  //---------------------------------------------------//
 
   Widget _buildPaginationControls() {
     int totalRows = _filteredRows.length;
@@ -362,8 +384,7 @@ void _showEditPacienteDialog(
       TextEditingController(text: alergias);
   final TextEditingController EstudioMedDetalleController =
       TextEditingController();
-
-  bool _isButtonEnabled = false;
+      
   bool isConsulted = false;
   bool isEstudioMed = false;
 

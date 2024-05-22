@@ -25,6 +25,62 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  static const int rowsPerPage = 15;
+  int _currentPage = 0;
+  List<DataRow> _allRows = [];
+  List<DataRow> _currentRows = [];
+  List<DataRow> _filteredRows = [];
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _filterRows();
+  }
+
+  void _loadData() async {
+    _allRows = await _userDataRows(context);
+    _filteredRows = List.from(_allRows);
+    _loadPage(0);
+  }
+
+  void _filterRows() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredRows = _allRows.where((row) {
+        return row.cells.any((cell) {
+          if (cell.child is Text) {
+            return (cell.child as Text).data!.toLowerCase().contains(query);
+          }
+          return false;
+        });
+      }).toList();
+    });
+    _loadPage(0);
+  }
+
+  void _loadPage(int page) {
+    int start = page * rowsPerPage;
+    int end = start + rowsPerPage;
+    setState(() {
+      _currentPage = page;
+      _currentRows = _filteredRows.sublist(
+          start, end > _filteredRows.length ? _filteredRows.length : end);
+    });
+  }
+
   //-------------------------------------------------------------//
   //-------- Widget que hace referencia al navbar y body --------//
   //-------------------------------------------------------------//
@@ -92,17 +148,55 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(
-                16.0), // Agrega un padding en todos los lados
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const UserManagementScreen(),
-                _buildUserDataTable(), // Tu DataTable aquí
+                _buildSearchBar(context),
+                Expanded(child: _buildUserDataTable()),
+                _buildPaginationControls(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------//
+  //-------- Widget del buscador de la tabla ---------//
+  //--------------------------------------------------//
+
+  Widget _buildSearchBar(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final bool isLargeScreen = width > 870;
+
+    double searchBarHeight = isLargeScreen ? height * 0.04 : height * 0.07;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: isLargeScreen ? width * 0.5 : width * 0.8,
+            height: searchBarHeight, // Alto responsivo
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Buscar',
+                hintText: 'Buscar por nombre, correo, rol, etc.',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: TextStyle(fontSize: 16.0),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -115,71 +209,94 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         double screenWidth = MediaQuery.of(context).size.width;
-        double columnSpacing = screenWidth * 0.05;
-        double fontSize = screenWidth * 0.020;
-        double fontSizeEdit = screenWidth * 0.015;
+        double columnSpacing = screenWidth * 0.02;
+        double fontSize = screenWidth * 0.016;
+        double fontSizeEdit = screenWidth * 0.014;
 
-        return FutureBuilder<List<DataRow>>(
-          future: _userDataRows(context),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child:
-                    CircularProgressIndicator(), // Muestra un indicador de carga mientras se espera
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                    'Error: ${snapshot.error}'), // Muestra un mensaje de error si ocurre algún problema
-              );
-            } else {
-              return DataTable(
-                columnSpacing: columnSpacing,
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      'Nombre',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Correo',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Rol',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Editar | Eliminar ',
-                      style: TextStyle(
-                        fontSize: fontSizeEdit,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-                rows: snapshot
-                    .data!, // Utiliza los datos devueltos por _userDataRows
-              );
-            }
-          },
+        return DataTable(
+          columnSpacing: columnSpacing,
+          columns: [
+            DataColumn(
+              label: Text(
+                'Nombre',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Correo',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Rol',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Editar',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Eliminar',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+          rows: _currentRows,
         );
       },
+    );
+  }
+
+  //---------------------------------------------------//
+  //-------- Widget de paginación de la tabla ---------//
+  //---------------------------------------------------//
+
+  Widget _buildPaginationControls() {
+    int totalRows = _filteredRows.length;
+    int totalPages = (totalRows / rowsPerPage).ceil();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: _currentPage > 0
+              ? () {
+                  _loadPage(_currentPage - 1);
+                }
+              : null,
+        ),
+        Text('Page ${_currentPage + 1} of $totalPages'),
+        IconButton(
+          icon: Icon(Icons.arrow_forward),
+          onPressed: _currentPage < totalPages - 1
+              ? () {
+                  _loadPage(_currentPage + 1);
+                }
+              : null,
+        ),
+      ],
     );
   }
 
@@ -189,9 +306,11 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
 
   Future<List<DataRow>> _userDataRows(BuildContext context) async {
     final List<Map<String, dynamic>> users = await apiService.getUsers();
+    users.sort((a, b) => b['userId'].compareTo(a['userId']));
 
     final double screenWidth2 = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth2 * 0.018;
+    double fontSize = screenWidth2 * 0.014;
+    double iconSize = screenWidth2 * 0.020;
 
     return users.map((user) {
       return DataRow(cells: [
@@ -214,7 +333,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
               icon: Icon(
                 Icons.edit,
                 color: const Color(0xFF094293),
-                size: fontSize,
+                size: iconSize,
               ),
               onPressed: () {
                 // Obtener los datos relevantes de la fila seleccionada
@@ -222,17 +341,19 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                 String name = user['name'];
                 String email = user['email'];
 
-                // int role = user['role'];
-
                 // Llamar al método para mostrar el diálogo de edición
                 _showEditUserDialog(context, userId, name, email);
               },
             ),
+          ],
+        )),
+        DataCell(Row(
+          children: [
             IconButton(
               icon: Icon(
                 Icons.person_off_sharp,
                 color: Colors.red,
-                size: fontSize,
+                size: iconSize,
               ),
               onPressed: () {
                 // Lógica para eliminar el usuario
@@ -544,7 +665,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 10),
             // Tu DataTable aquí
           ],
         ),
@@ -707,7 +828,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('Error'),
+                            title: Text('Inténtalo nuevamente'),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
