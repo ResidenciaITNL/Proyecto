@@ -308,18 +308,38 @@ class _RecepState extends State<Recep> {
       bool estudioMedico =
           user['estudio_medico'].toString().toLowerCase() == 'true';
       bool consulta = user['consulta'].toString().toLowerCase() == 'true';
+      
       String nombreCompleto = user['nombre'] + ' ' + user['apellido'];
 
+            // Asignar valor predeterminado si 'estudio_detalle' es null o está vacío
+      String estudioDetalle = user['estudio_detalle']?.toString() ?? '';
+      if (estudioDetalle.isEmpty) {
+        estudioDetalle = 'No requerido';
+      }
+
       return DataRow(cells: [
-        DataCell(Text(nombreCompleto, style: TextStyle(fontSize: fontSize))),
-        DataCell(Text(user['edad'].toString(),
-            style: TextStyle(fontSize: fontSize))),
+        DataCell(Text(nombreCompleto, style: TextStyle(fontSize: fontSize))),        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              user['edad'].toString(),
+              style: TextStyle(fontSize: fontSize),
+            ),
+          ),
+        ),
         DataCell(Text(user['sexo'].toString(),
             style: TextStyle(fontSize: fontSize))),
-        DataCell(Text(user['estudio_medico'].toString(),
+        DataCell(Text(estudioDetalle,
             style: TextStyle(fontSize: fontSize))),
-        DataCell(Text(user['consulta'].toString(),
-            style: TextStyle(fontSize: fontSize))),
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              user['consulta'].toString(),
+              style: TextStyle(fontSize: fontSize),
+            ),
+          ),
+        ),
         DataCell(Row(
           children: [
             IconButton(

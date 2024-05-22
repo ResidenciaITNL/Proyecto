@@ -323,6 +323,12 @@ class _ConsMedicaState extends State<ConsMedica> {
 
       String nombreCompleto = user['nombre'] + ' ' + user['apellido'];
 
+      // Asignar valor predeterminado si 'estudio_detalle' es null o está vacío
+      String estudioDetalle = user['estudio_detalle']?.toString() ?? '';
+      if (estudioDetalle.isEmpty) {
+        estudioDetalle = 'No requerido';
+      }
+
       return DataRow(cells: [
         DataCell(Text(
           nombreCompleto.toString(),
@@ -332,7 +338,7 @@ class _ConsMedicaState extends State<ConsMedica> {
           Container(
             alignment: Alignment.center,
             child: Text(
-              user['estudio_medico'].toString(),
+              estudioDetalle,
               style: TextStyle(fontSize: fontSize),
             ),
           ),
