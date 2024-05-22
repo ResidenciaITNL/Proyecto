@@ -363,11 +363,13 @@ class _ConsMedicaState extends State<ConsMedica> {
                 String sexo = user['sexo'];
                 double estatura = user['estatura'];
                 double peso = user['peso'];
+                double temperatura = user['temperatura'];
+                double presion = user['presion'];
                 String alergias = user['alergias'];
 
                 // Llamar al método para mostrar el diálogo de edición
                 _showCapturarReceta(context, pacienteId, nombre, apellido, edad,
-                    sexo, estatura, peso, alergias, estudioMedico, consulta);
+                    sexo, estatura, peso, temperatura, presion, alergias, estudioMedico, consulta);
               },
             ),
           ),
@@ -410,6 +412,8 @@ void _showCapturarReceta(
     String sexo,
     double estatura,
     double peso,
+    double temperatura,
+    double presion,
     String alergias,
     bool estudioMedico,
     bool consulta) {
@@ -420,6 +424,10 @@ void _showCapturarReceta(
   TextEditingController sexoController = TextEditingController(text: sexo);
   TextEditingController pesoController =
       TextEditingController(text: peso.toString());
+  TextEditingController temperaturaController =
+      TextEditingController(text: temperatura.toString());
+  TextEditingController presionController =
+      TextEditingController(text: presion.toString());
   TextEditingController estaturaController =
       TextEditingController(text: estatura.toString());
   TextEditingController alergiasController =
@@ -515,6 +523,25 @@ void _showCapturarReceta(
                     Row(
                       children: [
                         Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: temperaturaController,
+                            decoration:
+                                InputDecoration(labelText: 'Temperatura'),
+                            readOnly: true,
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: presionController,
+                            decoration: InputDecoration(labelText: 'Presión'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
                           flex: 1,
                           child: TextFormField(
                             decoration: InputDecoration(labelText: 'Fecha'),
@@ -523,7 +550,7 @@ void _showCapturarReceta(
                             readOnly: true, // Campo no editable
                           ),
                         ),
-                        SizedBox(width: constraints.maxWidth * 0.56),
+                        SizedBox(width: constraints.maxWidth * 0.1),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -555,7 +582,6 @@ void _showCapturarReceta(
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
                       await APIService().updatePaciente(pacienteId, {
                         'contenido': contenido,
-                        'fecha': fechaActual.toIso8601String(),
                       });
 
                       // Mostrar mensaje de éxito

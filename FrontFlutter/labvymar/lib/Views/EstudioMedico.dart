@@ -367,12 +367,15 @@ class _EstudioMedState extends State<EstudioMed> {
                 int edad = user['edad'];
                 String sexo = user['sexo'];
                 double estatura = user['estatura'];
-                double peso = user['peso'];
+                double peso = user['peso'];             
+                double temperatura = user['temperatura'];
+                double presion = user['presion'];
                 String alergias = user['alergias'];
+                String estudio_detalle = user['estudio_detalle'];
 
                 // Llamar al método para mostrar el diálogo de edición
-                _showCapturarReceta(context, pacienteId, nombre, apellido, edad,
-                    sexo, estatura, peso, alergias, estudioMedico, consulta);
+                _showCapturarEstudio(context, pacienteId, nombre, apellido, edad,
+                    sexo, estatura, peso, temperatura, presion, alergias, estudio_detalle, estudioMedico, consulta);
               },
             ),
           ),
@@ -406,7 +409,7 @@ class _EstudioMedState extends State<EstudioMed> {
 //-------- ShowDialog de la opcion de Editar Paciente  ---------//
 //--------------------------------------------------------------//
 
-void _showCapturarReceta(
+void _showCapturarEstudio(
     BuildContext context,
     int pacienteId,
     String nombre,
@@ -415,7 +418,10 @@ void _showCapturarReceta(
     String sexo,
     double estatura,
     double peso,
+    double temperatura,
+    double presion,
     String alergias,
+    String estudio_detalle,
     bool estudioMedico,
     bool consulta) {
   TextEditingController nombreCompletoController =
@@ -425,10 +431,16 @@ void _showCapturarReceta(
   TextEditingController sexoController = TextEditingController(text: sexo);
   TextEditingController pesoController =
       TextEditingController(text: peso.toString());
+  TextEditingController temperaturaController =
+      TextEditingController(text: temperatura.toString());
+  TextEditingController presionController =
+      TextEditingController(text: presion.toString());
   TextEditingController estaturaController =
       TextEditingController(text: estatura.toString());
   TextEditingController alergiasController =
       TextEditingController(text: alergias);
+  TextEditingController estudioDetalleController =
+      TextEditingController(text: estudio_detalle);
   DateTime fechaActual = DateTime.now();
   TextEditingController contenidoController = TextEditingController();
 
@@ -439,7 +451,7 @@ void _showCapturarReceta(
         builder: (BuildContext context, BoxConstraints constraints) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            title: const Text('Receta medica',
+            title: Text('Estudio medico: $estudio_detalle',
                 style: TextStyle(color: Colors.black)),
             content: SingleChildScrollView(
               child: Container(
@@ -520,6 +532,24 @@ void _showCapturarReceta(
                     Row(
                       children: [
                         Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: temperaturaController,
+                            decoration: InputDecoration(labelText: 'Temperatura'),
+                            readOnly: true,
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: presionController,
+                            decoration: InputDecoration(labelText: 'Presión'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
                           flex: 1,
                           child: TextFormField(
                             decoration: InputDecoration(labelText: 'Fecha'),
@@ -528,7 +558,7 @@ void _showCapturarReceta(
                             readOnly: true, // Campo no editable
                           ),
                         ),
-                        SizedBox(width: constraints.maxWidth * 0.56),
+                        SizedBox(width: constraints.maxWidth * 0.1),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -560,7 +590,6 @@ void _showCapturarReceta(
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
                       await APIService().updatePaciente(pacienteId, {
                         'contenido': contenido,
-                        'fecha': fechaActual.toIso8601String(),
                       });
 
                       // Mostrar mensaje de éxito
