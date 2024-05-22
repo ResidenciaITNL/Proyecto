@@ -5,16 +5,77 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:labvymar/Views/Navbar_widgets.dart';
 import 'package:labvymar/conectionmysql.dart';
 
-//-----------------------------------------------------//
+//----------------------------------------------------------//
 //----------------- Clase de EstudioMed --------------------//
-//-----------------------------------------------------//
+//----------------------------------------------------------//
 
-class EstudioMed extends StatelessWidget {
+class EstudioMed extends StatefulWidget {
   EstudioMed({super.key});
 
+  @override
+  _EstudioMedState createState() => _EstudioMedState();
+}
+
+class _EstudioMedState extends State<EstudioMed> {
   final APIService apiService = APIService();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  static const int rowsPerPage = 15;
+  int _currentPage = 0;
+  List<DataRow> _allRows = [];
+  List<DataRow> _currentRows = [];
+  List<DataRow> _filteredRows = [];
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _filterRows();
+  }
+
+  void _loadData() async {
+    _allRows = await _pacientesDataRows(context);
+    _filteredRows = List.from(_allRows);
+    _loadPage(0);
+  }
+
+  void _filterRows() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredRows = _allRows.where((row) {
+        return row.cells.any((cell) {
+          if (cell.child is Text) {
+            return (cell.child as Text).data!.toLowerCase().contains(query);
+          }
+          return false;
+        });
+      }).toList();
+    });
+    _loadPage(0);
+  }
+
+  void _loadPage(int page) {
+    int start = page * rowsPerPage;
+    int end = start + rowsPerPage;
+    setState(() {
+      _currentPage = page;
+      _currentRows = _filteredRows.sublist(
+          start, end > _filteredRows.length ? _filteredRows.length : end);
+    });
+  }
 
   //-------------------------------------------------------------//
   //-------- Widget que hace referencia al navbar y body --------//
@@ -82,17 +143,55 @@ class EstudioMed extends StatelessWidget {
 
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(
-                16.0), // Agrega un padding en todos los lados
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const UserManagementScreen(),
-                _buildUserDataTable(), // Tu DataTable aquí
+                _buildSearchBar(context),
+                Expanded(child: _buildUserDataTable()),
+                _buildPaginationControls(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------//
+  //-------- Widget del buscador de la tabla ---------//
+  //--------------------------------------------------//
+
+  Widget _buildSearchBar(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final bool isLargeScreen = width > 870;
+
+    double searchBarHeight = isLargeScreen ? height * 0.04 : height * 0.07;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: isLargeScreen ? width * 0.5 : width * 0.8,
+            height: searchBarHeight, // Alto responsivo
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Buscar',
+                hintText: 'Buscar por nombre, estudio medico, consulta, etc.',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: TextStyle(fontSize: 16.0),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -111,77 +210,90 @@ class EstudioMed extends StatelessWidget {
             screenWidth * 0.015; // Tamaño de fuente predeterminado
         double fontSizeEdit =
             screenWidth * 0.015; // Tamaño de fuente predeterminado
-
-        return FutureBuilder<List<DataRow>>(
-          future: _pacientesDataRows(context),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child:
-                    CircularProgressIndicator(), // Muestra un indicador de carga mientras se espera
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                    'Error: ${snapshot.error}'), // Muestra un mensaje de error si ocurre algún problema
-              );
-            } else {
-              return DataTable(
-                columnSpacing: columnSpacing,
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      'Nombre',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Estudio Medico',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Consulta',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Realizar Estudio',
-                      style: TextStyle(
-                        fontSize: fontSizeEdit,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Estudio Medico',
-                      style: TextStyle(
-                        fontSize: fontSizeEdit,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-                rows: snapshot
-                    .data!, // Utiliza los datos devueltos por _userDataRows
-              );
-            }
-          },
+        return DataTable(
+          columnSpacing: columnSpacing,
+          columns: [
+            DataColumn(
+              label: Text(
+                'Nombre',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Estudio Medico',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // DataColumn(
+            //   label: Text(
+            //     'Consulta',
+            //     style: TextStyle(
+            //       fontSize: fontSize,
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            // ),
+            DataColumn(
+              label: Text(
+                'Realizar Estudio',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Estudio Medico',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+          rows: _currentRows,
         );
       },
+    );
+  }
+
+  //---------------------------------------------------//
+  //-------- Widget de paginación de la tabla ---------//
+  //---------------------------------------------------//
+
+  Widget _buildPaginationControls() {
+    int totalRows = _filteredRows.length;
+    int totalPages = (totalRows / rowsPerPage).ceil();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: _currentPage > 0
+              ? () {
+                  _loadPage(_currentPage - 1);
+                }
+              : null,
+        ),
+        Text('Page ${_currentPage + 1} of $totalPages'),
+        IconButton(
+          icon: Icon(Icons.arrow_forward),
+          onPressed: _currentPage < totalPages - 1
+              ? () {
+                  _loadPage(_currentPage + 1);
+                }
+              : null,
+        ),
+      ],
     );
   }
 
@@ -191,15 +303,17 @@ class EstudioMed extends StatelessWidget {
 
   Future<List<DataRow>> _pacientesDataRows(BuildContext context) async {
     final List<Map<String, dynamic>> users = await apiService.getPacientes();
+    users.sort((a, b) => b['pacienteId'].compareTo(a['pacienteId']));
 
     final double screenWidth2 = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth2 * 0.015;
-    double iconSize = screenWidth2 * 0.025;
+    double fontSize = screenWidth2 * 0.014;
+    double iconSize = screenWidth2 * 0.021;
 
     return users.where((user) {
       // Convertir el valor de 'consulta' a booleano o verificar si es 'Si'
       String estudioMedicoStr = user['estudio_medico'].toString().toLowerCase();
-      bool estudioMedico = estudioMedicoStr == 'true' || estudioMedicoStr == 'si';
+      bool estudioMedico =
+          estudioMedicoStr == 'true' || estudioMedicoStr == 'si';
       return estudioMedico;
     }).map((user) {
       // Convertir los valores de 'estudio_medico' y 'consulta' a booleanos si son cadenas
@@ -209,6 +323,12 @@ class EstudioMed extends StatelessWidget {
 
       String nombreCompleto = user['nombre'] + ' ' + user['apellido'];
 
+      // Asignar valor predeterminado si 'estudio_detalle' es null o está vacío
+      String estudioDetalle = user['estudio_detalle']?.toString() ?? '';
+      if (estudioDetalle.isEmpty) {
+        estudioDetalle = 'Vuelve a seleccionar el estudio';
+      }
+
       return DataRow(cells: [
         DataCell(Text(
           nombreCompleto.toString(),
@@ -216,22 +336,21 @@ class EstudioMed extends StatelessWidget {
         )),
         DataCell(
           Container(
-            alignment: Alignment.center,
             child: Text(
-              user['estudio_medico'].toString(),
+              estudioDetalle,
               style: TextStyle(fontSize: fontSize),
             ),
           ),
         ),
-        DataCell(
-          Container(
-            alignment: Alignment.center,
-            child: Text(
-              user['consulta'].toString(),
-              style: TextStyle(fontSize: fontSize),
-            ),
-          ),
-        ),
+        // DataCell(
+        //   Container(
+        //     alignment: Alignment.center,
+        //     child: Text(
+        //       user['consulta'].toString(),
+        //       style: TextStyle(fontSize: fontSize),
+        //     ),
+        //   ),
+        // ),
         DataCell(
           Center(
             child: IconButton(
@@ -262,7 +381,7 @@ class EstudioMed extends StatelessWidget {
           Center(
             child: IconButton(
               icon: Icon(
-                Icons.library_books_rounded,
+                Icons.file_download,
                 color: Colors.black,
                 size: iconSize,
               ),
@@ -391,7 +510,7 @@ void _showCapturarReceta(
                           child: TextFormField(
                             controller: alergiasController,
                             decoration: InputDecoration(labelText: 'Alergias'),
-                            readOnly: true, 
+                            readOnly: true,
                           ),
                         ),
                         SizedBox(width: constraints.maxWidth * 0.1),
@@ -637,25 +756,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // ElevatedButton.icon(
-            //   onPressed: () {
-            //     _showAddPacienteDialog(context);
-            //   },
-            //   style: ButtonStyle(
-            //     backgroundColor:
-            //         MaterialStateProperty.all<Color>(const Color(0xFF094293)),
-            //   ),
-            //   icon: const Icon(
-            //     Icons.person_add_alt_sharp,
-            //     color: Colors.white,
-            //     size: 30,
-            //   ),
-            //   label: const Text(
-            //     'Nuevo Paciente',
-            //     style: TextStyle(color: Colors.white, fontSize: 20),
-            //   ),
-            // ),
-            SizedBox(height: 40),
+            SizedBox(height: 10),
           ],
         ),
       ),
