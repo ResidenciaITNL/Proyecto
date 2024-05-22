@@ -10,12 +10,73 @@ import 'package:intl/intl.dart';
 //----------------- Clase de InvMedicamento --------------------//
 //--------------------------------------------------------------//
 
-class InvMedicamento extends StatelessWidget {
-  InvMedicamento({Key? key}) : super(key: key);
+class InvMedicamento extends StatefulWidget {
+  InvMedicamento({super.key});
 
+  @override
+  _InvMedicamentoState createState() => _InvMedicamentoState();
+}
+
+class _InvMedicamentoState extends State<InvMedicamento> {
   final APIService apiService = APIService();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  static const int rowsPerPage = 15;
+  int _currentPage = 0;
+  List<DataRow> _allRows = [];
+  List<DataRow> _currentRows = [];
+  List<DataRow> _filteredRows = [];
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _filterRows();
+  }
+
+  void _loadData() async {
+    _allRows = await _medicamentoDataRows(context);
+    _filteredRows = List.from(_allRows);
+    _loadPage(0);
+  }
+
+  void _filterRows() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredRows = _allRows.where((row) {
+        return row.cells.any((cell) {
+          if (cell.child is Text) {
+            return (cell.child as Text).data!.toLowerCase().contains(query);
+          }
+          return false;
+        });
+      }).toList();
+    });
+    _loadPage(0);
+  }
+
+  void _loadPage(int page) {
+    int start = page * rowsPerPage;
+    int end = start + rowsPerPage;
+    setState(() {
+      _currentPage = page;
+      _currentRows = _filteredRows.sublist(
+          start, end > _filteredRows.length ? _filteredRows.length : end);
+    });
+  }
 
   //-------------------------------------------------------------//
   //-------- Widget que hace referencia al navbar y body --------//
@@ -83,17 +144,55 @@ class InvMedicamento extends StatelessWidget {
 
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(
-                16.0), // Agrega un padding en todos los lados
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const UserManagementScreen(),
-                _medicamentoDataTable(), // Tu DataTable aquí
+                _buildSearchBar(context),
+                Expanded(child: _medicamentoDataTable()),
+                _buildPaginationControls(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------//
+  //-------- Widget del buscador de la tabla ---------//
+  //--------------------------------------------------//
+
+  Widget _buildSearchBar(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final bool isLargeScreen = width > 870;
+
+    double searchBarHeight = isLargeScreen ? height * 0.04 : height * 0.07;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: isLargeScreen ? width * 0.5 : width * 0.8,
+            height: searchBarHeight, // Alto responsivo
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Buscar',
+                hintText: 'Buscar por nombre, descripcion, fecha, etc.',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: TextStyle(fontSize: 16.0),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -110,116 +209,131 @@ class InvMedicamento extends StatelessWidget {
         double fontSize = screenWidth * 0.014;
         double fontSizeEdit = screenWidth * 0.011;
 
-        return FutureBuilder<List<DataRow>>(
-          future: _medicamentoDataRows(context),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child:
-                    CircularProgressIndicator(), // Muestra un indicador de carga mientras se espera
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                    'Error: ${snapshot.error}'), // Muestra un mensaje de error si ocurre algún problema
-              );
-            } else {
-              return DataTable(
-                columnSpacing: columnSpacing,
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      'Nombre',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Descripcion',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Fecha de caducidad',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Stock',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Precio',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Contenido',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Unidad de medida',
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Editar | Eliminar',
-                      style: TextStyle(
-                        fontSize: fontSizeEdit,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-                rows: snapshot
-                    .data!, // Utiliza los datos devueltos por _medicamentoDataRows
-              );
-            }
-          },
+        return DataTable(
+          columnSpacing: columnSpacing,
+          columns: [
+            DataColumn(
+              label: Text(
+                'Nombre',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Descripcion',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Fecha de caducidad',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Stock',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Precio',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Contenido',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Unidad de medida',
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Editar | Eliminar',
+                style: TextStyle(
+                  fontSize: fontSizeEdit,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+          rows: _currentRows,
         );
       },
     );
   }
 
-//---------------------------------------------------------------//
-//-------- Lista de medicamento que se obtiene del API  ---------//
-//---------------------------------------------------------------//
+  //---------------------------------------------------//
+  //-------- Widget de paginación de la tabla ---------//
+  //---------------------------------------------------//
+
+  Widget _buildPaginationControls() {
+    int totalRows = _filteredRows.length;
+    int totalPages = (totalRows / rowsPerPage).ceil();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: _currentPage > 0
+              ? () {
+                  _loadPage(_currentPage - 1);
+                }
+              : null,
+        ),
+        Text('Page ${_currentPage + 1} of $totalPages'),
+        IconButton(
+          icon: Icon(Icons.arrow_forward),
+          onPressed: _currentPage < totalPages - 1
+              ? () {
+                  _loadPage(_currentPage + 1);
+                }
+              : null,
+        ),
+      ],
+    );
+  }
+
+  //---------------------------------------------------------------//
+  //-------- Lista de medicamento que se obtiene del API  ---------//
+  //---------------------------------------------------------------//
 
   Future<List<DataRow>> _medicamentoDataRows(BuildContext context) async {
-    final List<Map<String, dynamic>> medicamento =
-        await apiService.getMedicamento();
+    final List<Map<String, dynamic>> medicamento = await apiService.getMedicamento();
+    medicamento.sort((a, b) => b['medicamentoId'].compareTo(a['medicamentoId']));
 
     final double screenWidth2 = MediaQuery.of(context).size.width;
     double fontSize = screenWidth2 * 0.012;
+    double iconSize = screenWidth2 * 0.016;
 
     return medicamento.map((medicamento) {
       DateTime fechaVencimiento;
@@ -266,7 +380,7 @@ class InvMedicamento extends StatelessWidget {
               icon: Icon(
                 Icons.edit,
                 color: const Color(0xFF094293),
-                size: fontSize,
+                size: iconSize,
               ),
               onPressed: () {
                 int medicamentoId = medicamento['medicamentoId'];
@@ -291,9 +405,9 @@ class InvMedicamento extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(
-                Icons.person_off_sharp,
+                Icons.delete_forever,
                 color: Colors.red,
-                size: fontSize,
+                size: iconSize,
               ),
               onPressed: () {
                 int medicamentoId = medicamento['medicamentoId'];
@@ -310,6 +424,10 @@ class InvMedicamento extends StatelessWidget {
       ]);
     }).toList();
   }
+
+  //-----------------------------------------------------------------//
+  //-------- ShowDialog de la opcion de Editar Medicamento  ---------//
+  //-----------------------------------------------------------------//
 
   void _showEditMedicineDialog(
       BuildContext context,
@@ -628,7 +746,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -850,9 +968,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         ),
       );
 
-      
-                    Navigator.pushReplacementNamed(
-                        context, 'InventarioMedicamento');
+      Navigator.pushReplacementNamed(context, 'InventarioMedicamento');
 
       // Puedes realizar cualquier otra acción necesaria después de agregar el medicamento, como recargar la lista de medicamentos.
     } catch (e) {

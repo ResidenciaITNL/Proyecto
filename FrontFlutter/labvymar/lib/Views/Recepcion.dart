@@ -76,6 +76,10 @@ class _RecepState extends State<Recep> {
     });
   }
 
+  //-------------------------------------------------------------//
+  //-------- Widget que hace referencia al navbar y body --------//
+  //-------------------------------------------------------------//
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -288,12 +292,17 @@ class _RecepState extends State<Recep> {
     );
   }
 
+  //-------------------------------------------------------------//
+  //-------- Lista de pacientes que se obtiene del API  ---------//
+  //-------------------------------------------------------------//
+
   Future<List<DataRow>> _pacientesDataRows(BuildContext context) async {
     final List<Map<String, dynamic>> users = await apiService.getPacientes();
     users.sort((a, b) => b['pacienteId'].compareTo(a['pacienteId']));
 
     double screenWidth2 = MediaQuery.of(context).size.width;
     double fontSize = screenWidth2 * 0.012;
+    double iconSize = screenWidth2 * 0.015;
 
     return users.map((user) {
       bool estudioMedico =
@@ -315,7 +324,7 @@ class _RecepState extends State<Recep> {
           children: [
             IconButton(
               icon: Icon(Icons.edit,
-                  color: const Color(0xFF094293), size: fontSize),
+                  color: const Color(0xFF094293), size: iconSize),
               onPressed: () {
                 _showEditPacienteDialog(
                     context,
@@ -335,7 +344,7 @@ class _RecepState extends State<Recep> {
             ),
             IconButton(
               icon: Icon(Icons.person_off_sharp,
-                  color: Colors.red, size: fontSize),
+                  color: Colors.red, size: iconSize),
               onPressed: () {
                 _showDeletePacienteDialog(context, user['pacienteId'],
                     user['nombre'], user['apellido']);
@@ -384,7 +393,7 @@ void _showEditPacienteDialog(
       TextEditingController(text: alergias);
   final TextEditingController EstudioMedDetalleController =
       TextEditingController();
-      
+
   bool isConsulted = false;
   bool isEstudioMed = false;
 
@@ -487,64 +496,62 @@ void _showEditPacienteDialog(
                     decoration: InputDecoration(labelText: 'Alergias'),
                   ),
                   const SizedBox(height: 20),
-                                      Column(
-                      children: [
-                        SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: isEstudioMed,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  isEstudioMed = newValue ?? false;
-                                });
-                              },
-                            ),
-                            Text('¿Estudio Medico?'),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        if (isEstudioMed)
-                          DropdownButtonFormField<String>(
-                            value: EstudioMedDetalleController.text.isNotEmpty
-                                ? EstudioMedDetalleController.text
-                                : null,
-                            items: estudioMedicoOptions
-                                .map(
-                                    (String option) => DropdownMenuItem<String>(
-                                          value: option,
-                                          child: Text(option),
-                                        ))
-                                .toList(),
-                            onChanged: (String? newValue) {
+                  Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isEstudioMed,
+                            onChanged: (newValue) {
                               setState(() {
-                                EstudioMedDetalleController.text =
-                                    newValue ?? '';
+                                isEstudioMed = newValue ?? false;
                               });
                             },
-                            decoration: const InputDecoration(
-                                labelText: 'Selecciona estudio medico'),
                           ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: isConsulted,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  isConsulted = newValue ?? false;
-                                });
-                              },
-                            ),
-                            Text('¿Consulta Medica?'),
-                          ],
+                          Text('¿Estudio Medico?'),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      if (isEstudioMed)
+                        DropdownButtonFormField<String>(
+                          value: EstudioMedDetalleController.text.isNotEmpty
+                              ? EstudioMedDetalleController.text
+                              : null,
+                          items: estudioMedicoOptions
+                              .map((String option) => DropdownMenuItem<String>(
+                                    value: option,
+                                    child: Text(option),
+                                  ))
+                              .toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              EstudioMedDetalleController.text = newValue ?? '';
+                            });
+                          },
+                          decoration: const InputDecoration(
+                              labelText: 'Selecciona estudio medico'),
                         ),
-                      ],
-                    ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isConsulted,
+                            onChanged: (newValue) {
+                              setState(() {
+                                isConsulted = newValue ?? false;
+                              });
+                            },
+                          ),
+                          Text('¿Consulta Medica?'),
+                        ],
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
