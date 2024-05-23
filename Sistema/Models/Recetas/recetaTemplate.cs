@@ -3,7 +3,7 @@
     public class recetaTemplate
     {
         public string Nombre { get; set; }
-        public string Fecha { get; set; } = DateTime.Now.ToShortDateString();
+        public string DateNow { get; set; } = DateTime.Now.ToShortDateString();
         public string Titulo { get; set; }
         public string token { get; set; }
         public string Cedula { get; set; }

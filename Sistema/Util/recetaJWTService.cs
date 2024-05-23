@@ -21,7 +21,6 @@ namespace Sistema.Util
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyJwt));
             SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             string jsonPayload = JsonConvert.SerializeObject(payload);
-
             Claim[] claims = new Claim[9];
             if (payload.jti != null)
             {

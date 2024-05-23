@@ -42,7 +42,7 @@ namespace Sistema.Controllers
             recetaTemplate _recetaTemplate = new recetaTemplate(); // para el word
             _recetaTemplate.Contenido = receta.contenido;
             _recetaTemplate.Nombre = receta.Paciente.Nombre;
-            _recetaTemplate.Fecha = DateTime.Now.ToShortDateString();
+            _recetaTemplate.DateNow = DateTime.Now.ToShortDateString();
             _recetaTemplate.Titulo = receta.User.titulo;
             _recetaTemplate.Cedula = receta.User.cedula;
             _recetaTemplate.Col = receta.User.Customers.Colonia;
