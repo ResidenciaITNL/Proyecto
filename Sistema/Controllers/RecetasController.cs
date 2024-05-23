@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Sistema.DataBase;
 using Sistema.Models;
 using Sistema.Models.Recetas;
 using Sistema.Util;
-using System.Data.Entity;
 using System.Security.Claims;
 
 namespace Sistema.Controllers
