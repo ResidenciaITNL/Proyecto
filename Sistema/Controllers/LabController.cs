@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Sistema.DataBase;
 using Sistema.Models;
 using Sistema.Models.Lab;
 using Sistema.Util;
-using System.Data.Entity;
 using System.Security.Claims;
 
 namespace Sistema.Controllers
@@ -42,7 +42,9 @@ namespace Sistema.Controllers
 
             var paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == data.PacienteId);
             data.NombrePaciente = paciente.Nombre + " " + paciente.Apellido;
-            data.Edad = paciente.Edad.ToString();
+            data.edad = paciente.Edad.ToString();
+            paciente.Estudio_medico = false;
+            _context.Entry(paciente).State = EntityState.Modified;
 
             _recetaService = new RecetaService(path, pathWord, data);
             _recetaService.GenerateDocumentForLab();
@@ -70,7 +72,9 @@ namespace Sistema.Controllers
 
             var paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == data.PacienteId);
             data.NombrePaciente = paciente.Nombre + " " + paciente.Apellido;
-            data.Edad = paciente.Edad.ToString();
+            data.edad = paciente.Edad.ToString();
+            paciente.Estudio_medico = false;
+            _context.Entry(paciente).State = EntityState.Modified;
 
             _recetaService = new RecetaService(path, pathWord, data);
             _recetaService.GenerateDocumentForLab();
@@ -98,7 +102,9 @@ namespace Sistema.Controllers
 
             var paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == data.PacienteId);
             data.NombrePaciente = paciente.Nombre + " " + paciente.Apellido;
-            data.Edad = paciente.Edad.ToString();
+            data.edad = paciente.Edad.ToString();
+            paciente.Estudio_medico = false;
+            _context.Entry(paciente).State = EntityState.Modified;
 
             _recetaService = new RecetaService(path, pathWord, data);
             _recetaService.GenerateDocumentForLab();
