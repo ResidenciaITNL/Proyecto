@@ -119,13 +119,13 @@ class CuentaUser extends StatelessWidget {
                         ),
                         const SizedBox(height: 15),
                         _buildInfoRow(
-                          "Año",
+                          "Expedición de cédula",
                           user['year'] ?? 'Año no disponible',
                           context,
                         ),
                         const SizedBox(height: 15),
                         _buildInfoRow(
-                          "Título",
+                          "Registro de título",
                           user['titulo'] ?? 'Titulo no disponible',
                           context,
                         ),
@@ -202,13 +202,13 @@ class CuentaUser extends StatelessWidget {
                   _showEditPhoneDialog(context, displayValue);
                 } else if (label == "Contraseña") {
                   _showEditPasswordDialog(context, displayValue);
-                } else if (label == "Título") {
+                } else if (label == "Registro de título") {
                   _showEditTituloDialog(context, displayValue);
                 } else if (label == "Cédula") {
                   _showEditCedulaDialog(context, displayValue);
                 } else if (label == "Institución Educativa") {
                   _showEditInstitucionDialog(context, displayValue);
-                } else if (label == "Año") {
+                } else if (label == "Expedición de cédula") {
                   _showEditYearDialog(context, displayValue);
                 }
               },
@@ -675,7 +675,7 @@ class CuentaUser extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Verifica tu título"),
+          title: const Text("Verifica tu registro de título"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -937,7 +937,7 @@ class CuentaUser extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Verifica tu año"),
+          title: const Text("Verifica tu expedición de cédula"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -696,8 +696,7 @@ class APIService {
   //-- Método para enviar el carrito de ventas --//
   //---------------------------------------------//
 
-  Future<Map<String, dynamic>> enviarResumenVenta(
-      List<Map<String, dynamic>> resumenVenta) async {
+  Future<Map<String, dynamic>> enviarResumenVenta(List<Map<String, dynamic>> resumenVenta) async {
     String? token = await getToken();
 
     if (token == null) {
@@ -723,19 +722,22 @@ class APIService {
     );
 
     if (response.statusCode == 200 || response.statusCode == 204) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
-      responseBody['success'] = true;
-      return responseBody;
+      // Verifica si el cuerpo de la respuesta está vacío
+      if (response.body.isEmpty) {
+        return {'success': true};
+      } else {
+        Map<String, dynamic> responseBody = jsonDecode(response.body);
+        responseBody['success'] = true;
+        return responseBody;
+      }
     } else {
       Map<String, dynamic> errorResponse = {
         'success': false,
-        'message':
-            jsonDecode(response.body)['message'] ?? 'Failed to create sale',
+        'message': jsonDecode(response.body)['message'] ?? 'Failed to create sale',
       };
       return errorResponse;
     }
   }
-
 
   //------------------------------------------------------------------------------//
   //------------------------------------------------------------------------------//
@@ -743,12 +745,11 @@ class APIService {
   //------------------------------------------------------------------------------//
   //------------------------------------------------------------------------------//
 
-
   //-----------------------------------//
   //-- Método para crear un paciente --//
   //-----------------------------------//
 
-Future<void> createReceta(Map<String, dynamic> recetaData) async {
+  Future<void> createReceta(Map<String, dynamic> recetaData) async {
     String? token = await getToken(); // Obtener el token guardado
 
     if (token == null) {
@@ -772,5 +773,4 @@ Future<void> createReceta(Map<String, dynamic> recetaData) async {
       throw Exception('Failed to create paciente');
     }
   }
-
 }

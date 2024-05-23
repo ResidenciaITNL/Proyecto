@@ -1039,7 +1039,13 @@ void _showCartDialog(BuildContext context) {
                     ),
                   );
                 },
-                child: Text('Limpiar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                child: Text(
+                  'Borrar carrito',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -1079,7 +1085,13 @@ void _showCartDialog(BuildContext context) {
                     );
                   }
                 },
-                child: Text('Finalizar venta'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF094293),
+                ),
+                child: Text(
+                  'Finalizar venta',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );

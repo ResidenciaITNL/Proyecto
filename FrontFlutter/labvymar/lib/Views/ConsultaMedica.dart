@@ -618,7 +618,7 @@ void _showCapturarReceta(
                       );
                       Navigator.of(context).pop(); // Cerrar el diálogo
 
-                      Navigator.pushReplacementNamed(context, 'Recepcion');
+                      Navigator.pushReplacementNamed(context, 'ConsultaMedica');
                     } catch (e) {
                       // Manejar cualquier error que pueda ocurrir durante la actualización
                       showDialog(
