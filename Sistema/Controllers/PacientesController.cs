@@ -95,25 +95,31 @@ namespace Sistema.Controllers
         {
             //Obtener el customerId del token
             var CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
-            var paciente = await _context.RecetasTB.Where(RecetasTB => RecetasTB.PacienteId == id && RecetasTB.User.CustomersId == CustomerId).Select(receta => new
-            {
-                Id = "R-" + receta.RecetaId.ToString(),
-                Titulo = "Consulta",
-                Doctor = receta.User.name + " " + receta.User.email,
-                Fecha = receta.fecha.ToString("dd-MM-yyyy hh:mm tt")
-            }).Union(_context.Laboratorio.Where(Laboratorio => Laboratorio.PacienteId == id && Laboratorio.User.CustomersId == CustomerId).Select(laboratorio => new
-            {
-                Id = "L-" + laboratorio.LaboratorioId.ToString,
-                Titulo = "Estudio - " + laboratorio.tipo,
-                Doctor = laboratorio.User.name + " " + laboratorio.User.email,
-                Fecha = laboratorio.fecha.ToString("dd-MM-yyyy hh:mm tt")
-            })).OrderByDescending(x => x.Fecha).ToListAsync();
 
-            if (paciente == null)
-            {
-                return NotFound();
-            }
-            return Ok(paciente);
+            var recetas = await _context.RecetasTB
+                .Where(RecetasTB => RecetasTB.PacienteId == id && RecetasTB.User.CustomersId == CustomerId)
+                .Select(receta => new
+                {
+                    Id = "R-" + receta.RecetaId.ToString(),
+                    Titulo = "Consulta",
+                    Doctor = receta.User.name + " " + receta.User.email,
+                    Doctor_email = receta.User.email,
+                    Fecha = receta.fecha.ToString("dd-MM-yyyy hh:mm tt")
+                }).ToListAsync();
+
+            var laboratorios = await _context.Laboratorio
+                .Where(Laboratorio => Laboratorio.PacienteId == id && Laboratorio.User.CustomersId == CustomerId)
+                .Select(laboratorio => new
+                {
+                    Id = "L-" + laboratorio.LaboratorioId.ToString(),
+                    Titulo = "Estudio - " + laboratorio.tipo,
+                    Doctor = laboratorio.User.name,
+                    Doctor_email = laboratorio.User.email,
+                    Fecha = laboratorio.fecha.ToString("dd-MM-yyyy hh:mm tt")
+                }).ToListAsync();
+            recetas.AddRange(laboratorios);
+            recetas.OrderByDescending(x => x.Fecha);
+            return Ok(recetas);
         }
 
         // PUT: api/Pacientes/5
