@@ -1,0 +1,198 @@
+* bd84168 update
+| * 47bbba8 Consulta y estudio Done
+| * 5ad0224 EstudioMedico
+| * f8fe587 EstudioMedico uodate
+| * 6c4f23e Update
+| * 7b3a6da Inventario Finish
+| * 6000dec Update
+| * 0e77cd1 Consulta medica update
+| * c5d6502 consultaMedica finish
+| * 3550a64 EstudioMedico finish
+| * 22a96d5 InventarioMedicamento finish
+| * ff3c888 AdministrarUsuario finish
+| * 07d4b9e Recepcion finish
+| * b519a05 Recepcion 70%
+| * 65b9eae Cuenta finish
+| * e71124a ConsultaMedica aun no terminado
+| * 0e89f86 Inicio de ConsultaMedica
+| * 6473ca7 inventario update
+| * bf4ff70 Modulos de inventarioMedicamento
+| * 683a052 Modulo Recepcion finish con bugs
+| * 172842b modulos de crud del paciente
+| * f7abbdc Cuenta update
+| * 81acc05 AdministrarUsuarios all finished
+| * ee414f5 login y cambiarPassword finish
+| * df5109c recuperarcontraseña finish
+| * a016f20 Edit User update
+| * 8bce719 Agregar usuario finish
+| * 1fca0ff add user part 1
+| * d1ca3ee Navbar Solution ready
+| * 7c56293 Finish get userslist
+| * cf9054a Api traer usuarios part 1
+| * 144910f Login conexion API
+| * 70b831c Update Recepcion Check box
+| * a9176c1 Update Front Recepcion Finish
+| * 70621ab Update FrontEnd - AdminUs InvMed Recepcion
+| * 4b6fc59 Update FrontEnd AdminUsers, InvMedi y loggin
+| * 5a816aa Update FrontEnd Loggin
+| * 815a246 Update frontend Inventario 2.0
+| * 093f39c Update frontend - Inventario Medicamento
+| * df548e3 Update frontend
+| * c320137 Update Front Cuenta
+| * 7952582 Update Front Cuenta
+| * 724a7c6 Update front cuenta
+| * dcb12e7 Update Front AdminUsuarios
+| * 72bdf36 Update Front
+| * 70293a8 update laptop
+| * 2e9a209 Update Front
+| * cea067c Actualizacion de front
+| * b839a79 Actualizacion front
+| * f6695ac Front update
+| | *   479eab0 Merge pull request #28 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | 01feb30 fix:receta
+| | *   1fead18 Merge pull request #27 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | 028bdfa fix: Ventas
+| | *   4432feb Merge pull request #26 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | b13c93a update
+| | *   9aa59a1 Merge pull request #25 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | db48f34 update: paciente
+| | *   9a7199f Merge pull request #24 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | c6bb706 Update: Models
+* | | bb44344 fix:My Account
+| | *   4c652f2 Merge pull request #23 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | 27d8dd9 update userid
+| | *   f9b22d1 Merge pull request #22 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | 6c1e23e Fixed: CustomerId in User
+* | | 046cf6a add: MyAccount cedula,titulo,año, intitucion
+| | *   12b6f59 Merge pull request #21 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | 9e8bec4 fixed: autorize
+| | *   b431943 Merge pull request #20 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | 5732d45 Add: Sign Receta
+* | | dbfb90a fixed: udpate Medicamento & pacientes
+| | *   7ca92bf Merge pull request #19 from ResidenciaITNL/Back-End
+| | |\  
+| |_|/  
+|/| |   
+* | | 8a8add2 update
+* | | b73d90c Fixed: Campos obligatorios pero solo para backend
+| |/  
+|/|   
+* | 5689299 MedicamentoController y paciente Decimal
+* | e2dfdd2 Cambiar Email y GetPacientes UPADTE
+* |   9ce6956 Merge pull request #18 from ResidenciaITNL/FixBugs
+|\ \  
+| * | 46cc61d fix: error
+* | | 277cbbc Merge pull request #17 from ResidenciaITNL/FixBugs
+|\| | 
+| * | 3ad06a4 fix: firstLogin in MyAccount
+* | | 5f86673 Merge pull request #16 from ResidenciaITNL/FixBugs
+|\| | 
+| * | 388f5bf cambiar mi password
+* | | 29bdebe Merge pull request #15 from ResidenciaITNL/FixBugs
+|\| | 
+| * | 4b4ffca fix Role
+* | | 9245112 Merge pull request #14 from ResidenciaITNL/FixBugs
+|\| | 
+| * | bcf8b55 se arrelgaron bugs de endpoint de ususarios
+| * | 968c0eb doc
+|/ /  
+* |   6dc16cf fix
+|\ \  
+| * | fee46c3 Program api conection to front
+* | | 476b5cb fix: virtual Customers
+|/ /  
+* | 18983a6 Fix: Roles
+* |   d70d337 Merge pull request #13 from ResidenciaITNL/modulo-Medicamento
+|\ \  
+| * | 36cb6d2 add all
+* | |   1911d5f Merge pull request #12 from ResidenciaITNL/Modulo-recepcion
+|\ \ \  
+| |/ /  
+|/| |   
+| * | 10ee093 add all
+|/ /  
+* |   226330a Merge pull request #11 from ResidenciaITNL/Sprint2
+|\ \  
+| * | f9b94f4 Remove files from tracking that are in .gitignore
+| * | 80b0a0d fix
+| * | 7285374 fix
+| * | 3ca0979 Add package: EntityFrameworkCore
+| * |   543116e Merge branch 'Sprint2' of https://github.com/ResidenciaITNL/Proyecto into Sprint2
+| |\ \  
+| | * | 444bbba Merge pull request #10 from ResidenciaITNL/Dev-FontEnd
+| | |\| 
+| * | | 4cdd973 fix gitignore
+| * | | 066b8f3 add ignore /Sistema/bin  & /Sistema/obj
+| * | | 4539987 feat: Model & Controller of Sprint 2
+* | | |   aa1aa6f Merge pull request #9 from ResidenciaITNL/Dev-FontEnd
+|\ \ \ \  
+| | |_|/  
+| |/| |   
+| * | | a9b51db Actualizacion del front
+* | | |   4fbb450 Merge pull request #8 from ResidenciaITNL/Sprint2
+|\ \ \ \  
+| | |_|/  
+| |/| |   
+| * | | bbf8e97 Merge pull request #7 from ResidenciaITNL/Dev-FontEnd
+| |\| | 
+* | | |   11e9315 Merge pull request #6 from ResidenciaITNL/Dev-FontEnd
+|\ \ \ \  
+| | |/ /  
+| |/| |   
+| * | | 67fd67b Merge pull request #5 from ResidenciaITNL/Sprint2
+| |\| | 
+| | * |   974ebd3 Merge pull request #4 from ResidenciaITNL/Dev-FontEnd
+| | |\ \  
+| | |/ /  
+| |/| |   
+| * | | ee676b7 Fondo y vista de admin usuarios
+* | | |   7d3fdfd Merge pull request #3 from ResidenciaITNL/Sprint2
+|\ \ \ \  
+| | |/ /  
+| |/| /   
+| |_|/    
+|/| |     
+| * | 2c82522 Merge pull request #2 from ResidenciaITNL/Dev-FontEnd
+|/| | 
+| |/  
+| * 2a30fb3 Fondo en home y Vista admin usuarios
+* |   3907053 Merge branch 'main' of https://github.com/ResidenciaITNL/Proyecto
+|\ \  
+| * | 412ba73 Merge pull request #1 from ResidenciaITNL/Dev-FontEnd
+| |\| 
+| | * 0fb455d Edit View Home
+* | | c540ff2 fix
+|\| | 
+| * | b304f78 backend: first commit
+| |/  
+* / aea6e05 backend: first commit
+|/  
+* 110c94b 1era Carga Front
+* 65cb7ad Initial commit
