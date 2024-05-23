@@ -366,16 +366,11 @@ class _EstudioMedState extends State<EstudioMed> {
                 String apellido = user['apellido'];
                 int edad = user['edad'];
                 String sexo = user['sexo'];
-                double estatura = user['estatura'];
-                double peso = user['peso'];             
-                double temperatura = user['temperatura'];
-                double presion = user['presion'];
-                String alergias = user['alergias'];
                 String estudio_detalle = user['estudio_detalle'];
 
                 // Llamar al método para mostrar el diálogo de edición
-                _showCapturarEstudio(context, pacienteId, nombre, apellido, edad,
-                    sexo, estatura, peso, temperatura, presion, alergias, estudio_detalle, estudioMedico, consulta);
+                _showCapturarPruebaEmbarazo(context, pacienteId, nombre, apellido,
+                    edad, sexo, estudioMedico, estudio_detalle);
               },
             ),
           ),
@@ -405,44 +400,47 @@ class _EstudioMedState extends State<EstudioMed> {
   }
 }
 
-//--------------------------------------------------------------//
-//-------- ShowDialog de la opcion de Editar Paciente  ---------//
-//--------------------------------------------------------------//
+//-------------------------------------------------------------//
+//-------- ShowDialog del estudio medico Antidoping 5 ---------//
+//-------------------------------------------------------------//
 
-void _showCapturarEstudio(
-    BuildContext context,
-    int pacienteId,
-    String nombre,
-    String apellido,
-    int edad,
-    String sexo,
-    double estatura,
-    double peso,
-    double temperatura,
-    double presion,
-    String alergias,
-    String estudio_detalle,
-    bool estudioMedico,
-    bool consulta) {
+void _showCapturarAntidoping5(
+  BuildContext context,
+  int pacienteId,
+  String nombre,
+  String apellido,
+  int edad,
+  String sexo,
+  bool estudioMedico,
+  String estudio_detalle,
+) {
+  final APIService apiService = APIService();
+
   TextEditingController nombreCompletoController =
       TextEditingController(text: '$nombre $apellido');
   TextEditingController edadController =
       TextEditingController(text: edad.toString());
   TextEditingController sexoController = TextEditingController(text: sexo);
-  TextEditingController pesoController =
-      TextEditingController(text: peso.toString());
-  TextEditingController temperaturaController =
-      TextEditingController(text: temperatura.toString());
-  TextEditingController presionController =
-      TextEditingController(text: presion.toString());
-  TextEditingController estaturaController =
-      TextEditingController(text: estatura.toString());
-  TextEditingController alergiasController =
-      TextEditingController(text: alergias);
-  TextEditingController estudioDetalleController =
-      TextEditingController(text: estudio_detalle);
   DateTime fechaActual = DateTime.now();
   TextEditingController contenidoController = TextEditingController();
+
+  TextEditingController marihuanaNormalController = TextEditingController();
+  TextEditingController marihuanaResultadoController = TextEditingController();
+
+  TextEditingController cocainaNormalController = TextEditingController();
+  TextEditingController cocainaResultadoController = TextEditingController();
+
+  TextEditingController AnfetaminasNormalController = TextEditingController();
+  TextEditingController AnfetaminasResultadoController =
+      TextEditingController();
+
+  TextEditingController MetanfetaminasNormalController =
+      TextEditingController();
+  TextEditingController MetanfetaminasResultadoController =
+      TextEditingController();
+
+  TextEditingController OpiaceosNormalController = TextEditingController();
+  TextEditingController OpiaceosResultadoController = TextEditingController();
 
   showDialog(
     context: context,
@@ -452,11 +450,14 @@ void _showCapturarEstudio(
           return AlertDialog(
             backgroundColor: Colors.white,
             title: Text('Estudio medico: $estudio_detalle',
-                style: TextStyle(color: Colors.black)),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
             content: SingleChildScrollView(
               child: Container(
                 width:
-                    constraints.maxWidth * 0.95, // Ancho del 95% de la pantalla
+                    constraints.maxWidth * 0.70, // Ancho del 95% de la pantalla
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,7 +465,7 @@ void _showCapturarEstudio(
                     Row(
                       children: [
                         Expanded(
-                          flex: 2,
+                          flex: 4,
                           child: TextFormField(
                             controller: nombreCompletoController,
                             decoration: InputDecoration(
@@ -474,7 +475,7 @@ void _showCapturarEstudio(
                         ),
                         SizedBox(width: constraints.maxWidth * 0.1),
                         Expanded(
-                          flex: 1,
+                          flex: 4,
                           child: TextFormField(
                             controller: edadController,
                             decoration: InputDecoration(labelText: 'Edad'),
@@ -483,74 +484,24 @@ void _showCapturarEstudio(
                           ),
                         ),
                         SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
                         Expanded(
-                          flex: 1,
+                          flex: 4,
                           child: TextFormField(
-                            controller: pesoController,
-                            decoration: InputDecoration(labelText: 'Peso'),
+                            controller: sexoController,
+                            decoration: InputDecoration(labelText: 'Sexo'),
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             readOnly: true, // Campo no editable
                           ),
                         ),
                         SizedBox(width: constraints.maxWidth * 0.1),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
                         Expanded(
-                          flex: 2,
-                          child: TextFormField(
-                            controller: sexoController,
-                            decoration: InputDecoration(labelText: 'Sexo'),
-                            readOnly: true,
-                          ),
-                        ),
-                        SizedBox(width: constraints.maxWidth * 0.1),
-                        Expanded(
-                          flex: 1,
-                          child: TextFormField(
-                            controller: estaturaController,
-                            decoration: InputDecoration(labelText: 'Estatura'),
-                            readOnly: true, // Campo no editable
-                          ),
-                        ),
-                        SizedBox(width: constraints.maxWidth * 0.1),
-                        Expanded(
-                          flex: 1,
-                          child: TextFormField(
-                            controller: alergiasController,
-                            decoration: InputDecoration(labelText: 'Alergias'),
-                            readOnly: true,
-                          ),
-                        ),
-                        SizedBox(width: constraints.maxWidth * 0.1),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: TextFormField(
-                            controller: temperaturaController,
-                            decoration: InputDecoration(labelText: 'Temperatura'),
-                            readOnly: true,
-                          ),
-                        ),
-                        SizedBox(width: constraints.maxWidth * 0.1),
-                        Expanded(
-                          flex: 1,
-                          child: TextFormField(
-                            controller: presionController,
-                            decoration: InputDecoration(labelText: 'Presión'),
-                            readOnly: true, // Campo no editable
-                          ),
-                        ),
-                        SizedBox(width: constraints.maxWidth * 0.1),
-                        Expanded(
-                          flex: 1,
+                          flex: 4,
                           child: TextFormField(
                             decoration: InputDecoration(labelText: 'Fecha'),
                             initialValue:
@@ -561,13 +512,244 @@ void _showCapturarEstudio(
                         SizedBox(width: constraints.maxWidth * 0.1),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: contenidoController,
-                      decoration: InputDecoration(labelText: 'Rx'),
-                      maxLines: 10,
-                      keyboardType: TextInputType.multiline,
+                    const SizedBox(height: 40),
+                    const Text(
+                      'ANTIDOPING EN ORINA',
+                      style: TextStyle(
+                        fontWeight:
+                            FontWeight.bold, // Establece la letra en negrita
+                        fontSize: 18, // Establece el tamaño de la letra en 18
+                      ),
                     ),
+                    const SizedBox(height: 40),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Estudio',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Valor normal',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Resultado',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Marihuana',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: marihuanaNormalController,
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: marihuanaResultadoController,
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Cocaina',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                cocainaNormalController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                cocainaResultadoController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Anfetaminas',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                AnfetaminasNormalController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                AnfetaminasResultadoController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Metanfetaminas',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                MetanfetaminasNormalController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                MetanfetaminasResultadoController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Opiaceos',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                OpiaceosNormalController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                OpiaceosResultadoController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
                   ],
                 ),
               ),
@@ -584,24 +766,53 @@ void _showCapturarEstudio(
                 onPressed: () async {
                   // Validar los datos antes de enviar la actualización
                   if (contenidoController.text.isNotEmpty) {
-                    String contenido = contenidoController.text;
+                    String marihuanaNormal = marihuanaNormalController.text;
+                    String marihuanaResultado =
+                        marihuanaResultadoController.text;
+
+                    String cocainaNormal = cocainaNormalController.text;
+                    String cocainaResultado = cocainaResultadoController.text;
+
+                    String anfetaminasNormal = AnfetaminasNormalController.text;
+                    String anfetaminasResultado =
+                        AnfetaminasResultadoController.text;
+
+                    String metanfetaminasNormal =
+                        MetanfetaminasNormalController.text;
+                    String metanfetaminasResultado =
+                        MetanfetaminasResultadoController.text;
+
+                    String opiaceosNormal = OpiaceosNormalController.text;
+                    String opiaceosResultado = OpiaceosResultadoController.text;
+
+                    Map<String, dynamic> recetaData = {
+                      'pacienteId': pacienteId,
+                      '': marihuanaNormal,
+                      '': marihuanaResultado,
+                      '': cocainaNormal,
+                      '': cocainaResultado,
+                      '': anfetaminasNormal,
+                      '': anfetaminasResultado,
+                      '': metanfetaminasNormal,
+                      '': metanfetaminasResultado,
+                      '': opiaceosNormal,
+                      '': opiaceosResultado,
+                    };
 
                     try {
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
-                      await APIService().updatePaciente(pacienteId, {
-                        'contenido': contenido,
-                      });
+                      await apiService.createReceta(recetaData);
 
                       // Mostrar mensaje de éxito
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Receta capturada con éxito.'),
+                          content: Text('Estudio medico capturado con éxito.'),
                           duration: Duration(seconds: 3),
                         ),
                       );
                       Navigator.of(context).pop(); // Cerrar el diálogo
 
-                      Navigator.pushReplacementNamed(context, 'Recepcion');
+                      Navigator.pushReplacementNamed(context, 'EstudioMedico');
                     } catch (e) {
                       // Manejar cualquier error que pueda ocurrir durante la actualización
                       showDialog(
@@ -609,8 +820,8 @@ void _showCapturarEstudio(
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text('Inténtalo nuevamente'),
-                            content:
-                                Text('Hubo un error al capturar la receta.'),
+                            content: Text(
+                                'Hubo un error al capturar el estudio medico.'),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -631,7 +842,647 @@ void _showCapturarEstudio(
                         return AlertDialog(
                           title: Text('Inténtalo nuevamente'),
                           content: Text(
-                              'Por favor ingresa el contenido de la receta.'),
+                              'Por favor ingresa el contenido del estudio medico.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Aceptar'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF094293),
+                ),
+                child: Text(
+                  'Guardar',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+//-------------------------------------------------------------//
+//-------- ShowDialog del estudio medico Antidoping 3 ---------//
+//-------------------------------------------------------------//
+
+void _showCapturarAntidoping3(
+  BuildContext context,
+  int pacienteId,
+  String nombre,
+  String apellido,
+  int edad,
+  String sexo,
+  bool estudioMedico,
+  String estudio_detalle,
+) {
+  final APIService apiService = APIService();
+
+  TextEditingController nombreCompletoController =
+      TextEditingController(text: '$nombre $apellido');
+  TextEditingController edadController =
+      TextEditingController(text: edad.toString());
+  TextEditingController sexoController = TextEditingController(text: sexo);
+  DateTime fechaActual = DateTime.now();
+  TextEditingController contenidoController = TextEditingController();
+
+  TextEditingController marihuanaNormalController = TextEditingController();
+  TextEditingController marihuanaResultadoController = TextEditingController();
+
+  TextEditingController cocainaNormalController = TextEditingController();
+  TextEditingController cocainaResultadoController = TextEditingController();
+
+  TextEditingController AnfetaminasNormalController = TextEditingController();
+  TextEditingController AnfetaminasResultadoController =
+      TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text('Estudio medico: $estudio_detalle',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
+            content: SingleChildScrollView(
+              child: Container(
+                width:
+                    constraints.maxWidth * 0.70, // Ancho del 95% de la pantalla
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: TextFormField(
+                            controller: nombreCompletoController,
+                            decoration: InputDecoration(
+                                labelText: 'Nombre del paciente'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 4,
+                          child: TextFormField(
+                            controller: edadController,
+                            decoration: InputDecoration(labelText: 'Edad'),
+                            keyboardType: TextInputType.number,
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: TextFormField(
+                            controller: sexoController,
+                            decoration: InputDecoration(labelText: 'Sexo'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 4,
+                          child: TextFormField(
+                            decoration: InputDecoration(labelText: 'Fecha'),
+                            initialValue:
+                                '${fechaActual.toLocal()}'.split(' ')[0],
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    const Text(
+                      'ANTIDOPING EN ORINA',
+                      style: TextStyle(
+                        fontWeight:
+                            FontWeight.bold, // Establece la letra en negrita
+                        fontSize: 18, // Establece el tamaño de la letra en 18
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Estudio',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Valor normal',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Resultado',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Marihuana',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: marihuanaNormalController,
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: marihuanaResultadoController,
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Cocaina',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                cocainaNormalController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                cocainaResultadoController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Anfetaminas',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                AnfetaminasNormalController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller:
+                                AnfetaminasResultadoController, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancelar',
+                    style: TextStyle(color: Colors.black)),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  // Validar los datos antes de enviar la actualización
+                  if (contenidoController.text.isNotEmpty) {
+                    String marihuanaNormal = marihuanaNormalController.text;
+                    String marihuanaResultado =
+                        marihuanaResultadoController.text;
+
+                    String cocainaNormal = cocainaNormalController.text;
+                    String cocainaResultado = cocainaResultadoController.text;
+
+                    String anfetaminasNormal = AnfetaminasNormalController.text;
+                    String anfetaminasResultado =
+                        AnfetaminasResultadoController.text;
+
+                    Map<String, dynamic> recetaData = {
+                      'pacienteId': pacienteId,
+                      '': marihuanaNormal,
+                      '': marihuanaResultado,
+                      '': cocainaNormal,
+                      '': cocainaResultado,
+                      '': anfetaminasNormal,
+                      '': anfetaminasResultado,
+                    };
+
+                    try {
+                      // Llamar al método updatePaciente de APIService para actualizar el paciente
+                      await apiService.createReceta(recetaData);
+
+                      // Mostrar mensaje de éxito
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Estudio medico capturado con éxito.'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                      Navigator.of(context).pop(); // Cerrar el diálogo
+
+                      Navigator.pushReplacementNamed(context, 'EstudioMedico');
+                    } catch (e) {
+                      // Manejar cualquier error que pueda ocurrir durante la actualización
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Inténtalo nuevamente'),
+                            content: Text(
+                                'Hubo un error al capturar el estudio medico.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Aceptar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  } else {
+                    // Mostrar alerta si no se ingresan datos válidos
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Inténtalo nuevamente'),
+                          content: Text(
+                              'Por favor ingresa el contenido del estudio medico.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Aceptar'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF094293),
+                ),
+                child: Text(
+                  'Guardar',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+//-------------------------------------------------------------//
+//-------- ShowDialog del estudio medico Antidoping 3 ---------//
+//-------------------------------------------------------------//
+
+void _showCapturarPruebaEmbarazo(
+  BuildContext context,
+  int pacienteId,
+  String nombre,
+  String apellido,
+  int edad,
+  String sexo,
+  bool estudioMedico,
+  String estudio_detalle,
+) {
+  final APIService apiService = APIService();
+
+  TextEditingController nombreCompletoController =
+      TextEditingController(text: '$nombre $apellido');
+  TextEditingController edadController =
+      TextEditingController(text: edad.toString());
+  TextEditingController sexoController = TextEditingController(text: sexo);
+  DateTime fechaActual = DateTime.now();
+  TextEditingController resultadoController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text('Estudio medico: $estudio_detalle',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
+            content: SingleChildScrollView(
+              child: Container(
+                width:
+                    constraints.maxWidth * 0.70, // Ancho del 95% de la pantalla
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: TextFormField(
+                            controller: nombreCompletoController,
+                            decoration: InputDecoration(
+                                labelText: 'Nombre del paciente'),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 4,
+                          child: TextFormField(
+                            controller: edadController,
+                            decoration: InputDecoration(labelText: 'Edad'),
+                            keyboardType: TextInputType.number,
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: TextFormField(
+                            controller: sexoController,
+                            decoration: InputDecoration(labelText: 'Sexo'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 4,
+                          child: TextFormField(
+                            decoration: InputDecoration(labelText: 'Fecha'),
+                            initialValue:
+                                '${fechaActual.toLocal()}'.split(' ')[0],
+                            readOnly: true, // Campo no editable
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    const Text(
+                      'PRUEBA DE EMBARAZO EN SANGRE',
+                      style: TextStyle(
+                        fontWeight:
+                            FontWeight.bold, // Establece la letra en negrita
+                        fontSize: 18, // Establece el tamaño de la letra en 18
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                'Resultado:',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          flex: 1,
+                          child: DropdownButtonFormField<String>(
+                            value: resultadoController.text.isNotEmpty
+                                ? resultadoController.text
+                                : null,
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                resultadoController.text = newValue;
+                              }
+                            },
+                            items: <String>['Positivo', 'Negativo']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              labelText: 'Resultado',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                        Expanded(
+                          child: Container(
+                            child: Center(
+                              child: Text(
+                                '',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: constraints.maxWidth * 0.1),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancelar',
+                    style: TextStyle(color: Colors.black)),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  // Validar los datos antes de enviar la actualización
+                  if (resultadoController.text.isNotEmpty) {
+                    String resultado = resultadoController.text;
+
+                    Map<String, dynamic> recetaData = {
+                      'pacienteId': pacienteId,
+                      'resultado': resultado,
+                    };
+
+                    try {
+                      // Llamar al método updatePaciente de APIService para actualizar el paciente
+                      await apiService.createReceta(recetaData);
+
+                      // Mostrar mensaje de éxito
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Estudio medico capturado con éxito.'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                      Navigator.of(context).pop(); // Cerrar el diálogo
+
+                      Navigator.pushReplacementNamed(context, 'EstudioMedico');
+                    } catch (e) {
+                      // Manejar cualquier error que pueda ocurrir durante la actualización
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Inténtalo nuevamente'),
+                            content: Text(
+                                'Hubo un error al capturar el estudio medico.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Aceptar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  } else {
+                    // Mostrar alerta si no se ingresan datos válidos
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Inténtalo nuevamente'),
+                          content: Text(
+                              'Por favor ingresa el contenido del estudio medico.'),
                           actions: [
                             TextButton(
                               onPressed: () {
