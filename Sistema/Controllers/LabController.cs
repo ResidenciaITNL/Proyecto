@@ -30,6 +30,7 @@ namespace Sistema.Controllers
             lab.objetoData = Newtonsoft.Json.JsonConvert.SerializeObject(data);
             lab.objetoName = nameof(Antidoping3);
             lab.UserId = UserId;
+            lab.tipo = "Antidoping 3";
             lab.PacienteId = data.PacienteId;
             _context.Laboratorio.Add(lab);
             await _context.SaveChangesAsync();
@@ -54,6 +55,7 @@ namespace Sistema.Controllers
             lab.objetoName = nameof(Antidoping5);
             lab.UserId = UserId;
             lab.PacienteId = data.PacienteId;
+            lab.tipo = "Antidoping 5";
             _context.Laboratorio.Add(lab);
             await _context.SaveChangesAsync();
 
@@ -76,6 +78,7 @@ namespace Sistema.Controllers
             lab.objetoData = Newtonsoft.Json.JsonConvert.SerializeObject(data);
             lab.objetoName = nameof(PruebaDeEmbarazo);
             lab.UserId = UserId;
+            lab.tipo = "Prueba de Embarazo";
             lab.PacienteId = data.PacienteId;
             _context.Laboratorio.Add(lab);
             await _context.SaveChangesAsync();
