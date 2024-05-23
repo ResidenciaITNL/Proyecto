@@ -22,7 +22,7 @@ namespace Sistema.Models
         public bool isDeleted { get; set; } = false;
         public int? UserId { get; set; }
         public virtual Users? User { get; set; }
-        public virtual ICollection<RecetasTB> RecetasTB { get; set; }
+        public virtual ICollection<RecetasTB>? RecetasTB { get; set; }
 
     }
 }
