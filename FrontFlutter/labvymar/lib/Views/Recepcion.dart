@@ -826,14 +826,79 @@ void _showDeletePacienteDialog(
 void _showHistorialPacienteDialog(
     BuildContext context, int pacienteId, String nombre, String apellido) {
   final APIService apiService = APIService();
+
+  Future<List<DataRow>> _pacienteHistorialRows(BuildContext context) async {
+    final List<Map<String, dynamic>> paciente =
+        await apiService.getPacienteHistorial(pacienteId);
+    paciente.sort((a, b) => b['id'].compareTo(a['id']));
+
+    double screenWidth2 = MediaQuery.of(context).size.width;
+    double fontSize = screenWidth2 * 0.012;
+
+    return paciente.map((user) {
+      return DataRow(cells: [
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              user['id'].toString(),
+              style: TextStyle(fontSize: fontSize),
+            ),
+          ),
+        ),
+        DataCell(Text(user['titulo'].toString(),
+            style: TextStyle(fontSize: fontSize))),
+        DataCell(Text(user['doctor'].toString(),
+            style: TextStyle(fontSize: fontSize))),
+        DataCell(Text(user['doctor_email'].toString(),
+            style: TextStyle(fontSize: fontSize))),
+        DataCell(Text(user['fecha'].toString(),
+            style: TextStyle(fontSize: fontSize))),
+      ]);
+    }).toList();
+  }
+
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
+          // Obtén el tamaño de la pantalla
+          final double screenWidth = MediaQuery.of(context).size.width;
+          final double screenHeight = MediaQuery.of(context).size.height;
+
           return AlertDialog(
-            title: Text(
-                'Historial Medico de: $nombre $apellido'),
+            title: Text('Historial Medico de: $nombre $apellido'),
+            content: Container(
+              width: screenWidth * 0.8,
+              height: screenHeight * 0.6,
+              child: FutureBuilder<List<DataRow>>(
+                future: _pacienteHistorialRows(context),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<DataRow>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error al cargar el historial'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No se encontraron datos'));
+                  } else {
+                    return SingleChildScrollView(
+                      child: DataTable(
+                        columns: [
+                          DataColumn(label: Text('ID')),
+                          DataColumn(label: Text('Título')),
+                          DataColumn(label: Text('Doctor')),
+                          DataColumn(label: Text('Email Doctor')),
+                          DataColumn(label: Text('Fecha')),
+                        ],
+                        rows: snapshot.data!,
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -841,52 +906,6 @@ void _showHistorialPacienteDialog(
                 },
                 child: Text('Cerrar'),
               ),
-              // ElevatedButton(
-              //   onPressed: () async {
-              //     // Aquí puedes realizar la lógica para eliminar el paciente
-              //     try {
-              //       // Llamar al método deletePaciente de APIService para eleiminar al paciente
-              //       await apiService.deletePaciente(pacienteId);
-
-              //       // Mostrar mensaje de éxito
-              //       ScaffoldMessenger.of(context).showSnackBar(
-              //         const SnackBar(
-              //           content: Text('Paciente eliminado con exito.'),
-              //           duration: Duration(seconds: 3),
-              //         ),
-              //       );
-              //       Navigator.of(context).pop(); // Cerrar el diálogo
-              //       Navigator.pushReplacementNamed(context, 'Recepcion');
-              //     } catch (e) {
-              //       // Manejar cualquier error que pueda ocurrir durante la actualización
-              //       showDialog(
-              //         context: context,
-              //         builder: (BuildContext context) {
-              //           return AlertDialog(
-              //             title: Text('Inténtelo nuevamente'),
-              //             content:
-              //                 Text('Hubo un error al eliminar al paciente.'),
-              //             actions: [
-              //               TextButton(
-              //                 onPressed: () {
-              //                   Navigator.of(context).pop();
-              //                 },
-              //                 child: Text('Aceptar'),
-              //               ),
-              //             ],
-              //           );
-              //         },
-              //       );
-              //     }
-              //   },
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: Colors.red, // Color de fondo rojo
-              //   ),
-              //   child: Text(
-              //     'Eliminar',
-              //     style: TextStyle(color: Colors.white),
-              //   ),
-              // ),
             ],
           );
         },

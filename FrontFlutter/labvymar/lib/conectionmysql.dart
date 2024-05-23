@@ -522,6 +522,33 @@ class APIService {
     }
   }
 
+  //--------------------------------------------//
+  //-- Método para obtener lista de pacientes --//
+  //--------------------------------------------//
+
+  Future<List<Map<String, dynamic>>> getPacienteHistorial(int pacietneId) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/Pacientes/$pacietneId'),
+      headers: {
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+    // print('Toke generado desde el get: $token');
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load pacientes');
+    }
+  }
+
   //-----------------------------------//
   //-- Método para crear un paciente --//
   //-----------------------------------//
