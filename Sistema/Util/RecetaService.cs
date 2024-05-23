@@ -16,8 +16,6 @@ namespace Sistema.Util
         private string _qrImagePath;
 
         public recetaTemplate _recetaTemplate { get; set; } = null;
-        public payloadJWT payloadJWT { get; set; } = null;
-        public recetaJWTService recetaJWTService { get; set; }
 
         public RecetaService(string templatePath, string outputPdfPath, string qrText)
         {
@@ -26,7 +24,6 @@ namespace Sistema.Util
             QrText = qrText;
             _tempDocxPath = outputPdfPath;
             _qrImagePath = Path.GetTempFileName() + ".png";
-            recetaJWTService = new();
         }
 
         public void GenerateDocument()
@@ -55,28 +52,6 @@ namespace Sistema.Util
                 picture.Width = 100;
                 picture.Height = 100;
                 document.InsertParagraph().AppendPicture(picture);
-                recetaJWTService = new();
-
-                if (payloadJWT != null)
-                {
-                    payloadJWT = new();
-                    payloadJWT.version = "2.0";
-                    payloadJWT.jti = Guid.NewGuid();
-                    payloadJWT.iss = "S";
-                    payloadJWT.environment = "dev";
-                    payloadJWT.subject = new Subject();
-                    payloadJWT.requester = new Requester();
-                    payloadJWT.subject.name = "Juan Perez";
-                    payloadJWT.subject.address = new();
-                    payloadJWT.subject.address.line = "Calle 123";
-                    payloadJWT.subject.address.city = "Bogota";
-                    payloadJWT.subject.address.state = "Cundinamarca";
-                    payloadJWT.subject.address.postalCode = "110111";
-                    payloadJWT.subject.address.country = "Colombia";
-                    payloadJWT.subject.birthDate = new DateOnly(1990, 1, 1);
-                    payloadJWT.subject.curp = "123456789012345678";
-                }
-                _recetaTemplate.token = recetaJWTService.signReceta(payloadJWT);
                 var properties = _recetaTemplate.GetType().GetProperties();
                 foreach (var property in properties)
                 {
