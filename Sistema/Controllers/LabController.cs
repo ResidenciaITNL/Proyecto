@@ -4,6 +4,7 @@ using Sistema.DataBase;
 using Sistema.Models;
 using Sistema.Models.Lab;
 using Sistema.Util;
+using System.Data.Entity;
 using System.Security.Claims;
 
 namespace Sistema.Controllers
@@ -39,6 +40,10 @@ namespace Sistema.Controllers
             var pathWord = Path.Combine(Directory.GetCurrentDirectory(), "Util", $"{timestamp}.docx");
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Util", "template_antidoping3.docx");
 
+            var paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == data.PacienteId);
+            data.NombrePaciente = paciente.Nombre + " " + paciente.Apellido;
+            data.Edad = paciente.Edad.ToString();
+
             _recetaService = new RecetaService(path, pathWord, data);
             _recetaService.GenerateDocumentForLab();
             var file = System.IO.File.ReadAllBytes(pathWord);
@@ -63,6 +68,10 @@ namespace Sistema.Controllers
             var pathWord = Path.Combine(Directory.GetCurrentDirectory(), "Util", $"{timestamp}.docx");
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Util", "template_antidoping5.docx");
 
+            var paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == data.PacienteId);
+            data.NombrePaciente = paciente.Nombre + " " + paciente.Apellido;
+            data.Edad = paciente.Edad.ToString();
+
             _recetaService = new RecetaService(path, pathWord, data);
             _recetaService.GenerateDocumentForLab();
             var file = System.IO.File.ReadAllBytes(pathWord);
@@ -86,6 +95,10 @@ namespace Sistema.Controllers
             var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
             var pathWord = Path.Combine(Directory.GetCurrentDirectory(), "Util", $"{timestamp}.docx");
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Util", "template_embarazo.docx");
+
+            var paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == data.PacienteId);
+            data.NombrePaciente = paciente.Nombre + " " + paciente.Apellido;
+            data.Edad = paciente.Edad.ToString();
 
             _recetaService = new RecetaService(path, pathWord, data);
             _recetaService.GenerateDocumentForLab();
