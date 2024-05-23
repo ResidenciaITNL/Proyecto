@@ -93,7 +93,6 @@ namespace Sistema.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPaciente(int id)
         {
-            //Obtener el customerId del token
             var CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
 
             var recetas = await _context.RecetasTB
