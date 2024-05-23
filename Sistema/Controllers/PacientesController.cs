@@ -36,6 +36,7 @@ namespace Sistema.Controllers
                 Presion = x.presion,
                 Temperatura = x.temperatura,
                 Estudio_detalle = x.Estudio_medico_detalle,
+                Telefono = x.telefono,
                 Peso = x.Peso,
                 Alergias = x.Alergias,
                 Estudio_medico = x.Estudio_medico ? "Si" : "No",
@@ -90,20 +91,29 @@ namespace Sistema.Controllers
 
         // GET: api/Pacientes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Paciente>> GetPaciente(int id)
+        public async Task<IActionResult> GetPaciente(int id)
         {
-            if (_context.Paciente == null)
+            //Obtener el customerId del token
+            var CustomerId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "CustomerId").Value);
+            var paciente = await _context.RecetasTB.Where(RecetasTB => RecetasTB.PacienteId == id && RecetasTB.User.CustomersId == CustomerId).Select(receta => new
             {
-                return NotFound();
-            }
-            var paciente = await _context.Paciente.FindAsync(id);
+                Id = "R-" + receta.RecetaId.ToString(),
+                Titulo = "Consulta",
+                Doctor = receta.User.name + " " + receta.User.email,
+                Fecha = receta.fecha.ToString("dd-MM-yyyy hh:mm tt")
+            }).Union(_context.Laboratorio.Where(Laboratorio => Laboratorio.PacienteId == id && Laboratorio.User.CustomersId == CustomerId).Select(laboratorio => new
+            {
+                Id = "L-" + laboratorio.LaboratorioId.ToString,
+                Titulo = "Estudio - " + laboratorio.tipo,
+                Doctor = laboratorio.User.name + " " + laboratorio.User.email,
+                Fecha = laboratorio.fecha.ToString("dd-MM-yyyy hh:mm tt")
+            })).OrderByDescending(x => x.Fecha).ToListAsync();
 
             if (paciente == null)
             {
                 return NotFound();
             }
-
-            return paciente;
+            return Ok(paciente);
         }
 
         // PUT: api/Pacientes/5

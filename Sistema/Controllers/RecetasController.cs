@@ -4,6 +4,7 @@ using Sistema.DataBase;
 using Sistema.Models;
 using Sistema.Models.Recetas;
 using Sistema.Util;
+using System.Data.Entity;
 using System.Security.Claims;
 
 namespace Sistema.Controllers
@@ -26,22 +27,22 @@ namespace Sistema.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostReceta([FromBody] RecetasTB receta)
+        public async Task<IActionResult> PostReceta([FromBody] RecetasTB receta)
         {
 
             int UserId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
             receta.UserId = UserId;
-            receta.User = _context.Users.FirstOrDefault(x => x.UserId == UserId); // Medico que lo esta conultadno
+            receta.User = await _context.Users.FirstOrDefaultAsync(x => x.UserId == UserId); // Medico que lo esta conultadno
             string timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
             var pathWord = Path.Combine(Directory.GetCurrentDirectory(), "Util", $"{timestamp}.docx");
-            receta.Paciente = _context.Paciente.FirstOrDefault(x => x.PacienteId == receta.PacienteId);
+            receta.Paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == receta.PacienteId);
 
 
             //Construrir el obejto para sustirutir en el word
             #region recetaTemplate
             recetaTemplate _recetaTemplate = new recetaTemplate(); // para el word
             _recetaTemplate.Contenido = receta.contenido;
-            _recetaTemplate.Nombre = receta.Paciente.Nombre;
+            _recetaTemplate.Nombre = receta.Paciente.Nombre + " " + receta.Paciente.Apellido;
             _recetaTemplate.DateNow = DateTime.Now.ToShortDateString();
             _recetaTemplate.Titulo = receta.User.titulo;
             _recetaTemplate.Cedula = receta.User.cedula;
@@ -91,7 +92,11 @@ namespace Sistema.Controllers
             FileInfo fileHash = new FileInfo(pathWord);
             receta.hash = recetaJWTService.hash256(fileHash);
             _context.RecetasTB.Add(receta);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+            var paciente = await _context.Paciente.FirstOrDefaultAsync(x => x.PacienteId == receta.PacienteId);
+            paciente.Consulta = false;
+            _context.Entry(paciente).State = (Microsoft.EntityFrameworkCore.EntityState)EntityState.Modified;
+            await _context.SaveChangesAsync();
 
             _recetaService.CleanUp();
             return File(file, "application/octet-stream", $"{_recetaTemplate.Titulo}.docx");
