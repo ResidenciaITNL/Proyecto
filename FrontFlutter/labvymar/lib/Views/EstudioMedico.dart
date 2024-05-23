@@ -749,7 +749,7 @@ void _showCapturarAntidoping5(
               ElevatedButton(
                 onPressed: () async {
                   // Validar los datos antes de enviar la actualización
-                  if (contenidoController.text.isNotEmpty) {
+                  if (marihuanaNormalController.text.isNotEmpty) {
                     String marihuanaNormal = marihuanaNormalController.text;
                     String marihuanaResultado =
                         marihuanaResultadoController.text;
@@ -771,16 +771,16 @@ void _showCapturarAntidoping5(
 
                     Map<String, dynamic> estudioData = {
                       'pacienteId': pacienteId,
-                      'RV_M': marihuanaNormal,
-                      'R_M': marihuanaResultado,
-                      'RV_C': cocainaNormal,
-                      'R_C': cocainaResultado,
-                      'RV_A': anfetaminasNormal,
-                      'R_A': anfetaminasResultado,
-                      'RV_ME': metanfetaminasNormal,
-                      'R_ME': metanfetaminasResultado,
-                      'RV_O': opiaceosNormal,
-                      'R_O': opiaceosResultado,
+                      'VN_M': marihuanaNormal,
+                      'V_M': marihuanaResultado,
+                      'VN_C': cocainaNormal,
+                      'V_C': cocainaResultado,
+                      'VN_A': anfetaminasNormal,
+                      'V_A': anfetaminasResultado,
+                      'VN_ME': metanfetaminasNormal,
+                      'V_ME': metanfetaminasResultado,
+                      'VN_O': opiaceosNormal,
+                      'V_O': opiaceosResultado,
                     };
 
                     try {
@@ -1141,7 +1141,7 @@ void _showCapturarAntidoping3(
               ElevatedButton(
                 onPressed: () async {
                   // Validar los datos antes de enviar la actualización
-                  if (contenidoController.text.isNotEmpty) {
+                  if (marihuanaNormalController.text.isNotEmpty) {
                     String marihuanaNormal = marihuanaNormalController.text;
                     String marihuanaResultado =
                         marihuanaResultadoController.text;
@@ -1155,12 +1155,12 @@ void _showCapturarAntidoping3(
 
                     Map<String, dynamic> estudioData = {
                       'pacienteId': pacienteId,
-                      'RV_M': marihuanaNormal,
-                      'R_M': marihuanaResultado,
-                      'RV_C': cocainaNormal,
-                      'R_C': cocainaResultado,
-                      'RV_A': anfetaminasNormal,
-                      'R_A': anfetaminasResultado,
+                      'VN_M': marihuanaNormal,
+                      'V_M': marihuanaResultado,
+                      'VN_C': cocainaNormal,
+                      'V_C': cocainaResultado,
+                      'VN_A': anfetaminasNormal,
+                      'V_A': anfetaminasResultado,
                     };
 
                     try {
@@ -1236,9 +1236,9 @@ void _showCapturarAntidoping3(
   );
 }
 
-//-------------------------------------------------------------//
-//-------- ShowDialog del estudio medico Antidoping 3 ---------//
-//-------------------------------------------------------------//
+//----------------------------------------------------------------//
+//-------- ShowDialog del estudio medico Prueba Embarazo ---------//
+//----------------------------------------------------------------//
 
 void _showCapturarPruebaEmbarazo(
   BuildContext context,
@@ -1419,7 +1419,7 @@ void _showCapturarPruebaEmbarazo(
                     String resultado = resultadoController.text;
 
                     Map<String, dynamic> estudioData = {
-                      'pacienteId': pacienteId,
+                      'PacienteId': pacienteId,
                       'Resultado': resultado,
                     };
 

@@ -202,7 +202,7 @@ class APIService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['role']; // Suponiendo que el rol viene en la respuesta JSON
+      return data['role'].toString(); // Suponiendo que el rol viene en la respuesta JSON
     } else {
       throw Exception('Failed to load mi cuenta');
     }
@@ -292,9 +292,9 @@ class APIService {
     }
   }
 
-  //--------------------------------------------//
-  //-- Método para cambiar Titulo del usuario --//
-  //--------------------------------------------//
+  //------------------------------------------------//
+  //-- Método para cambiar Insitución del usuario --//
+  //------------------------------------------------//
 
   Future<Map<String, dynamic>> actualizarInstitucion({
     required String Oldinstitucion,
@@ -840,7 +840,7 @@ class APIService {
     }
 
     final response = await http.post(
-      Uri.parse('$baseUrl/Recetas'),
+      Uri.parse('$baseUrl/Lab/Antidoping-5'),
       body: jsonEncode(estudioData),
       headers: {
         'Content-Type': 'application/json',
@@ -888,7 +888,7 @@ class APIService {
     }
 
     final response = await http.post(
-      Uri.parse('$baseUrl/Recetas'),
+      Uri.parse('$baseUrl/Lab/Antidoping-3'),
       body: jsonEncode(estudioData),
       headers: {
         'Content-Type': 'application/json',
@@ -936,7 +936,7 @@ class APIService {
     }
 
     final response = await http.post(
-      Uri.parse('$baseUrl/Recetas'),
+      Uri.parse('$baseUrl/Lab/pruebaEmbarazo'),
       body: jsonEncode(estudioData),
       headers: {
         'Content-Type': 'application/json',
@@ -946,7 +946,7 @@ class APIService {
     );
 
     // Extraer el pacienteId de recetaData
-    String pacienteId = estudioData['pacienteId'].toString();
+    String pacienteId = estudioData['PacienteId'].toString();
     String fileName = 'Prueba Embarazo - Paciente_$pacienteId.docx';
 
     if (response.statusCode == 200) {
