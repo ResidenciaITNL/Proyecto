@@ -81,7 +81,7 @@ namespace Sistema.Util
                 var properties = _dataTemplate.GetType().GetProperties();
                 foreach (var property in properties)
                 {
-                    var value = property.GetValue(_recetaTemplate);
+                    var value = property.GetValue(_dataTemplate);
                     document.ReplaceText($"{{{{{property.Name}}}}}", value.ToString());
                 }
 
