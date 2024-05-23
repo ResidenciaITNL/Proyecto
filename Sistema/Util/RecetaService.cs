@@ -14,6 +14,7 @@ namespace Sistema.Util
         public string QrText { get; set; }
         private string _tempDocxPath;
         private string _qrImagePath;
+        private object _dataTemplate { get; set; } = null;
 
         public recetaTemplate _recetaTemplate { get; set; } = null;
 
@@ -25,11 +26,22 @@ namespace Sistema.Util
             _tempDocxPath = outputPdfPath;
             _qrImagePath = Path.GetTempFileName() + ".png";
         }
+        public RecetaService(string templatePath, string outputPdfPath, object dataTemplate)
+        {
+            TemplatePath = templatePath;
+            OutputPdfPath = outputPdfPath;
+            _tempDocxPath = outputPdfPath;
+            _dataTemplate = dataTemplate;
+        }
 
         public void GenerateDocument()
         {
             GenerateQRCode(QrText, _qrImagePath);
             CreateWordDocument();
+        }
+        public void GenerateDocumentForLab()
+        {
+            CreateWordDocumentForLab();
         }
 
         private void GenerateQRCode(string text, string filePath)
@@ -53,6 +65,20 @@ namespace Sistema.Util
                 picture.Height = 100;
                 document.InsertParagraph().AppendPicture(picture);
                 var properties = _recetaTemplate.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    var value = property.GetValue(_recetaTemplate);
+                    document.ReplaceText($"{{{{{property.Name}}}}}", value.ToString());
+                }
+
+                document.SaveAs(_tempDocxPath);
+            }
+        }
+        private void CreateWordDocumentForLab()
+        {
+            using (var document = DocX.Load(TemplatePath))
+            {
+                var properties = _dataTemplate.GetType().GetProperties();
                 foreach (var property in properties)
                 {
                     var value = property.GetValue(_recetaTemplate);
@@ -93,10 +119,12 @@ namespace Sistema.Util
             {
                 File.Delete(_tempDocxPath);
             }
-
-            if (File.Exists(_qrImagePath))
+            if (_qrImagePath != null)
             {
-                File.Delete(_qrImagePath);
+                if (File.Exists(_qrImagePath))
+                {
+                    File.Delete(_qrImagePath);
+                }
             }
         }
     }
