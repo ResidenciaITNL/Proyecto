@@ -433,7 +433,7 @@ void _showEditPacienteDialog(
     String nombre,
     String apellido,
     int edad,
-    int telefono,
+    String telefono,
     String sexo,
     double estatura,
     double peso,
@@ -448,7 +448,7 @@ void _showEditPacienteDialog(
   TextEditingController edadController =
       TextEditingController(text: edad.toString());
   TextEditingController telefonoController =
-      TextEditingController(text: telefono.toString());
+      TextEditingController(text: telefono);
   TextEditingController sexoController = TextEditingController(text: sexo);
   TextEditingController estaturaController =
       TextEditingController(text: estatura.toString());
@@ -467,13 +467,7 @@ void _showEditPacienteDialog(
   bool isEstudioMed = false;
 
   List<String> estudioMedicoOptions = [
-    'Biometria Hecatica',
-    'Quimica Sanginea 1',
-    'Quimica Sanginea 3',
-    'Perfil bioquimico 24',
-    'EGO',
     'Prueba de embarazo',
-    'Reacciones Febriles',
     'Antidoping 3',
     'Antidoping 5'
   ];
@@ -512,12 +506,8 @@ void _showEditPacienteDialog(
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    controller: edadController,
+                    controller: telefonoController,
                     decoration: InputDecoration(labelText: 'Teléfono'),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d+')),
-                    ],
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -653,7 +643,7 @@ void _showEditPacienteDialog(
                     String newName = nameController.text;
                     String newApellido = apellidoController.text;
                     int newEdad = int.parse(edadController.text);
-                    int newTelefono = int.parse(telefonoController.text);
+                    String newTelefono = telefonoController.text;
                     String newSexo = sexoController.text;
                     double newEstatura = double.parse(estaturaController.text);
                     double newPeso = double.parse(pesoController.text);
@@ -943,13 +933,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   bool isEstudioMed = false;
 
   List<String> estudioMedicoOptions = [
-    'Biometria Hecatica',
-    'Quimica Sanginea 1',
-    'Quimica Sanginea 3',
-    'Perfil bioquimico 24',
-    'EGO',
     'Prueba de embarazo',
-    'Reacciones Febriles',
     'Antidoping 3',
     'Antidoping 5'
   ];
@@ -1040,19 +1024,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     TextFormField(
                       controller: _TelefonoController,
                       decoration: const InputDecoration(labelText: 'Teléfono'),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        TextInputFormatter.withFunction((oldValue, newValue) {
-                          if (newValue.text.isEmpty) {
-                            return newValue.copyWith(text: '');
-                          } else if (double.tryParse(newValue.text) == null) {
-                            return oldValue;
-                          } else {
-                            return newValue;
-                          }
-                        }),
-                      ],
                       onChanged: (_) => _updateButtonState(setState),
                     ),
                     TextFormField(
@@ -1189,7 +1160,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           String nombre = _nameController.text;
                           String apellido = _apellidoController.text;
                           int edad = int.parse(_EdadController.text);
-                          int telefono = int.parse(_TelefonoController.text);
+                          String telefono = _TelefonoController.text;
                           String sexo = _sexoController.text;
                           double estatura =
                               double.parse(_EstaturaController.text);

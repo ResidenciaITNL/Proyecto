@@ -691,4 +691,86 @@ class APIService {
       throw Exception('Failed to delete medicamento');
     }
   }
+
+  //---------------------------------------------//
+  //-- Método para enviar el carrito de ventas --//
+  //---------------------------------------------//
+
+  Future<Map<String, dynamic>> enviarResumenVenta(
+      List<Map<String, dynamic>> resumenVenta) async {
+    String? token = await getToken();
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    Map<String, dynamic> payload = {
+      'items': resumenVenta.map((item) {
+        return {
+          'id': item['id'].toString(),
+          'cantidad': item['cantidad'],
+        };
+      }).toList(),
+    };
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/Medicamento/carrito'), // Reemplaza con tu endpoint
+      body: jsonEncode(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      responseBody['success'] = true;
+      return responseBody;
+    } else {
+      Map<String, dynamic> errorResponse = {
+        'success': false,
+        'message':
+            jsonDecode(response.body)['message'] ?? 'Failed to create sale',
+      };
+      return errorResponse;
+    }
+  }
+
+
+  //------------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------//
+  //------------------ MODULO DE INVENTARIO DE CONSULTA MEDICA -------------------//
+  //------------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------//
+
+
+  //-----------------------------------//
+  //-- Método para crear un paciente --//
+  //-----------------------------------//
+
+Future<void> createReceta(Map<String, dynamic> recetaData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/Recetas'),
+      body: jsonEncode(recetaData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Usuario creado exitosamente, no es necesario hacer nada más aquí
+      return;
+    } else {
+      throw Exception('Failed to create paciente');
+    }
+  }
+
 }

@@ -374,8 +374,20 @@ class _ConsMedicaState extends State<ConsMedica> {
                 String alergias = user['alergias'];
 
                 // Llamar al método para mostrar el diálogo de edición
-                _showCapturarReceta(context, pacienteId, nombre, apellido, edad,
-                    sexo, estatura, peso, temperatura, presion, alergias, estudioMedico, consulta);
+                _showCapturarReceta(
+                    context,
+                    pacienteId,
+                    nombre,
+                    apellido,
+                    edad,
+                    sexo,
+                    estatura,
+                    peso,
+                    temperatura,
+                    presion,
+                    alergias,
+                    estudioMedico,
+                    consulta);
               },
             ),
           ),
@@ -423,6 +435,10 @@ void _showCapturarReceta(
     String alergias,
     bool estudioMedico,
     bool consulta) {
+
+  final APIService apiService = APIService();
+
+
   TextEditingController nombreCompletoController =
       TextEditingController(text: '$nombre $apellido');
   TextEditingController edadController =
@@ -584,11 +600,14 @@ void _showCapturarReceta(
                   if (contenidoController.text.isNotEmpty) {
                     String contenido = contenidoController.text;
 
+                    Map<String, dynamic> recetaData = {
+                      'pacienteId': pacienteId,
+                      'contenido': contenido
+                    };
+
                     try {
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
-                      await APIService().updatePaciente(pacienteId, {
-                        'contenido': contenido,
-                      });
+                      await apiService.createReceta(recetaData);
 
                       // Mostrar mensaje de éxito
                       ScaffoldMessenger.of(context).showSnackBar(
