@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -176,6 +177,32 @@ class APIService {
 
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load mi cuenta');
+    }
+  }
+
+  //------------------------------------------------//
+  //-- Método para obtener los datos de la cuenta --//
+  //------------------------------------------------//
+
+  Future<String> getUserRole() async {
+    String? token = await getToken();
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/MyAccount'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['role']; // Suponiendo que el rol viene en la respuesta JSON
     } else {
       throw Exception('Failed to load mi cuenta');
     }
@@ -696,7 +723,8 @@ class APIService {
   //-- Método para enviar el carrito de ventas --//
   //---------------------------------------------//
 
-  Future<Map<String, dynamic>> enviarResumenVenta(List<Map<String, dynamic>> resumenVenta) async {
+  Future<Map<String, dynamic>> enviarResumenVenta(
+      List<Map<String, dynamic>> resumenVenta) async {
     String? token = await getToken();
 
     if (token == null) {
@@ -733,7 +761,8 @@ class APIService {
     } else {
       Map<String, dynamic> errorResponse = {
         'success': false,
-        'message': jsonDecode(response.body)['message'] ?? 'Failed to create sale',
+        'message':
+            jsonDecode(response.body)['message'] ?? 'Failed to create sale',
       };
       return errorResponse;
     }
@@ -745,9 +774,9 @@ class APIService {
   //------------------------------------------------------------------------------//
   //------------------------------------------------------------------------------//
 
-  //-----------------------------------//
-  //-- Método para crear un paciente --//
-  //-----------------------------------//
+  //----------------------------------//
+  //-- Método para crear una receta --//
+  //----------------------------------//
 
   Future<void> createReceta(Map<String, dynamic> recetaData) async {
     String? token = await getToken(); // Obtener el token guardado
@@ -766,11 +795,181 @@ class APIService {
       },
     );
 
+    // Extraer el pacienteId de recetaData
+    String pacienteId = recetaData['pacienteId'].toString();
+    String fileName = 'Receta Medica - Paciente_$pacienteId.docx';
+
     if (response.statusCode == 200) {
       // Usuario creado exitosamente, no es necesario hacer nada más aquí
+      // Crea un Blob con los datos recibidos
+      final blob = Blob([response.bodyBytes]);
+
+      // Crea un enlace temporal para descargar el archivo
+      final url = Url.createObjectUrlFromBlob(blob);
+      final anchor = AnchorElement(href: url)
+        ..setAttribute("download", fileName)
+        ..click();
+
+      // Revoca el objeto URL después de la descarga
+      Url.revokeObjectUrl(url);
+
+      print('Archivo descargado: $fileName');
+
       return;
     } else {
       throw Exception('Failed to create paciente');
     }
   }
+
+
+  //------------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------//
+  //------------------ MODULO DE INVENTARIO DE ESTUDIO MEDICO -------------------//
+  //------------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------//
+
+  //---------------------------------------------------//
+  //-- Método para crear estudio medico Antidoping 5 --//
+  //---------------------------------------------------//
+
+  Future<void> createAntidoping5(Map<String, dynamic> estudioData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/Recetas'),
+      body: jsonEncode(estudioData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    // Extraer el pacienteId de recetaData
+    String pacienteId = estudioData['pacienteId'].toString();
+    String fileName = 'Antidoping 5 - Paciente_$pacienteId.docx';
+
+    if (response.statusCode == 200) {
+      // Usuario creado exitosamente, no es necesario hacer nada más aquí
+      // Crea un Blob con los datos recibidos
+      final blob = Blob([response.bodyBytes]);
+
+      // Crea un enlace temporal para descargar el archivo
+      final url = Url.createObjectUrlFromBlob(blob);
+      final anchor = AnchorElement(href: url)
+        ..setAttribute("download", fileName)
+        ..click();
+
+      // Revoca el objeto URL después de la descarga
+      Url.revokeObjectUrl(url);
+
+      print('Archivo descargado: $fileName');
+
+      return;
+    } else {
+      throw Exception('Failed to create paciente');
+    }
+  }
+
+
+  //---------------------------------------------------//
+  //-- Método para crear estudio medico Antidoping 3 --//
+  //---------------------------------------------------//
+
+  Future<void> createAntidoping3(Map<String, dynamic> estudioData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/Recetas'),
+      body: jsonEncode(estudioData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    // Extraer el pacienteId de recetaData
+    String pacienteId = estudioData['pacienteId'].toString();
+    String fileName = 'Antidoping 3 - Paciente_$pacienteId.docx';
+
+    if (response.statusCode == 200) {
+      // Usuario creado exitosamente, no es necesario hacer nada más aquí
+      // Crea un Blob con los datos recibidos
+      final blob = Blob([response.bodyBytes]);
+
+      // Crea un enlace temporal para descargar el archivo
+      final url = Url.createObjectUrlFromBlob(blob);
+      final anchor = AnchorElement(href: url)
+        ..setAttribute("download", fileName)
+        ..click();
+
+      // Revoca el objeto URL después de la descarga
+      Url.revokeObjectUrl(url);
+
+      print('Archivo descargado: $fileName');
+
+      return;
+    } else {
+      throw Exception('Failed to create paciente');
+    }
+  }
+
+  
+  //------------------------------------------------------//
+  //-- Método para crear estudio medico Prueba Embarazo --//
+  //------------------------------------------------------//
+
+  Future<void> createPruebaEmbarazo(Map<String, dynamic> estudioData) async {
+    String? token = await getToken(); // Obtener el token guardado
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/Recetas'),
+      body: jsonEncode(estudioData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer $token', // Añadir el token al encabezado de autorización
+      },
+    );
+
+    // Extraer el pacienteId de recetaData
+    String pacienteId = estudioData['pacienteId'].toString();
+    String fileName = 'Prueba Embarazo - Paciente_$pacienteId.docx';
+
+    if (response.statusCode == 200) {
+      // Usuario creado exitosamente, no es necesario hacer nada más aquí
+      // Crea un Blob con los datos recibidos
+      final blob = Blob([response.bodyBytes]);
+
+      // Crea un enlace temporal para descargar el archivo
+      final url = Url.createObjectUrlFromBlob(blob);
+      final anchor = AnchorElement(href: url)
+        ..setAttribute("download", fileName)
+        ..click();
+
+      // Revoca el objeto URL después de la descarga
+      Url.revokeObjectUrl(url);
+
+      print('Archivo descargado: $fileName');
+
+      return;
+    } else {
+      throw Exception('Failed to create paciente');
+    }
+  }
+
+
 }

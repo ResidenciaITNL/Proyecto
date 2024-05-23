@@ -250,15 +250,6 @@ class _ConsMedicaState extends State<ConsMedica> {
                 ),
               ),
             ),
-            DataColumn(
-              label: Text(
-                'Receta',
-                style: TextStyle(
-                  fontSize: fontSizeEdit,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
           ],
           rows: _currentRows,
         );
@@ -388,26 +379,6 @@ class _ConsMedicaState extends State<ConsMedica> {
                     alergias,
                     estudioMedico,
                     consulta);
-              },
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: IconButton(
-              icon: Icon(
-                Icons.file_download,
-                color: Colors.black,
-                size: iconSize,
-              ),
-              onPressed: () {
-                // Lógica para eliminar el usuario
-
-                // Obtener los datos relevantes de la fila seleccionada
-                int pacienteId = user['pacienteId'];
-                String nombre = user['nombre'];
-
-                _showDeletePacienteDialog(context, pacienteId, nombre);
               },
             ),
           ),

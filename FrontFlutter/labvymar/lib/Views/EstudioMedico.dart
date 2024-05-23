@@ -249,15 +249,6 @@ class _EstudioMedState extends State<EstudioMed> {
                 ),
               ),
             ),
-            DataColumn(
-              label: Text(
-                'Estudio Medico',
-                style: TextStyle(
-                  fontSize: fontSizeEdit,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
           ],
           rows: _currentRows,
         );
@@ -384,26 +375,6 @@ class _EstudioMedState extends State<EstudioMed> {
                       edad, sexo, estudioMedico, estudio_detalle);
 
                 }
-              },
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: IconButton(
-              icon: Icon(
-                Icons.file_download,
-                color: Colors.black,
-                size: iconSize,
-              ),
-              onPressed: () {
-                // Lógica para eliminar el usuario
-
-                // Obtener los datos relevantes de la fila seleccionada
-                int pacienteId = user['pacienteId'];
-                String nombre = user['nombre'];
-
-                _showDeletePacienteDialog(context, pacienteId, nombre);
               },
             ),
           ),
@@ -798,23 +769,23 @@ void _showCapturarAntidoping5(
                     String opiaceosNormal = OpiaceosNormalController.text;
                     String opiaceosResultado = OpiaceosResultadoController.text;
 
-                    Map<String, dynamic> recetaData = {
+                    Map<String, dynamic> estudioData = {
                       'pacienteId': pacienteId,
-                      '': marihuanaNormal,
-                      '': marihuanaResultado,
-                      '': cocainaNormal,
-                      '': cocainaResultado,
-                      '': anfetaminasNormal,
-                      '': anfetaminasResultado,
-                      '': metanfetaminasNormal,
-                      '': metanfetaminasResultado,
-                      '': opiaceosNormal,
-                      '': opiaceosResultado,
+                      'RV_M': marihuanaNormal,
+                      'R_M': marihuanaResultado,
+                      'RV_C': cocainaNormal,
+                      'R_C': cocainaResultado,
+                      'RV_A': anfetaminasNormal,
+                      'R_A': anfetaminasResultado,
+                      'RV_ME': metanfetaminasNormal,
+                      'R_ME': metanfetaminasResultado,
+                      'RV_O': opiaceosNormal,
+                      'R_O': opiaceosResultado,
                     };
 
                     try {
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
-                      await apiService.createReceta(recetaData);
+                      await apiService.createAntidoping5(estudioData);
 
                       // Mostrar mensaje de éxito
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -1182,19 +1153,19 @@ void _showCapturarAntidoping3(
                     String anfetaminasResultado =
                         AnfetaminasResultadoController.text;
 
-                    Map<String, dynamic> recetaData = {
+                    Map<String, dynamic> estudioData = {
                       'pacienteId': pacienteId,
-                      '': marihuanaNormal,
-                      '': marihuanaResultado,
-                      '': cocainaNormal,
-                      '': cocainaResultado,
-                      '': anfetaminasNormal,
-                      '': anfetaminasResultado,
+                      'RV_M': marihuanaNormal,
+                      'R_M': marihuanaResultado,
+                      'RV_C': cocainaNormal,
+                      'R_C': cocainaResultado,
+                      'RV_A': anfetaminasNormal,
+                      'R_A': anfetaminasResultado,
                     };
 
                     try {
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
-                      await apiService.createReceta(recetaData);
+                      await apiService.createAntidoping3(estudioData);
 
                       // Mostrar mensaje de éxito
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -1447,14 +1418,14 @@ void _showCapturarPruebaEmbarazo(
                   if (resultadoController.text.isNotEmpty) {
                     String resultado = resultadoController.text;
 
-                    Map<String, dynamic> recetaData = {
+                    Map<String, dynamic> estudioData = {
                       'pacienteId': pacienteId,
-                      'resultado': resultado,
+                      'Resultado': resultado,
                     };
 
                     try {
                       // Llamar al método updatePaciente de APIService para actualizar el paciente
-                      await apiService.createReceta(recetaData);
+                      await apiService.createPruebaEmbarazo(estudioData);
 
                       // Mostrar mensaje de éxito
                       ScaffoldMessenger.of(context).showSnackBar(
