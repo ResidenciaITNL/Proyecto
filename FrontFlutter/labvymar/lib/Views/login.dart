@@ -303,40 +303,40 @@ class __FormContentState extends State<_FormContent> {
           //-------------------------------------------------------------//
           //----------- Hyperbinculo a recuperar contraseña -------------//
           //-------------------------------------------------------------//
-          SizedBox(
-            width: double.infinity,
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacementNamed(context, 'recoverpass');
-                },
-                child: const Material(
-                  color: Color.fromARGB(0, 0, 0, 0),
-                  child: Center(
-                    // Centra el texto
-                    child: Text(
-                      'Recuperar contraseña',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(
-                            0xFF094293), // Cambia el color para que parezca un enlace
-                        decoration: TextDecoration
-                            .underline, // Agrega subrayado al texto
-                        decorationThickness:
-                            2.0, // Ajusta el grosor de la línea de subrayado
-                        decorationColor: const Color(
-                            0xFF094293), // Color de la línea de subrayado
-                        decorationStyle: TextDecorationStyle
-                            .solid, // Estilo de la línea de subrayado
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // SizedBox(
+          //   width: double.infinity,
+          //   child: MouseRegion(
+          //     cursor: SystemMouseCursors.click,
+          //     child: GestureDetector(
+          //       onTap: () {
+          //         Navigator.pushReplacementNamed(context, 'recoverpass');
+          //       },
+          //       child: const Material(
+          //         color: Color.fromARGB(0, 0, 0, 0),
+          //         child: Center(
+          //           // Centra el texto
+          //           child: Text(
+          //             'Recuperar contraseña',
+          //             style: TextStyle(
+          //               fontSize: 14,
+          //               fontWeight: FontWeight.bold,
+          //               color: const Color(
+          //                   0xFF094293), // Cambia el color para que parezca un enlace
+          //               decoration: TextDecoration
+          //                   .underline, // Agrega subrayado al texto
+          //               decorationThickness:
+          //                   2.0, // Ajusta el grosor de la línea de subrayado
+          //               decorationColor: const Color(
+          //                   0xFF094293), // Color de la línea de subrayado
+          //               decorationStyle: TextDecorationStyle
+          //                   .solid, // Estilo de la línea de subrayado
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
