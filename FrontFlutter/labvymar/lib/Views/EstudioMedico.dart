@@ -368,9 +368,22 @@ class _EstudioMedState extends State<EstudioMed> {
                 String sexo = user['sexo'];
                 String estudio_detalle = user['estudio_detalle'];
 
-                // Llamar al método para mostrar el diálogo de edición
-                _showCapturarPruebaEmbarazo(context, pacienteId, nombre, apellido,
-                    edad, sexo, estudioMedico, estudio_detalle);
+                if(estudio_detalle == 'Prueba de embarazo'){
+                  // Llamar al método para mostrar el diálogo de edición
+                  _showCapturarPruebaEmbarazo(context, pacienteId, nombre, apellido,
+                      edad, sexo, estudioMedico, estudio_detalle);
+
+                } else if(estudio_detalle == 'Antidoping 3'){
+                  // Llamar al método para mostrar el diálogo de edición
+                  _showCapturarAntidoping3(context, pacienteId, nombre, apellido,
+                      edad, sexo, estudioMedico, estudio_detalle);
+
+                } else if(estudio_detalle == 'Antidoping 5'){
+                  // Llamar al método para mostrar el diálogo de edición
+                  _showCapturarAntidoping5(context, pacienteId, nombre, apellido,
+                      edad, sexo, estudioMedico, estudio_detalle);
+
+                }
               },
             ),
           ),
